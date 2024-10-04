@@ -410,16 +410,21 @@ def cancellations_demo():
     # Bar Chart for Total Subscriptions and Cancellations using Plotly
     bar_fig = px.bar(df, x='Category', y='Count', title="Total Subscriptions vs Cancellations",
                      color='Category', color_discrete_sequence=px.colors.qualitative.Pastel,
-                     text='Count', template='simple_white')
+                     text='Count', template='plotly_dark')
 
+    # Adjust layout to fit better
     bar_fig.update_layout(
         title_font_size=20,
         xaxis_title=None,
         yaxis_title="Count",
-        font=dict(size=16),
-        showlegend=False
+        font=dict(size=14),
+        showlegend=False,
+        height=450,  # Adjust the height to fit better in the layout
+        margin=dict(l=30, r=30, t=80, b=40),  # Adjust margins to fit the chart
+        bargap=0.2,  # Reduce gap between bars
     )
     bar_fig.update_traces(texttemplate='%{text:.0f}', textposition='outside')
+
 
     # Pie Chart for Cancellation Rate using Plotly
     pie_fig = px.pie(
