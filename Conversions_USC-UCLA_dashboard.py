@@ -19,12 +19,11 @@ import sys
 
 def intro():
  # Title shown in the app
-    st.markdown("<h1 style='text-align: center;'>AnswersAi</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center;'>AnswersAi Marketing Insights</h1>", unsafe_allow_html=True)
     st.sidebar.success("Select Dashboard above")
 
     st.image("answersai.png")
 
-    st.write(sys.executable)
 
 def tiktok_instagram_demo ():
     st.markdown("<h1 style='text-align: center;'>TikTok and Instagram Conversion Rates</h1>", unsafe_allow_html=True)
