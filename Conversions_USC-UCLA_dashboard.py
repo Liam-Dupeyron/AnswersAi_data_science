@@ -611,31 +611,6 @@ def cancellations_demo():
     # Show the line chart in Streamlit
     st.plotly_chart(fig, use_container_width=True)
 
-    # Comparison Plot for DAU: Total Cancellations vs Total Users
-    st.markdown("### Total Cancellations vs Total Users (DAU)")
-
-    # Melt the DAU data to have a long format for Altair
-    dau_melted = pd.melt(dau_data, id_vars=['days_of_use'], value_vars=['cancellations', 'total_users'], 
-                        var_name='type', value_name='count')
-
-    # DAU Altair Chart with Custom Colors
-    dau_chart = alt.Chart(dau_melted).mark_bar().encode(
-        x=alt.X('days_of_use:O', title='Days of Use'),
-        y=alt.Y('count:Q', title='Count'),
-        color=alt.Color('type:N', scale=alt.Scale(range=['#FFCCCB', '#AEC6CF']), legend=alt.Legend(title="Type")),  # Pastel Red and Blue
-        tooltip=['days_of_use', 'type', 'count']
-    ).properties(
-        title='Total Cancellations vs Total Users (First 30 Days)',
-        width=600, height=400
-    ).configure_axis(
-        labelFontSize=12,
-        titleFontSize=14
-    ).configure_title(
-        fontSize=18
-    )
-
-    # Display DAU Chart
-    st.altair_chart(dau_chart, use_container_width=True)
 
     #-------------------------------------------------------------------------------
 
@@ -673,32 +648,6 @@ def cancellations_demo():
 
     # Show the MAU line chart in Streamlit
     st.plotly_chart(fig_mau, use_container_width=True)
-
-    # Comparison Plot for MAU: Total Cancellations vs Total Users
-    st.markdown("### Total Cancellations vs Total Users (MAU)")
-
-    # Melt the MAU data to have a long format for Altair
-    mau_melted = pd.melt(mau_data, id_vars=['months_after_subscription'], value_vars=['cancellations', 'total_users'], 
-                        var_name='type', value_name='count')
-
-    # MAU Altair Chart with Custom Colors
-    mau_chart = alt.Chart(mau_melted).mark_bar().encode(
-        x=alt.X('months_after_subscription:O', title='Months After Subscription'),
-        y=alt.Y('count:Q', title='Count'),
-        color=alt.Color('type:N', scale=alt.Scale(range=['#FFCCCB', '#AEC6CF']), legend=alt.Legend(title="Type")),  # Pastel Red and Blue
-        tooltip=['months_after_subscription', 'type', 'count']
-    ).properties(
-        title='Total Cancellations vs Total Users (First 12 Months)',
-        width=600, height=400
-    ).configure_axis(
-        labelFontSize=12,
-        titleFontSize=14
-    ).configure_title(
-        fontSize=18
-    )
-
-    # Display MAU Chart
-    st.altair_chart(mau_chart, use_container_width=True)
     
 
 
