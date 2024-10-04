@@ -344,7 +344,7 @@ def usc_ucla_demo ():
         zoom=10,
         mapbox_style='open-street-map',
         title="USC and UCLA Users on Map",
-        size_max = 20
+        size_max = 30
     )
 
     # Set the layout size for the map
