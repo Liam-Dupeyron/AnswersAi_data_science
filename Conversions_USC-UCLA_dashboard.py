@@ -13,7 +13,9 @@ import geopandas as gpd
 import contextily as ctx
 import folium
 import plotly.express as px
-from streamlit_folium import st_folium
+#from streamlit_folium import st_folium
+import sys
+
 
 def intro():
  # Title shown in the app
@@ -21,6 +23,8 @@ def intro():
     st.sidebar.success("Select Dashboard above")
 
     st.image("answersai.png")
+
+    st.write(sys.executable)
 
 def tiktok_instagram_demo ():
     st.markdown("<h1 style='text-align: center;'>TikTok and Instagram Conversion Rates</h1>", unsafe_allow_html=True)
