@@ -444,9 +444,8 @@ def cancellations_demo():
     #Load cancellation data
     cancellation_report = pd.read_csv("cancellations_report.csv")
     st.dataframe(cancellation_report)
-git 
 
-
+    
 def main():
 
     page_names_to_funcs = {
