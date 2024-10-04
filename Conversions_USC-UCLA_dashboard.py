@@ -597,6 +597,35 @@ def cancellations_demo():
     # Show the line chart in Streamlit
     st.plotly_chart(fig, use_container_width=True)
 
+    # Data from the query result
+    data = {
+        "months_after_subscription": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        "cancellations": [422, 34, 61, 72, 113, 43, 10, 4, 17, 30, 1],
+        "total_users": [208383, 171867, 21158, 24023, 41130, 58506, 43411, 21848, 20710, 4824, 10416],
+        "cancellation_rate": [0.2025, 0.0198, 0.2883, 0.2997, 0.2747, 0.0735, 0.0230, 0.0183, 0.0821, 0.6219, 0.0096]
+    }
+
+    # Create a DataFrame
+    df_cancellation_rate = pd.DataFrame(data)
+
+    # Display the DataFrame in Streamlit
+    st.markdown("## Cancellation Rate by Months After Subscription")
+    st.dataframe(df_cancellation_rate)
+
+    # Optionally, allow downloading the data as a CSV
+    @st.cache_data
+    def convert_df_to_csv(df):
+        return df.to_csv(index=False).encode('utf-8')
+
+    # Provide a download button for the CSV file
+    csv_data = convert_df_to_csv(df_cancellation_rate)
+    st.download_button(
+        label="Download Data as CSV",
+        data=csv_data,
+        file_name='cancellation_rate_by_month.csv',
+        mime='text/csv',
+    )
+
 
 def main():
 
