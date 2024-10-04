@@ -389,6 +389,44 @@ def usc_ucla_demo ():
 def cancellations_demo():
     st.markdown("<h1 style='text-align: center;'>Cancellation Insights</h1>", unsafe_allow_html=True)
 
+    ### KPI Cards for Key Metrics
+    st.markdown("### Key Performance Indicators (KPIs)")
+
+    Total_subscsiptions =  20881 
+    Total_cancellations = 10179 
+    Cancellation_rate =Total_cancellations /  Total_subscsiptions
+
+    st.metric(label="Total number of Cancellations", value=f"Total_subscsiptions")
+    st.metric(label="Total subscriptions", value=Total_cancellations)
+    st.metric(label="Cancellation rate", value=f"{Cancellation_rate}%")
+
+    # Create the figure and axis
+    fig, ax = plt.subplots(1, 2, figsize=(14, 7))
+
+    # Bar Plot for Total Subscriptions and Cancellations
+    categories = ['Total Subscriptions', 'Total Cancellations']
+    values = [Total_subscriptions, Total_cancellations]
+    pastel_colors = ['#FFB6C1', '#ADD8E6']  # Light pastel colors for bars
+
+    ax[0].bar(categories, values, color=pastel_colors)
+    ax[0].set_title('Total Subscriptions vs Cancellations', fontsize=16)
+    ax[0].set_ylabel('Count', fontsize=16)
+    ax[0].tick_params(axis='x', labelsize=16)
+    ax[0].tick_params(axis='y', labelsize=16)
+
+    # Pie Chart for Cancellation Rate
+    labels = ['Cancellations', 'Active Subscriptions']
+    sizes = [Total_cancellations, Total_subscriptions - Total_cancellations]
+    colors = ['#FFB6C1', '#98FB98']  # Pastel pink for cancellations, green for active
+    explode = (0.1, 0)  # Slightly "explode" the cancellations slice
+
+    ax[1].pie(sizes, explode=explode, labels=labels, colors=colors, autopct='%1.1f%%',
+              shadow=True, startangle=140, textprops={'fontsize': 16})
+    ax[1].set_title('Cancellation Rate', fontsize=16)
+
+    # Display the plots in Streamlit
+    st.pyplot(fig)
+
 
 def main():
 
