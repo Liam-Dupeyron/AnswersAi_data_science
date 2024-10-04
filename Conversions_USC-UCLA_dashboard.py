@@ -365,7 +365,7 @@ def usc_ucla_demo ():
         radius=10,  # Adjust radius for density smoothing
         center=dict(lat=34.05, lon=-118.25),  # Center around LA
         zoom=10,  # Adjust zoom level
-        mapbox_style='stamen-terrain',  # Use 'open-street-map' or other map styles
+        mapbox_style='open-street-map',  # Use 'open-street-map' instead of 'stamen-terrain'
         title="User Density Heatmap (USC and UCLA)"
     )
 
