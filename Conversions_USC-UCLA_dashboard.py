@@ -347,7 +347,7 @@ def usc_ucla_demo ():
     )
 
     # Explicitly increase marker size for the dots
-    fig_map.update_traces(marker=dict(size=20))  # Increase dot size here (e.g., size=20)
+    fig_map.update_traces(marker=dict(size=14))  # Increase dot size here (e.g., size=20)
 
     # Set the layout size for the map
     fig_map.update_layout(
