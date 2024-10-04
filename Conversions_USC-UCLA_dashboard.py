@@ -337,7 +337,7 @@ def usc_ucla_demo ():
             radius=3,
             color='blue',
             fill=True,
-            fill_color='blue',
+            fill_color='#990000',
             fill_opacity=0.6,
         ).add_to(m)
 
@@ -348,7 +348,7 @@ def usc_ucla_demo ():
             radius=3,
             color='green',
             fill=True,
-            fill_color='green',
+            fill_color='#2774AE',
             fill_opacity=0.6,
         ).add_to(m)
 
