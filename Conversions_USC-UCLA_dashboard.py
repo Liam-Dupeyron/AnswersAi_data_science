@@ -441,11 +441,59 @@ def cancellations_demo():
     st.plotly_chart(pie_fig, use_container_width=True)
 
  
-    #Load cancellation data
-    cancellation_report = pd.read_csv("cancellations_report.csv")
-    st.dataframe(cancellation_report)
 
-    
+    # Define the data from the query result
+    cancellation_reasons_data = {
+        "cancel_reason": [
+            "too expensive",
+            "no longer needed",
+            "not working well",
+            "it does not work for my exam site and i mistakenly make subcription 2 time intead of one and i have been getting charge twice every month please unsubscribe me from everything please thank you",
+            "i didnt request for any subscription",
+            "Multiple charges",
+            "I don't need this for right now.",
+            "not good always error",
+            "No longer in school.",
+            "Taking a break"
+        ],
+        "cancellation_count": [49509, 42714, 20138, 1193, 546, 482, 447, 263, 256, 229],
+        "last_tools_used": [
+            "Auto Mode,Highlight,Mobile OCR Mode,Snapshot,Summarize",
+            "Auto Mode,Highlight,Mobile OCR Mode,Snapshot",
+            "Auto Mode,Highlight,Mobile OCR Mode,Snapshot",
+            "Highlight",
+            "Highlight,Snapshot",
+            "Mobile OCR Mode,Snapshot",
+            "Mobile OCR Mode,Snapshot",
+            "Highlight,Snapshot",
+            "Highlight",
+            "Snapshot"
+        ]
+    }
+
+    # Create a DataFrame
+    top_cancellation_reasons = pd.DataFrame(cancellation_reasons_data)
+
+    # Display the DataFrame in Streamlit
+    st.dataframe(top_cancellation_reasons)
+
+    # Optionally, allow downloading the data as a CSV
+    @st.cache_data
+    def convert_df_to_csv(top_cancellation_reasons):
+        return df.to_csv(index=False).encode('utf-8')
+
+    top_cancellation_reasons_csv = convert_df_to_csv(top_cancellation_reasons)
+
+    # Provide a download button for the CSV file
+    st.download_button(
+        label="Download Data as CSV",git
+        data=top_cancellation_reasons_csv,
+        file_name='cancellations_report.csv',
+        mime='text/csv',
+    )
+
+
+
 def main():
 
     page_names_to_funcs = {
