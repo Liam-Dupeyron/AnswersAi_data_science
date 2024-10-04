@@ -394,7 +394,7 @@ def cancellations_demo():
 
     Total_subscsiptions =  20881 
     Total_cancellations = 10179 
-    Cancellation_rate =Total_cancellations /  Total_subscsiptions
+    Cancellation_rate = round(Total_cancellations /  Total_subscsiptions, 2)
 
     st.metric(label="Total number of Cancellations", value=f"Total_subscsiptions")
     st.metric(label="Total subscriptions", value=Total_cancellations)
@@ -405,7 +405,7 @@ def cancellations_demo():
 
     # Bar Plot for Total Subscriptions and Cancellations
     categories = ['Total Subscriptions', 'Total Cancellations']
-    values = [Total_subscriptions, Total_cancellations]
+    values = [Total_subscsiptions, Total_cancellations]
     pastel_colors = ['#FFB6C1', '#ADD8E6']  # Light pastel colors for bars
 
     ax[0].bar(categories, values, color=pastel_colors)
@@ -416,7 +416,7 @@ def cancellations_demo():
 
     # Pie Chart for Cancellation Rate
     labels = ['Cancellations', 'Active Subscriptions']
-    sizes = [Total_cancellations, Total_subscriptions - Total_cancellations]
+    sizes = [Total_cancellations, Total_subscsiptions - Total_cancellations]
     colors = ['#FFB6C1', '#98FB98']  # Pastel pink for cancellations, green for active
     explode = (0.1, 0)  # Slightly "explode" the cancellations slice
 
