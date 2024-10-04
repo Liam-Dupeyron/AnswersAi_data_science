@@ -559,34 +559,35 @@ def cancellations_demo():
     # Display the pie chart
     st.plotly_chart(pie_fig, use_container_width=True)
 
-    # Data from the query result
-    data = {
-        "days_of_use": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 17, 18, 20, 21, 22, 23, 25, 28, 29],
-        "cancellations": [208, 51, 21, 17, 9, 13, 14, 14, 11, 11, 6, 6, 7, 2, 4, 1, 8, 2, 1, 2, 2, 4, 3, 5],
-        "total_users": [705819, 699642, 691056, 682742, 673678, 665093, 657770, 650973, 641634, 628999, 617835, 609131, 600997, 595406, 591470, 577619, 571871, 557897, 549748, 541775, 537045, 526311, 510684, 505080],
-        "cancellation_rate": [0.0295, 0.0073, 0.0030, 0.0025, 0.0013, 0.0020, 0.0021, 0.0022, 0.0017, 0.0017, 0.0010, 0.0010, 0.0012, 0.0003, 0.0007, 0.0002, 0.0014, 0.0004, 0.0002, 0.0004, 0.0004, 0.0008, 0.0006, 0.0010]
-    }
-
-    # Create a DataFrame
-    df_cancellations = pd.DataFrame(data)
-
-    # Display the DataFrame in Streamlit
+    # DAU Data
     st.markdown("## Cancellation Rates from Day 1 to Day 30")
-    st.dataframe(df_cancellations)
 
-    # Optionally, allow downloading the data as a CSV
-    @st.cache_data
-    def convert_df_to_csv(df):
-        return df.to_csv(index=False).encode('utf-8')
+    # Load the DAU data from the CSV
+    dau_data = pd.read_csv("DAU_data.csv")
 
-    # Provide a download button for the CSV file
-    csv_data = convert_df_to_csv(df_cancellations)
-    st.download_button(
-        label="Download Data as CSV",
-        data=csv_data,
-        file_name='cancellation_rates.csv',
-        mime='text/csv',
+    # Display the dataframe
+    st.dataframe(dau_data)
+
+    # Create a line plot for cancellation rates over days of use
+    fig = px.line(dau_data, 
+                x='days_of_use',  # X-axis: days of use
+                y='cancellation_rate',  # Y-axis: cancellation rate
+                title="Cancellation Rates Over Time (First 30 Days)", 
+                labels={'days_of_use': 'Days of Use', 'cancellation_rate': 'Cancellation Rate (%)'},  # Axis labels
+                template='plotly_dark')  # Dark template for better contrast
+
+    # Customize the plot's appearance
+    fig.update_layout(
+        title_font_size=22,
+        xaxis_title="Days of Use",
+        yaxis_title="Cancellation Rate (%)",
+        font=dict(size=16),  # Increase font size for better readability
+        height=600  # Increase height for better spacing
     )
+
+    # Show the line chart in Streamlit
+    st.plotly_chart(fig, use_container_width=True)
+
 
 def main():
 
