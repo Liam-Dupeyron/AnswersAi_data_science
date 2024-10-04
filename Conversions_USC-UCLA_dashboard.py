@@ -577,7 +577,7 @@ def cancellations_demo():
                 template='plotly_dark')
 
     # Change the line color to a pastel color (e.g., light blue)
-    fig.update_traces(mode='lines+markers', marker=dict(size=10, symbol='circle', color='coral'), line=dict(color='lightblue'))  # Pastel color
+    fig.update_traces(mode='lines+markers', marker=dict(size=8, symbol='circle', color='#FFCAA4'), line=dict(color='lightblue'))  # Pastel color
 
     # Customize the layout with grid lines and enhanced font size
     fig.update_layout(
@@ -597,34 +597,41 @@ def cancellations_demo():
     # Show the line chart in Streamlit
     st.plotly_chart(fig, use_container_width=True)
 
-    # Data from the final query result
-    data = {
-        "months_after_subscription": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-        "cancellations": [422, 34, 61, 72, 113, 43, 10, 4, 17, 30, 1],
-        "total_users": [208408, 171867, 21158, 24023, 41130, 58506, 43411, 21848, 20710, 4824, 10416],
-        "cancellation_rate": [0.2025, 0.0198, 0.2883, 0.2997, 0.2747, 0.0735, 0.0230, 0.0183, 0.0821, 0.6219, 0.0096]
-    }
+    # MAU Line Plot
+    st.markdown("## Cancellation Rate by Months After Subscription (MAU)")
 
-    # Create a DataFrame
-    df_cancellation_rate = pd.DataFrame(data)
+    # Load the MAU data from the CSV
+    mau_data = pd.read_csv("cancellation_rate_by_month.csv")
 
-    # Display the DataFrame in Streamlit
-    st.markdown("## Cancellation Rate by Months After Subscription")
-    st.dataframe(df_cancellation_rate)
+    # Display the dataframe
+    st.dataframe(mau_data)
 
-    # Optionally, allow downloading the data as a CSV
-    @st.cache_data
-    def convert_df_to_csv(df):
-        return df.to_csv(index=False).encode('utf-8')
+    # Create a line plot for cancellation rates over months of subscription (MAU)
+    fig_mau = px.line(mau_data, 
+                    x='months_after_subscription',  # X-axis: months after subscription
+                    y='cancellation_rate',  # Y-axis: cancellation rate
+                    title="Cancellation Rates Over Time (First 12 Months)", 
+                    labels={'months_after_subscription': 'Months After Subscription', 'cancellation_rate': 'Cancellation Rate (%)'},
+                    template='plotly_dark')
 
-    # Provide a download button for the CSV file
-    csv_data = convert_df_to_csv(df_cancellation_rate)
-    st.download_button(
-        label="Download Data as CSV",
-        data=csv_data,
-        file_name='cancellation_rate_by_month.csv',
-        mime='text/csv',
+    # Customize the line and marker colors for contrast
+    fig_mau.update_traces(mode='lines+markers', marker=dict(size=8, symbol='circle', color='#FFCAA4'), line=dict(color='lightblue'))
+
+    # Customize the layout with grid lines and enhanced font size
+    fig_mau.update_layout(
+        title_font_size=22,
+        xaxis_title="Months After Subscription",
+        yaxis_title="Cancellation Rate (%)",
+        font=dict(size=16),
+        height=600,
+        xaxis=dict(showgrid=True),  # Add grid lines to x-axis
+        yaxis=dict(showgrid=True),  # Add grid lines to y-axis
+        hovermode="x unified",  # Unify hover information for both axes
     )
+
+    # Show the MAU line chart in Streamlit
+    st.plotly_chart(fig_mau, use_container_width=True)
+    
 
 
 def main():
