@@ -392,40 +392,49 @@ def cancellations_demo():
     ### KPI Cards for Key Metrics
     st.markdown("### Key Performance Indicators (KPIs)")
 
-    Total_subscsiptions =  20881 
+    Total_subscriptions =  20881 
     Total_cancellations = 10179 
-    Cancellation_rate = round(Total_cancellations /  Total_subscsiptions, 2)
+    Cancellation_rate = round(Total_cancellations /  Total_subscriptions, 2)
 
-    st.metric(label="Total number of Cancellations", value=f"Total_subscsiptions")
+    st.metric(label="Total number of Cancellations", value=Total_subscriptions)
     st.metric(label="Total subscriptions", value=Total_cancellations)
     st.metric(label="Cancellation rate", value=f"{Cancellation_rate}%")
 
-    # Create the figure and axis
-    fig, ax = plt.subplots(1, 2, figsize=(14, 7))
+    # Data for the charts
+    data = {
+        'Category': ['Total Subscriptions', 'Total Cancellations'],
+        'Count': [Total_subscriptions, Total_cancellations]
+    }
+    df = pd.DataFrame(data)
 
-    # Bar Plot for Total Subscriptions and Cancellations
-    categories = ['Total Subscriptions', 'Total Cancellations']
-    values = [Total_subscsiptions, Total_cancellations]
-    pastel_colors = ['#FFB6C1', '#ADD8E6']  # Light pastel colors for bars
+    # Bar Chart for Total Subscriptions and Cancellations using Plotly
+    bar_fig = px.bar(df, x='Category', y='Count', title="Total Subscriptions vs Cancellations",
+                     color='Category', color_discrete_sequence=px.colors.qualitative.Pastel,
+                     text='Count', template='simple_white')
 
-    ax[0].bar(categories, values, color=pastel_colors)
-    ax[0].set_title('Total Subscriptions vs Cancellations', fontsize=16)
-    ax[0].set_ylabel('Count', fontsize=16)
-    ax[0].tick_params(axis='x', labelsize=16)
-    ax[0].tick_params(axis='y', labelsize=16)
+    bar_fig.update_layout(
+        title_font_size=20,
+        xaxis_title=None,
+        yaxis_title="Count",
+        font=dict(size=16),
+        showlegend=False
+    )
+    bar_fig.update_traces(texttemplate='%{text:.0f}', textposition='outside')
 
-    # Pie Chart for Cancellation Rate
-    labels = ['Cancellations', 'Active Subscriptions']
-    sizes = [Total_cancellations, Total_subscsiptions - Total_cancellations]
-    colors = ['#FFB6C1', '#98FB98']  # Pastel pink for cancellations, green for active
-    explode = (0.1, 0)  # Slightly "explode" the cancellations slice
+    # Pie Chart for Cancellation Rate using Plotly
+    pie_fig = px.pie(
+        names=['Cancellations', 'Active Subscriptions'],
+        values=[Total_cancellations, Total_subscriptions - Total_cancellations],
+        title="Cancellation Rate",
+        color_discrete_sequence=px.colors.qualitative.Pastel
+    )
 
-    ax[1].pie(sizes, explode=explode, labels=labels, colors=colors, autopct='%1.1f%%',
-              shadow=True, startangle=140, textprops={'fontsize': 16})
-    ax[1].set_title('Cancellation Rate', fontsize=16)
+    pie_fig.update_traces(textposition='inside', textinfo='percent+label', pull=[0.1, 0])
 
-    # Display the plots in Streamlit
-    st.pyplot(fig)
+    # Display the charts in Streamlit
+    st.plotly_chart(bar_fig, use_container_width=True)
+    st.plotly_chart(pie_fig, use_container_width=True)
+
 
 
 def main():
