@@ -618,11 +618,11 @@ def cancellations_demo():
     dau_melted = pd.melt(dau_data, id_vars=['days_of_use'], value_vars=['cancellations', 'total_users'], 
                         var_name='type', value_name='count')
 
-    # DAU Altair Chart
+    # DAU Altair Chart with Custom Colors
     dau_chart = alt.Chart(dau_melted).mark_bar().encode(
         x=alt.X('days_of_use:O', title='Days of Use'),
         y=alt.Y('count:Q', title='Count'),
-        color='type:N',  # Cancellations vs Total Users
+        color=alt.Color('type:N', scale=alt.Scale(range=['#FFCCCB', '#AEC6CF']), legend=alt.Legend(title="Type")),  # Pastel Red and Blue
         tooltip=['days_of_use', 'type', 'count']
     ).properties(
         title='Total Cancellations vs Total Users (First 30 Days)',
@@ -681,11 +681,11 @@ def cancellations_demo():
     mau_melted = pd.melt(mau_data, id_vars=['months_after_subscription'], value_vars=['cancellations', 'total_users'], 
                         var_name='type', value_name='count')
 
-    # MAU Altair Chart
+    # MAU Altair Chart with Custom Colors
     mau_chart = alt.Chart(mau_melted).mark_bar().encode(
         x=alt.X('months_after_subscription:O', title='Months After Subscription'),
         y=alt.Y('count:Q', title='Count'),
-        color='type:N',  # Cancellations vs Total Users
+        color=alt.Color('type:N', scale=alt.Scale(range=['#FFCCCB', '#AEC6CF']), legend=alt.Legend(title="Type")),  # Pastel Red and Blue
         tooltip=['months_after_subscription', 'type', 'count']
     ).properties(
         title='Total Cancellations vs Total Users (First 12 Months)',
