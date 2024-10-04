@@ -576,8 +576,8 @@ def cancellations_demo():
                 labels={'days_of_use': 'Days of Use', 'cancellation_rate': 'Cancellation Rate (%)'},
                 template='plotly_dark')
 
-    # Add markers for each data point
-    fig.update_traces(mode='lines+markers', marker=dict(size=8, symbol='circle'))
+    # Change the line color to a pastel color (e.g., light blue)
+    fig.update_traces(line=dict(color='lightblue'))  # Pastel color
 
     # Customize the layout with grid lines and enhanced font size
     fig.update_layout(
@@ -597,11 +597,11 @@ def cancellations_demo():
     # Show the line chart in Streamlit
     st.plotly_chart(fig, use_container_width=True)
 
-    # Data from the query result
+    # Data from the final query result
     data = {
         "months_after_subscription": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
         "cancellations": [422, 34, 61, 72, 113, 43, 10, 4, 17, 30, 1],
-        "total_users": [208383, 171867, 21158, 24023, 41130, 58506, 43411, 21848, 20710, 4824, 10416],
+        "total_users": [208408, 171867, 21158, 24023, 41130, 58506, 43411, 21848, 20710, 4824, 10416],
         "cancellation_rate": [0.2025, 0.0198, 0.2883, 0.2997, 0.2747, 0.0735, 0.0230, 0.0183, 0.0821, 0.6219, 0.0096]
     }
 
