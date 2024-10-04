@@ -356,7 +356,7 @@ def usc_ucla_demo ():
     # Display the Plotly map in Streamlit
     st.plotly_chart(fig_map)
 
-    # Create a density heatmap using Plotly with custom color scale (red to blue)
+    # Create a density heatmap using Plotly with refined custom color scale
     fig_density = px.density_mapbox(
         usc_ucla_combined,
         lat='latitude',
@@ -367,7 +367,7 @@ def usc_ucla_demo ():
         zoom=10,  # Adjust zoom level
         mapbox_style='open-street-map',  # Use 'open-street-map' for simplicity
         title="User Density Heatmap (USC and UCLA)",
-        color_continuous_scale=[(0, '#990000'), (1, '#2774AE')]  # Custom color scale: red to blue
+        color_continuous_scale=[[0, '#990000'], [0.5, '#990000'], [1, '#2774AE']]  # Direct transition from USC Red to UCLA Blue
     )
 
     # Display the density heatmap in Streamlit
