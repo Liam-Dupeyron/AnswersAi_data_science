@@ -334,7 +334,7 @@ def usc_ucla_demo ():
     # Remove rows with missing or invalid latitude or longitude values
     usc_ucla_combined = usc_ucla_combined.dropna(subset=['latitude', 'longitude'])
 
-    # Plot using Plotly scatter_mapbox with a legend for USC and UCLA users
+    # Plot using Plotly scatter_mapbox with larger marker size
     fig_map = px.scatter_mapbox(
         usc_ucla_combined,
         lat='latitude',
@@ -344,13 +344,15 @@ def usc_ucla_demo ():
         zoom=10,
         mapbox_style='open-street-map',
         title="USC and UCLA Users on Map",
-        size_max = 40
     )
+
+    # Explicitly increase marker size for the dots
+    fig_map.update_traces(marker=dict(size=20))  # Increase dot size here (e.g., size=20)
 
     # Set the layout size for the map
     fig_map.update_layout(
         height=500,
-        margin={"r":0,"t":0,"l":0,"b":0},
+        margin={"r": 0, "t": 0, "l": 0, "b": 0},
         legend=dict(title="Legend", font=dict(size=10))
     )
 
