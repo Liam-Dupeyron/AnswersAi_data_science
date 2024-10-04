@@ -1,3 +1,11 @@
-Category,Count
-Total Subscriptions,20881
-Total Cancellations,10179
+cancel_reason,cancellation_count,last_tools_used
+too expensive,49509,"Auto Mode,Highlight,Mobile OCR Mode,Snapshot,Summarize"
+no longer needed,42714,"Auto Mode,Highlight,Mobile OCR Mode,Snapshot"
+not working well,20138,"Auto Mode,Highlight,Mobile OCR Mode,Snapshot"
+it does not work for my exam site and i mistakenly make subcription 2 time intead of one and i have been getting charge twice every month please unsubscribe me from everything please thank you,1193,Highlight
+i didnt request for any subscription,546,"Highlight,Snapshot"
+Multiple charges,482,"Mobile OCR Mode,Snapshot"
+I don't need this for right now.,447,"Mobile OCR Mode,Snapshot"
+not good always error,263,"Highlight,Snapshot"
+No longer in school.,256,Highlight
+Taking a break,229,Snapshot
