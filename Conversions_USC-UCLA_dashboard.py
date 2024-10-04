@@ -385,12 +385,18 @@ def usc_ucla_demo ():
     # Display the density heatmap in Streamlit
     st.plotly_chart(fig_density)
 
+
+def cancellations_demo():
+    st.markdown("<h1 style='text-align: center;'>Cancellation Insights</h1>", unsafe_allow_html=True)
+
+
 def main():
 
     page_names_to_funcs = {
     "Intro": intro,
     "Tiktok/Instagram Conversion Rates": tiktok_instagram_demo,
     "UCLA/USC users": usc_ucla_demo,
+    "Cancellation": cancellations_demo
 }
 
     demo_name = st.sidebar.selectbox("Choose a demo", page_names_to_funcs.keys())
