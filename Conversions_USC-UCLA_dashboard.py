@@ -15,6 +15,7 @@ import folium
 import plotly.express as px
 from streamlit_folium import st_folium
 import sys
+import altair as alt
 
 
 def intro():
@@ -440,7 +441,9 @@ def cancellations_demo():
     st.plotly_chart(bar_fig, use_container_width=True)
     st.plotly_chart(pie_fig, use_container_width=True)
 
- 
+    
+    #-------------------------------------------------------------------------------------------------------
+
 
     # Markdown header for the cancellation report
     st.markdown("## Detailed Cancellation Report")
@@ -457,6 +460,10 @@ def cancellations_demo():
     
     # Display the DataFrame
     st.dataframe(cancellation_report[['cancel_reason', "cancellation_count"]])
+
+
+    #---------------------------------------------------------------------------------------------------------
+
 
     # Visualization: Bar Chart for Top 10 Cancellation Reasons
     st.markdown("### Top 10 Cancellation Reasons")
@@ -512,6 +519,10 @@ def cancellations_demo():
         "usage_count": [56949, 28471, 19597, 5428, 4479, 980]
     }
 
+
+    #------------------------------------------------------------------------------------------------
+
+
     # Most Used Tools Before Cancellation
     st.markdown("## Most Used Tools Before Cancellation")
     most_used_tools = pd.read_csv("most_used_tools_before_cancellation_2.csv")
@@ -559,6 +570,9 @@ def cancellations_demo():
     # Display the pie chart
     st.plotly_chart(pie_fig, use_container_width=True)
 
+
+    #---------------------------------------------------------------------------------------------------------
+
     # DAU Data
     st.markdown("## Cancellation Rates from Day 1 to Day 30")
 
@@ -577,7 +591,7 @@ def cancellations_demo():
                 template='plotly_dark')
 
     # Change the line color to a pastel color (e.g., light blue)
-    fig.update_traces(mode='lines+markers', marker=dict(size=8, symbol='circle', color='#FFCAA4'), line=dict(color='#8391A3'))  # Pastel color
+    fig.update_traces(mode='lines+markers', marker=dict(size=8, symbol='circle', color='#FFCAA4'), line=dict(color='#9EDCE1'))  # Pastel color
 
     # Customize the layout with grid lines and enhanced font size
     fig.update_layout(
@@ -600,19 +614,30 @@ def cancellations_demo():
     # Comparison Plot for DAU: Total Cancellations vs Total Users
     st.markdown("### Total Cancellations vs Total Users (DAU)")
 
-    # Create a bar chart comparing total cancellations and total users for DAU
-    fig_dau_comparison = px.bar(dau_data, 
-                                x='days_of_use', 
-                                y=['cancellations', 'total_users'], 
-                                title="Total Cancellations vs Total Users (First 30 Days)",
-                                labels={'days_of_use': 'Days of Use', 'value': 'Count'},
-                                template='plotly_dark')
+    # Melt the DAU data to have a long format for Altair
+    dau_melted = pd.melt(dau_data, id_vars=['days_of_use'], value_vars=['cancellations', 'total_users'], 
+                        var_name='type', value_name='count')
 
-    # Customize the layout
-    fig_dau_comparison.update_layout(barmode='group', title_font_size=22, font=dict(size=16), height=600)
+    # DAU Altair Chart
+    dau_chart = alt.Chart(dau_melted).mark_bar().encode(
+        x=alt.X('days_of_use:O', title='Days of Use'),
+        y=alt.Y('count:Q', title='Count'),
+        color='type:N',  # Cancellations vs Total Users
+        tooltip=['days_of_use', 'type', 'count']
+    ).properties(
+        title='Total Cancellations vs Total Users (First 30 Days)',
+        width=600, height=400
+    ).configure_axis(
+        labelFontSize=12,
+        titleFontSize=14
+    ).configure_title(
+        fontSize=18
+    )
 
-    # Show the DAU comparison plot in Streamlit
-    st.plotly_chart(fig_dau_comparison, use_container_width=True)
+    # Display DAU Chart
+    st.altair_chart(dau_chart, use_container_width=True)
+
+    #-------------------------------------------------------------------------------
 
     # MAU Line Plot
     st.markdown("## Cancellation Rate by Months After Subscription (MAU)")
@@ -632,7 +657,7 @@ def cancellations_demo():
                     template='plotly_dark')
 
     # Customize the line and marker colors for contrast
-    fig_mau.update_traces(mode='lines+markers', marker=dict(size=8, symbol='circle', color='#FFCAA4'), line=dict(color='#8391A3'))
+    fig_mau.update_traces(mode='lines+markers', marker=dict(size=8, symbol='circle', color='#FFCAA4'), line=dict(color='#9EDCE1'))
 
     # Customize the layout with grid lines and enhanced font size
     fig_mau.update_layout(
@@ -652,19 +677,28 @@ def cancellations_demo():
     # Comparison Plot for MAU: Total Cancellations vs Total Users
     st.markdown("### Total Cancellations vs Total Users (MAU)")
 
-    # Create a bar chart comparing total cancellations and total users for MAU
-    fig_mau_comparison = px.bar(mau_data, 
-                                x='months_after_subscription', 
-                                y=['cancellations', 'total_users'], 
-                                title="Total Cancellations vs Total Users (First 12 Months)",
-                                labels={'months_after_subscription': 'Months After Subscription', 'value': 'Count'},
-                                template='plotly_dark')
+    # Melt the MAU data to have a long format for Altair
+    mau_melted = pd.melt(mau_data, id_vars=['months_after_subscription'], value_vars=['cancellations', 'total_users'], 
+                        var_name='type', value_name='count')
 
-    # Customize the layout
-    fig_mau_comparison.update_layout(barmode='group', title_font_size=22, font=dict(size=16), height=600)
+    # MAU Altair Chart
+    mau_chart = alt.Chart(mau_melted).mark_bar().encode(
+        x=alt.X('months_after_subscription:O', title='Months After Subscription'),
+        y=alt.Y('count:Q', title='Count'),
+        color='type:N',  # Cancellations vs Total Users
+        tooltip=['months_after_subscription', 'type', 'count']
+    ).properties(
+        title='Total Cancellations vs Total Users (First 12 Months)',
+        width=600, height=400
+    ).configure_axis(
+        labelFontSize=12,
+        titleFontSize=14
+    ).configure_title(
+        fontSize=18
+    )
 
-    # Show the MAU comparison plot in Streamlit
-    st.plotly_chart(fig_mau_comparison, use_container_width=True)
+    # Display MAU Chart
+    st.altair_chart(mau_chart, use_container_width=True)
     
 
 
