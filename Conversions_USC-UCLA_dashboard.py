@@ -531,7 +531,7 @@ def cancellations_demo():
         title_font_size=22,
         xaxis_title=None,
         yaxis_title="Usage Count",
-        font=dict(size=14),
+        font=dict(size=16),  # Set font size to 16
         showlegend=False,
         height=600,  # Increased height for better readability
         margin=dict(l=30, r=30, t=80, b=150),
@@ -550,6 +550,11 @@ def cancellations_demo():
 
     # Customize the pie chart
     pie_fig.update_traces(textposition='inside', textinfo='percent+label', pull=[0.1, 0, 0, 0, 0])
+
+    # Customize layout with larger font size
+    pie_fig.update_layout(
+        font=dict(size=16)  # Set font size to 16
+    )
 
     # Display the pie chart
     st.plotly_chart(pie_fig, use_container_width=True)
