@@ -502,15 +502,14 @@ def cancellations_demo():
     # Define the data from the query result
     tools_data = {
         "feature_used": [
-            "NULL",
+            "No tool recorded",
             "Snapshot",
             "Highlight",
             "Mobile OCR Mode",
             "Auto Mode",
-            "Summarize",
-            ""
+            "Summarize"
         ],
-        "usage_count": [56949, 28471, 19597, 5428, 4479, 980, 563]
+        "usage_count": [56949, 28471, 19597, 5428, 4479, 980]
     }
 
     # Create a DataFrame
