@@ -356,21 +356,22 @@ def usc_ucla_demo ():
     # Display the Plotly map in Streamlit
     st.plotly_chart(fig_map)
 
-    # Create a density heatmap using Plotly with a larger radius and increased visibility
+    # Create a density heatmap using Plotly
     fig_density = px.density_mapbox(
         usc_ucla_combined,
         lat='latitude',
         lon='longitude',
         z=None,  # If you don't have a "count" column, use None
-        radius=30,  # Increase the radius for more pronounced heatmap regions
+        radius=10,  # Adjust radius for density smoothing
         center=dict(lat=34.05, lon=-118.25),  # Center around LA
         zoom=10,  # Adjust zoom level
-        mapbox_style='open-street-map',  # Use 'open-street-map' for simplicity
-        title="User Density Heatmap (USC and UCLA)",
+        mapbox_style='open-street-map',  # Use 'open-street-map' instead of 'stamen-terrain'
+        title="User Density Heatmap (USC and UCLA)"
     )
 
     # Display the density heatmap in Streamlit
     st.plotly_chart(fig_density)
+
 def main():
 
     page_names_to_funcs = {
