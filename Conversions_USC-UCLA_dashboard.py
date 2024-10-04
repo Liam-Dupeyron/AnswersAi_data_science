@@ -499,7 +499,42 @@ def cancellations_demo():
     # Display the pie chart for the distribution
     st.plotly_chart(pie_fig_dist, use_container_width=True)
 
+    # Define the data from the query result
+    tools_data = {
+        "feature_used": [
+            "NULL",
+            "Snapshot",
+            "Highlight",
+            "Mobile OCR Mode",
+            "Auto Mode",
+            "Summarize",
+            ""
+        ],
+        "usage_count": [56949, 28471, 19597, 5428, 4479, 980, 563]
+    }
 
+    # Create a DataFrame
+    df_tools = pd.DataFrame(tools_data)
+
+    # Display the DataFrame in Streamlit
+    st.markdown("## Most Used Tools Before Cancellation")
+    st.dataframe(df_tools)
+
+    # Optionally, allow downloading the data as a CSV
+    @st.cache_data
+    def convert_df_to_csv(df):
+        return df.to_csv(index=False).encode('utf-8')
+
+    # Call the function to convert the DataFrame to CSV
+    tools_csv = convert_df_to_csv(df_tools)
+
+    # Provide a download button for the CSV file
+    st.download_button(
+        label="Download Data as CSV",
+        data=tools_csv,
+        file_name='most_used_tools_before_cancellation.csv',
+        mime='text/csv',
+    )
 
 def main():
 
