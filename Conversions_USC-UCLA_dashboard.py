@@ -343,7 +343,8 @@ def usc_ucla_demo ():
         color_discrete_map={'USC': '#990000', 'UCLA': '#2774AE'},
         zoom=10,
         mapbox_style='open-street-map',
-        title="USC and UCLA Users on Map"
+        title="USC and UCLA Users on Map",
+        size_max = 20
     )
 
     # Set the layout size for the map
