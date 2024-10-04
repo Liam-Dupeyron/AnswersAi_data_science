@@ -472,9 +472,10 @@ def cancellations_demo():
         yaxis_title="Cancellation Count",
         font=dict(size=14),
         showlegend=False,
-        height=500,
+        height=600,  # Increased height for better visibility
         margin=dict(l=30, r=30, t=80, b=150),  # Adjust margins to allow space for long text in x-axis
     )
+    bar_fig_top10.update_xaxes(tickangle=-45)  # Rotate x-axis labels for better fit
     bar_fig_top10.update_traces(texttemplate='%{text:.0f}', textposition='outside')
 
     # Display the top 10 reasons for cancellations bar chart
