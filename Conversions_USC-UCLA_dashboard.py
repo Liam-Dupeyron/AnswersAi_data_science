@@ -324,49 +324,34 @@ def usc_ucla_demo ():
                      color_discrete_map={'USC': '#990000', 'UCLA': '#2774AE'})
     st.plotly_chart(fig_bar)
 
-    # UCLA and USC User Analysis
-    st.markdown("### Map of Users (USC and UCLA)")
+    # Scatter plot on map using Plotly with custom legend
+    st.markdown("### Scatter Plot of USC and UCLA Users on Map")
 
-    # Create a Folium map centered around LA
-    m = folium.Map(location=[34.05, -118.25], zoom_start=10)
+    # Combine the latitude and longitude for both USC and UCLA users and add labels
+    usc_ucla_combined = pd.concat([USC_users[['latitude', 'longitude']], UCLA_users[['latitude', 'longitude']]])
+    usc_ucla_combined['University'] = ['USC'] * len(USC_users) + ['UCLA'] * len(UCLA_users)
 
-    # Add USC markers
-    for _, row in USC_users.iterrows():
-        folium.CircleMarker(
-            location=[row['latitude'], row['longitude']],
-            radius=3,
-            color='#990000',
-            fill=True,
-            fill_color='#990000',
-            fill_opacity=0.6,
-        ).add_to(m)
+    # Plot using Plotly scatter_mapbox with a legend for USC and UCLA users
+    fig_map = px.scatter_mapbox(
+        usc_ucla_combined,
+        lat='latitude',
+        lon='longitude',
+        color='University',
+        color_discrete_map={'USC': '#990000', 'UCLA': '#2774AE'},
+        zoom=10,
+        mapbox_style='open-street-map',
+        title="USC and UCLA Users on Map"
+    )
 
-    # Add UCLA markers
-    for _, row in UCLA_users.iterrows():
-        folium.CircleMarker(
-            location=[row['latitude'], row['longitude']],
-            radius=3,
-            color='#2774AE',
-            fill=True,
-            fill_color='#2774AE',
-            fill_opacity=0.6,
-        ).add_to(m)
+    # Set the layout size for the map
+    fig_map.update_layout(
+        height=500,
+        margin={"r":0,"t":0,"l":0,"b":0},
+        legend=dict(title="Legend", font=dict(size=10))
+    )
 
-    # Create custom legend using HTML/CSS
-    legend_html = '''
-        <div style="position: fixed; 
-        bottom: 50px; left: 50px; width: 150px; height: 90px; 
-        background-color: white; border:2px solid grey; z-index:9999; font-size:14px;
-        ">
-        &nbsp; <strong>Legend</strong> <br>
-        &nbsp; <i class="fa fa-circle" style="color:#990000"></i>&nbsp; USC Users<br>
-        &nbsp; <i class="fa fa-circle" style="color:#2774AE"></i>&nbsp; UCLA Users
-        </div>
-        '''
-    m.get_root().html.add_child(folium.Element(legend_html))
-
-    # Display the map in Streamlit
-    st_folium(m, width=700, height=500)
+    # Display the Plotly map in Streamlit
+    st.plotly_chart(fig_map)
 
     
 
