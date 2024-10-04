@@ -456,7 +456,7 @@ def cancellations_demo():
     cancellation_report['short_reason'] = cancellation_report['cancel_reason'].apply(lambda x: (x[:50] + '...') if len(x) > 50 else x)
     
     # Display the DataFrame
-    st.dataframe(cancellation_report)
+    st.dataframe(cancellation_report[['cancel_reason', "cancellation_count"]])
 
     # Visualization: Bar Chart for Top 10 Cancellation Reasons
     st.markdown("### Top 10 Cancellation Reasons")
