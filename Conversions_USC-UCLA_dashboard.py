@@ -577,7 +577,7 @@ def cancellations_demo():
                 template='plotly_dark')
 
     # Change the line color to a pastel color (e.g., light blue)
-    fig.update_traces(mode='lines+markers', marker=dict(size=8, symbol='circle', color='#FFCAA4'), line=dict(color='lightblue'))  # Pastel color
+    fig.update_traces(mode='lines+markers', marker=dict(size=8, symbol='circle', color='#FFCAA4'), line=dict(color='#8391A3'))  # Pastel color
 
     # Customize the layout with grid lines and enhanced font size
     fig.update_layout(
@@ -597,6 +597,23 @@ def cancellations_demo():
     # Show the line chart in Streamlit
     st.plotly_chart(fig, use_container_width=True)
 
+    # Comparison Plot for DAU: Total Cancellations vs Total Users
+    st.markdown("### Total Cancellations vs Total Users (DAU)")
+
+    # Create a bar chart comparing total cancellations and total users for DAU
+    fig_dau_comparison = px.bar(dau_data, 
+                                x='days_of_use', 
+                                y=['cancellations', 'total_users'], 
+                                title="Total Cancellations vs Total Users (First 30 Days)",
+                                labels={'days_of_use': 'Days of Use', 'value': 'Count'},
+                                template='plotly_dark')
+
+    # Customize the layout
+    fig_dau_comparison.update_layout(barmode='group', title_font_size=22, font=dict(size=16), height=600)
+
+    # Show the DAU comparison plot in Streamlit
+    st.plotly_chart(fig_dau_comparison, use_container_width=True)
+
     # MAU Line Plot
     st.markdown("## Cancellation Rate by Months After Subscription (MAU)")
 
@@ -615,7 +632,7 @@ def cancellations_demo():
                     template='plotly_dark')
 
     # Customize the line and marker colors for contrast
-    fig_mau.update_traces(mode='lines+markers', marker=dict(size=8, symbol='circle', color='#FFCAA4'), line=dict(color='lightblue'))
+    fig_mau.update_traces(mode='lines+markers', marker=dict(size=8, symbol='circle', color='#FFCAA4'), line=dict(color='#8391A3'))
 
     # Customize the layout with grid lines and enhanced font size
     fig_mau.update_layout(
@@ -631,6 +648,23 @@ def cancellations_demo():
 
     # Show the MAU line chart in Streamlit
     st.plotly_chart(fig_mau, use_container_width=True)
+
+    # Comparison Plot for MAU: Total Cancellations vs Total Users
+    st.markdown("### Total Cancellations vs Total Users (MAU)")
+
+    # Create a bar chart comparing total cancellations and total users for MAU
+    fig_mau_comparison = px.bar(mau_data, 
+                                x='months_after_subscription', 
+                                y=['cancellations', 'total_users'], 
+                                title="Total Cancellations vs Total Users (First 12 Months)",
+                                labels={'months_after_subscription': 'Months After Subscription', 'value': 'Count'},
+                                template='plotly_dark')
+
+    # Customize the layout
+    fig_mau_comparison.update_layout(barmode='group', title_font_size=22, font=dict(size=16), height=600)
+
+    # Show the MAU comparison plot in Streamlit
+    st.plotly_chart(fig_mau_comparison, use_container_width=True)
     
 
 
