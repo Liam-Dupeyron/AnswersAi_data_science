@@ -367,8 +367,6 @@ def usc_ucla_demo ():
         zoom=10,  # Adjust zoom level
         mapbox_style='open-street-map',  # Use 'open-street-map' for simplicity
         title="User Density Heatmap (USC and UCLA)",
-        color_continuous_scale=[[0, '#2774AE'], [1, '#990000']],  # Blue to Red scale
-        opacity=0.7  # Increase opacity for more intense color
     )
 
     # Display the density heatmap in Streamlit
