@@ -355,6 +355,15 @@ def usc_ucla_demo ():
     # Display the map in Streamlit
     st_folium(m, width=700, height=500)
 
+    # Scatter plot of users on map using st.map
+    st.markdown("### Scatter Plot of USC and UCLA Users on Map")
+
+    # Combine the latitude and longitude for both USC and UCLA users
+    usc_ucla_combined = pd.concat([USC_users[['latitude', 'longitude']], UCLA_users[['latitude', 'longitude']]])
+
+    # Plot the scatter plot using st.map (this will display a map with scatter points)
+    st.map(usc_ucla_combined)
+
 
 def main():
 
