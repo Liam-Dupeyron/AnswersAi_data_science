@@ -577,7 +577,7 @@ def cancellations_demo():
                 template='plotly_dark')
 
     # Change the line color to a pastel color (e.g., light blue)
-    fig.update_traces(line=dict(color='lightblue'))  # Pastel color
+    fig.update_traces(mode='lines+markers', marker=dict(size=10, symbol='circle', color='coral'), line=dict(color='lightblue'))  # Pastel color
 
     # Customize the layout with grid lines and enhanced font size
     fig.update_layout(
