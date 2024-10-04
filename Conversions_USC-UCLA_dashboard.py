@@ -335,7 +335,7 @@ def usc_ucla_demo ():
         folium.CircleMarker(
             location=[row['latitude'], row['longitude']],
             radius=3,
-            color='blue',
+            color='#990000',
             fill=True,
             fill_color='#990000',
             fill_opacity=0.6,
@@ -346,7 +346,7 @@ def usc_ucla_demo ():
         folium.CircleMarker(
             location=[row['latitude'], row['longitude']],
             radius=3,
-            color='green',
+            color='#2774AE',
             fill=True,
             fill_color='#2774AE',
             fill_opacity=0.6,
