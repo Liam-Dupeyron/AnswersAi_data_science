@@ -355,14 +355,33 @@ def usc_ucla_demo ():
     # Display the map in Streamlit
     st_folium(m, width=700, height=500)
 
-    # Scatter plot of users on map using st.map
+    # Scatter plot of users on map using Plotly with custom colors
     st.markdown("### Scatter Plot of USC and UCLA Users on Map")
 
-    # Combine the latitude and longitude for both USC and UCLA users
+    # Prepare data for Plotly scatter mapbox
     usc_ucla_combined = pd.concat([USC_users[['latitude', 'longitude']], UCLA_users[['latitude', 'longitude']]])
+    usc_ucla_combined['University'] = ['USC'] * len(USC_users) + ['UCLA'] * len(UCLA_users)
 
-    # Plot the scatter plot using st.map (this will display a map with scatter points)
-    st.map(usc_ucla_combined)
+    # Plot using Plotly scatter_mapbox
+    fig_map = px.scatter_mapbox(
+        usc_ucla_combined,
+        lat='latitude',
+        lon='longitude',
+        color='University',
+        color_discrete_map={'USC': '#990000', 'UCLA': '#2774AE'},
+        zoom=10,
+        mapbox_style='open-street-map',
+        title="USC and UCLA Users on Map"
+    )
+
+    # Set the layout size for the map
+    fig_map.update_layout(
+        height=500,
+        margin={"r":0,"t":0,"l":0,"b":0}
+    )
+
+    # Display the Plotly map
+    st.plotly_chart(fig_map)
 
 
 def main():
