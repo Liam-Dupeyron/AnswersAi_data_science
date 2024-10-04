@@ -324,9 +324,9 @@ def usc_ucla_demo ():
                      color_discrete_map={'USC': '#990000', 'UCLA': '#2774AE'})
     st.plotly_chart(fig_bar)
 
-    # Map visualization (using Folium) for users
+    # UCLA and USC User Analysis
     st.markdown("### Map of Users (USC and UCLA)")
-    
+
     # Create a Folium map centered around LA
     m = folium.Map(location=[34.05, -118.25], zoom_start=10)
 
@@ -352,36 +352,23 @@ def usc_ucla_demo ():
             fill_opacity=0.6,
         ).add_to(m)
 
+    # Create custom legend using HTML/CSS
+    legend_html = '''
+        <div style="position: fixed; 
+        bottom: 50px; left: 50px; width: 150px; height: 90px; 
+        background-color: white; border:2px solid grey; z-index:9999; font-size:14px;
+        ">
+        &nbsp; <strong>Legend</strong> <br>
+        &nbsp; <i class="fa fa-circle" style="color:#990000"></i>&nbsp; USC Users<br>
+        &nbsp; <i class="fa fa-circle" style="color:#2774AE"></i>&nbsp; UCLA Users
+        </div>
+        '''
+    m.get_root().html.add_child(folium.Element(legend_html))
+
     # Display the map in Streamlit
     st_folium(m, width=700, height=500)
 
-    # Scatter plot of users on map using Plotly with custom colors
-    st.markdown("### Scatter Plot of USC and UCLA Users on Map")
-
-    # Prepare data for Plotly scatter mapbox
-    usc_ucla_combined = pd.concat([USC_users[['latitude', 'longitude']], UCLA_users[['latitude', 'longitude']]])
-    usc_ucla_combined['University'] = ['USC'] * len(USC_users) + ['UCLA'] * len(UCLA_users)
-
-    # Plot using Plotly scatter_mapbox
-    fig_map = px.scatter_mapbox(
-        usc_ucla_combined,
-        lat='latitude',
-        lon='longitude',
-        color='University',
-        color_discrete_map={'USC': '#990000', 'UCLA': '#2774AE'},
-        zoom=10,
-        mapbox_style='open-street-map',
-        title="USC and UCLA Users on Map"
-    )
-
-    # Set the layout size for the map
-    fig_map.update_layout(
-        height=500,
-        margin={"r":0,"t":0,"l":0,"b":0}
-    )
-
-    # Display the Plotly map
-    st.plotly_chart(fig_map)
+    
 
 
 def main():
