@@ -13,7 +13,7 @@ import geopandas as gpd
 import contextily as ctx
 import folium
 import plotly.express as px
-#from streamlit_folium import st_folium
+from streamlit_folium import st_folium
 import sys
 
 
@@ -321,7 +321,7 @@ def usc_ucla_demo ():
     }
     df_counts = pd.DataFrame(university_counts)
     fig_bar = px.bar(df_counts, x='University', y='Users', title="USC vs UCLA Users", color='University',
-                     color_discrete_map={'USC': 'blue', 'UCLA': 'green'})
+                     color_discrete_map={'USC': '#990000', 'UCLA': '#2774AE'})
     st.plotly_chart(fig_bar)
 
     # Map visualization (using Folium) for users
