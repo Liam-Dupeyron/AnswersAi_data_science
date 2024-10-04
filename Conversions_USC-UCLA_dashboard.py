@@ -479,14 +479,15 @@ def cancellations_demo():
 
     # Optionally, allow downloading the data as a CSV
     @st.cache_data
-    def convert_df_to_csv(top_cancellation_reasons):
+    def convert_df_to_csv(df):
         return df.to_csv(index=False).encode('utf-8')
 
+    # Call the function to convert the DataFrame to CSV
     top_cancellation_reasons_csv = convert_df_to_csv(top_cancellation_reasons)
 
     # Provide a download button for the CSV file
     st.download_button(
-        label="Download Data as CSV",git
+        label="Download Data as CSV",
         data=top_cancellation_reasons_csv,
         file_name='cancellations_report.csv',
         mime='text/csv',
