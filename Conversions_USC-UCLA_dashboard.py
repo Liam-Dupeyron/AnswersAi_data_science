@@ -104,7 +104,7 @@ def tiktok_instagram_demo ():
     fig_conversion = px.bar(df_conversion, x='Source', y='Conversions', title='TikTok Ad vs. Organic Conversion Rates',
                             labels={'Conversions': 'Total Conversions'}, text='Conversions', color='Source', color_discrete_map=color_map)
 
-    fig_conversion.update_traces(textposition='auto', textfont_size=14)  # Adjust text font size here
+    fig_conversion.update_traces(textposition='auto', textfont_size=16)  # Adjust text font size here
     st.plotly_chart(fig_conversion)
 
   
@@ -128,7 +128,7 @@ def tiktok_instagram_demo ():
 
     fig_ctr = px.pie(df_ctr, names='Source', values='CTR (%)', title='View-to-Click CTR: Ads vs Organic', color='Source', color_discrete_map=color_map)
 
-    fig_ctr.update_traces(textposition='auto', textfont_size=14)
+    fig_ctr.update_traces(textposition='auto', textfont_size=16)
     st.plotly_chart(fig_ctr)
 
     
@@ -161,7 +161,7 @@ def tiktok_instagram_demo ():
                                  labels={'Conversion Rate (%)': 'Conversion Rate'}, 
                                  text='Conversion Rate (%)', color='Source', color_discrete_map=color_map_extended)
 
-    fig_view_conversion.update_traces(textposition='auto', textfont_size=14)
+    fig_view_conversion.update_traces(textposition='auto', textfont_size=16)
     st.plotly_chart(fig_view_conversion)
 
 
@@ -198,7 +198,7 @@ def tiktok_instagram_demo ():
                                   color='Source', 
                                   color_discrete_map=color_map)
 
-    fig_click_conversion.update_traces(textposition='auto', textfont_size=14)
+    fig_click_conversion.update_traces(textposition='auto', textfont_size=16)
     # Display the chart in Streamlit
     st.plotly_chart(fig_click_conversion)
 
@@ -248,13 +248,13 @@ def tiktok_instagram_demo ():
     fig_tiktok_funnel = px.funnel(df_tiktok_funnel, x='TikTok Ads', y='Stage', 
                                   title="TikTok Ads Funnel", color='Stage', 
                                   color_discrete_map=funnel_color_map)
-    fig_tiktok_funnel.update_traces(textposition='auto', textfont_size=14)
+    fig_tiktok_funnel.update_traces(textposition='auto', textfont_size=16)
     
     # Funnel chart for TikTok Organic
     fig_tiktok_organic_funnel = px.funnel(df_tiktok_organic_funnel, x='TikTok Organic', y='Stage', 
                                           title="TikTok Organic Funnel", color='Stage', 
                                           color_discrete_map=funnel_color_map)
-    fig_tiktok_organic_funnel.update_traces(textposition='auto', textfont_size=14)
+    fig_tiktok_organic_funnel.update_traces(textposition='auto', textfont_size=16)
 
     # Display both funnels side by side
     st.plotly_chart(fig_tiktok_funnel)
@@ -331,7 +331,7 @@ def usc_ucla_demo ():
     fig_bar = px.bar(df_counts, x='University', y='Users', title="USC vs UCLA Users", color='University', text="Users",
                      color_discrete_map={'USC': '#990000', 'UCLA': '#2774AE'})
     # Update the layout to ensure the text is displayed clearly and adjust font size
-    fig_bar.update_traces(textposition='auto', textfont_size=14)  # Adjust text font size here
+    fig_bar.update_traces(textposition='auto', textfont_size=16)  # Adjust text font size here
     st.plotly_chart(fig_bar)
 
     # Scatter plot on map using Plotly with custom legend
