@@ -573,17 +573,26 @@ def cancellations_demo():
                 x='days_of_use',  # X-axis: days of use
                 y='cancellation_rate',  # Y-axis: cancellation rate
                 title="Cancellation Rates Over Time (First 30 Days)", 
-                labels={'days_of_use': 'Days of Use', 'cancellation_rate': 'Cancellation Rate (%)'},  # Axis labels
-                template='plotly_dark')  # Dark template for better contrast
+                labels={'days_of_use': 'Days of Use', 'cancellation_rate': 'Cancellation Rate (%)'},
+                template='plotly_dark')
 
-    # Customize the plot's appearance
+    # Add markers for each data point
+    fig.update_traces(mode='lines+markers', marker=dict(size=8, symbol='circle'))
+
+    # Customize the layout with grid lines and enhanced font size
     fig.update_layout(
         title_font_size=22,
         xaxis_title="Days of Use",
         yaxis_title="Cancellation Rate (%)",
-        font=dict(size=16),  # Increase font size for better readability
-        height=600  # Increase height for better spacing
+        font=dict(size=16),
+        height=600,
+        xaxis=dict(showgrid=True),  # Add grid lines to x-axis
+        yaxis=dict(showgrid=True),  # Add grid lines to y-axis
+        hovermode="x unified",  # Unify hover information for both axes
     )
+
+    # Optionally, you can smooth the line (if desired)
+    # fig.update_traces(line_shape='spline')
 
     # Show the line chart in Streamlit
     st.plotly_chart(fig, use_container_width=True)
