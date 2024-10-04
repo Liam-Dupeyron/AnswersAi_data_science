@@ -13,7 +13,7 @@ import geopandas as gpd
 import contextily as ctx
 import folium
 import plotly.express as px
-
+from streamlit_folium import st_folium
 
 def intro():
  # Title shown in the app
@@ -249,10 +249,107 @@ def tiktok_instagram_demo ():
     st.plotly_chart(fig_tiktok_organic_funnel)
 
 
-def usc_ucla_demo ():
-    st.markdown("<h1 style='text-align: center;'>UCLA and USC</h1>", unsafe_allow_html=True)
 
+usc_coordinates = (34.022415, -118.285530)
+ucla_coordinates = (34.0700 ,  -118.4398)
+
+def haversine(coord1, coord2):
+    R = 6371  # Earth radius in kilometers
+    lat1, lon1 = coord1
+    lat2, lon2 = coord2
+
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+
+    a = math.sin(dlat / 2) ** 2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon / 2) ** 2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+    return R * c  # Distance in kilometers
+
+def nearest_university(lat, lon, threshold=8):
+        if lat is None or lon is None:
+            return 'OTHER', None, None
+
+        ip_coords = (lat, lon)
+
+        # Calculate distances to UCLA and USC
+        dist_to_ucla = haversine(ip_coords, ucla_coordinates)
+        dist_to_usc = haversine(ip_coords, usc_coordinates)
+
+        # Determine if within the threshold
+        if dist_to_ucla <= threshold:
+            return 'UCLA', dist_to_ucla, dist_to_usc
+        elif dist_to_usc <= threshold:
+            return 'USC', dist_to_usc, dist_to_ucla
+        else:
+            return 'OTHER', dist_to_usc, dist_to_ucla
+
+def usc_ucla_demo ():
+    st.markdown("<h1 style='text-align: center;'>UCLA and USC User Analysis</h1>", unsafe_allow_html=True)
+
+    # Load IP address data
+    Ip_merged = pd.read_csv('IP_merged.csv')
+
+    # University Assignment and Aggregation
+    Ip_merged[['nearest_university', 'distance_to_nearest', 'distance_to_other']] = Ip_merged.apply(
+        lambda row: pd.Series(nearest_university(row['latitude'], row['longitude'])), axis=1)
+
+    # Calculate the total number of users for each university
+    USC_users = Ip_merged[(Ip_merged['nearest_university'] == 'USC')]
+    total_USC_users = USC_users["count"].sum()
+
+    UCLA_users = Ip_merged[(Ip_merged['nearest_university'] == 'UCLA')]
+    total_UCLA_users = UCLA_users["count"].sum()
+
+    # Key highlights using Streamlit metrics
+    st.markdown("### Key Metrics")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric(label="Total USC Users", value=total_USC_users)
+    with col2:
+        st.metric(label="Total UCLA Users", value=total_UCLA_users)
+
+    # Bar chart for USC vs UCLA users
+    st.markdown("### Comparison of Users by University")
+    university_counts = {
+        'University': ['USC', 'UCLA'],
+        'Users': [total_USC_users, total_UCLA_users]
+    }
+    df_counts = pd.DataFrame(university_counts)
+    fig_bar = px.bar(df_counts, x='University', y='Users', title="USC vs UCLA Users", color='University',
+                     color_discrete_map={'USC': 'blue', 'UCLA': 'green'})
+    st.plotly_chart(fig_bar)
+
+    # Map visualization (using Folium) for users
+    st.markdown("### Map of Users (USC and UCLA)")
     
+    # Create a Folium map centered around LA
+    m = folium.Map(location=[34.05, -118.25], zoom_start=10)
+
+    # Add USC markers
+    for _, row in USC_users.iterrows():
+        folium.CircleMarker(
+            location=[row['latitude'], row['longitude']],
+            radius=3,
+            color='blue',
+            fill=True,
+            fill_color='blue',
+            fill_opacity=0.6,
+        ).add_to(m)
+
+    # Add UCLA markers
+    for _, row in UCLA_users.iterrows():
+        folium.CircleMarker(
+            location=[row['latitude'], row['longitude']],
+            radius=3,
+            color='green',
+            fill=True,
+            fill_color='green',
+            fill_opacity=0.6,
+        ).add_to(m)
+
+    # Display the map in Streamlit
+    st_folium(m, width=700, height=500)
 
 
 def main():
