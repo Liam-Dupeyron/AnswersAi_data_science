@@ -512,8 +512,47 @@ def cancellations_demo():
         "usage_count": [56949, 28471, 19597, 5428, 4479, 980]
     }
 
+    # Most Used Tools Before Cancellation
+    st.markdown("## Most Used Tools Before Cancellation")
     most_used_tools = pd.read_csv("most_used_tools_before_cancellation_2.csv")
     st.dataframe(most_used_tools)
+
+    # Bar Chart for Most Used Tools Before Cancellation
+    bar_fig = px.bar(most_used_tools, 
+                    x='feature_used', 
+                    y='usage_count', 
+                    title='Most Used Tools Before Cancellation',
+                    color='feature_used',
+                    text='usage_count',
+                    color_discrete_sequence=px.colors.qualitative.Pastel)
+
+    # Customize the layout
+    bar_fig.update_layout(
+        title_font_size=22,
+        xaxis_title=None,
+        yaxis_title="Usage Count",
+        font=dict(size=14),
+        showlegend=False,
+        height=600,  # Increased height for better readability
+        margin=dict(l=30, r=30, t=80, b=150),
+    )
+    bar_fig.update_traces(texttemplate='%{text:.0f}', textposition='outside')
+
+    # Display the bar chart
+    st.plotly_chart(bar_fig, use_container_width=True)
+
+    # Pie Chart for Most Used Tools Before Cancellation
+    pie_fig = px.pie(most_used_tools, 
+                    names='feature_used', 
+                    values='usage_count', 
+                    title='Distribution of Tools Used Before Cancellation',
+                    color_discrete_sequence=px.colors.qualitative.Pastel)
+
+    # Customize the pie chart
+    pie_fig.update_traces(textposition='inside', textinfo='percent+label', pull=[0.1, 0, 0, 0, 0])
+
+    # Display the pie chart
+    st.plotly_chart(pie_fig, use_container_width=True)
 
 def main():
 
