@@ -356,9 +356,9 @@ def usc_ucla_demo ():
     # Display the Plotly map in Streamlit
     st.plotly_chart(fig_map)
 
-    # Create a density heatmap using Plotly with refined custom color scale
-    fig_density = px.density_mapbox(
-        usc_ucla_combined,
+    # Create a density heatmap for USC users (in red)
+    fig_usc = px.density_mapbox(
+        USC_users,
         lat='latitude',
         lon='longitude',
         z=None,  # If you don't have a "count" column, use None
@@ -366,12 +366,29 @@ def usc_ucla_demo ():
         center=dict(lat=34.05, lon=-118.25),  # Center around LA
         zoom=10,  # Adjust zoom level
         mapbox_style='open-street-map',  # Use 'open-street-map' for simplicity
-        title="User Density Heatmap (USC and UCLA)",
-        color_continuous_scale=[[0, '#990000'], [0.5, '#990000'], [1, '#2774AE']]  # Direct transition from USC Red to UCLA Blue
+        title="USC and UCLA User Density Heatmap",
+        color_continuous_scale=[[0, '#990000'], [1, '#990000']]  # USC Red
     )
 
-    # Display the density heatmap in Streamlit
-    st.plotly_chart(fig_density)
+    # Create a density heatmap for UCLA users (in blue)
+    fig_ucla = px.density_mapbox(
+        UCLA_users,
+        lat='latitude',
+        lon='longitude',
+        z=None,  # If you don't have a "count" column, use None
+        radius=10,  # Adjust radius for density smoothing
+        center=dict(lat=34.05, lon=-118.25),  # Center around LA
+        zoom=10,  # Adjust zoom level
+        mapbox_style='open-street-map',  # Use 'open-street-map' for simplicity
+        color_continuous_scale=[[0, '#2774AE'], [1, '#2774AE']]  # UCLA Blue
+    )
+
+    # Display both maps separately in Streamlit (side by side)
+    col1, col2 = st.columns(2)
+    with col1:
+        st.plotly_chart(fig_usc)
+    with col2:
+        st.plotly_chart(fig_ucla)
 
     
 def main():
