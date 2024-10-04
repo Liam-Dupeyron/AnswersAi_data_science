@@ -443,56 +443,8 @@ def cancellations_demo():
  
 
     # Define the data from the query result
-    cancellation_report = pd.read_csv("cancellations_report.csv")
+    cancellation_report = pd.read_csv("cancellations_report_2.csv")
     st.dataframe(cancellation_report)
-
-    # Define the data from the query result
-    cancellation_data = {
-        "cancel_reason": [
-            "too expensive",
-            "no longer needed",
-            "not working well",
-            "it does not work for my exam site and i mistakenly make subcription 2 time intead of one and i have been getting charge twice every month please unsubscribe me from everything please thank you",
-            "i didnt request for any subscription",
-            "Multiple charges",
-            "I don't need this for right now.",
-            "not good always error",
-            "No longer in school.",
-            "Taking a break",
-            "kml",
-            "it gave me only wrong answer twice on my quiz",
-            "gave me wrong answers on my quiz twice",
-            "Forgot to cancel last.",
-            "Slow",
-            "Doesnt give right answers",
-            "It doesn't work well in greek",
-            "Please cancel my subscription",
-            "I was not able to use it",
-            "This app has charged me like 5 TIMES!!! I emailed to cancel it and everything I would like my refund this app was absolute garbage and never even used it after I seen how bad it was"
-        ],
-        "cancellation_count": [49509, 42714, 20138, 1193, 546, 482, 447, 263, 256, 229, 213, 118, 118, 90, 73, 15, 15, 15, 10, 8]
-    }
-
-    # Create a DataFrame
-    df_cancellations = pd.DataFrame(cancellation_data)
-
-    # Display the DataFrame in Streamlit
-    st.dataframe(df_cancellations)
-
-    # Optionally, allow downloading the data as a CSV
-    @st.cache_data
-    def convert_df_to_csv(df):
-        return df.to_csv(index=False).encode('utf-8')
-
-    csv_data = convert_df_to_csv(df_cancellations)
-
-    # Provide a download button for the CSV file
-    st.download_button(
-        label="Download Data as CSV",
-        data=csv_data,
-        file_name='cancellations_report.csv',
-        mime='text/csv',
-    )
 
 
 def main():
