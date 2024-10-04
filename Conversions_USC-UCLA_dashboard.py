@@ -331,6 +331,9 @@ def usc_ucla_demo ():
     usc_ucla_combined = pd.concat([USC_users[['latitude', 'longitude']], UCLA_users[['latitude', 'longitude']]])
     usc_ucla_combined['University'] = ['USC'] * len(USC_users) + ['UCLA'] * len(UCLA_users)
 
+    # Remove rows with missing or invalid latitude or longitude values
+    usc_ucla_combined = usc_ucla_combined.dropna(subset=['latitude', 'longitude'])
+
     # Plot using Plotly scatter_mapbox with a legend for USC and UCLA users
     fig_map = px.scatter_mapbox(
         usc_ucla_combined,
