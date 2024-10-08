@@ -652,11 +652,11 @@ def cancellations_demo():
 #---------------------------------------------------------------------------------------------------------------------------------------
 
 
-####CHURN RATE
+    ####CHURN RATE
 
-monthly_vs_lost_customers = pd.read_csv("monthly_subscribers_lost_customers.csv")
-st.markdown("###MMonthly subscribers and calcellations")
-st.dataframe(monthly_vs_lost_customers)
+    monthly_vs_lost_customers = pd.read_csv("monthly_subscribers_lost_customers.csv")
+    st.markdown("###MMonthly subscribers and calcellations")
+    st.dataframe(monthly_vs_lost_customers)
 
 
 
