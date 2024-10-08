@@ -656,6 +656,8 @@ def cancellations_demo():
 
     monthly_vs_lost_customers = pd.read_csv("monthly_subscribers_lost_customers.csv")
     st.markdown("###MMonthly subscribers and calcellations")
+
+    monthly_vs_lost_customers = monthly_vs_lost_customers.round({'churn_rate': 2})
     st.dataframe(monthly_vs_lost_customers)
 
 
