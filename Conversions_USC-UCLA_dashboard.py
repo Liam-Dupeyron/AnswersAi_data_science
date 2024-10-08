@@ -574,7 +574,7 @@ def cancellations_demo():
     #---------------------------------------------------------------------------------------------------------
 
     # DAU Data
-    st.markdown("## Cancellation Rates from Day 1 to Day 30")
+    st.markdown("## Cancellation Rate by day After Subscription")
 
     # Load the DAU data from the CSV
     dau_data = pd.read_csv("DAU_data.csv")
@@ -615,7 +615,7 @@ def cancellations_demo():
     #-------------------------------------------------------------------------------
 
     # MAU Line Plot
-    st.markdown("## Cancellation Rate by Months After Subscription (MAU)")
+    st.markdown("## Cancellation Rate by Months After Subscription")
 
     # Load the MAU data from the CSV
     mau_data = pd.read_csv("cancellation_rate_by_month.csv")
@@ -649,6 +649,15 @@ def cancellations_demo():
     # Show the MAU line chart in Streamlit
     st.plotly_chart(fig_mau, use_container_width=True)
     
+#---------------------------------------------------------------------------------------------------------------------------------------
+
+
+####CHURN RATE
+
+monthly_vs_lost_customers = pd.read_csv("monthly_subscribers_lost_customers.csv")
+st.markdown("###MMonthly subscribers and calcellations")
+st.dataframe(monthly_vs_lost_customers)
+
 
 
 def main():
