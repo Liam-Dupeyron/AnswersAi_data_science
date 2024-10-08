@@ -654,8 +654,8 @@ def cancellations_demo():
 
     ####CHURN RATE
 
-    monthly_vs_lost_customers = pd.read_csv("monthly_subscribers_lost_customers.csv")
-    st.markdown("###MMonthly subscribers and calcellations")
+    monthly_vs_lost_customers = pd.read_csv("Updated_Subscribers_Lost_Table.csv")
+    st.markdown("###Monthly subscribers and calcellations")
 
     monthly_vs_lost_customers = monthly_vs_lost_customers.round({'churn_rate': 2})
     monthly_vs_lost_customers["churn_rate_2"] = monthly_vs_lost_customers["customers_lost"] / monthly_vs_lost_customers["subscribers_at_start"]
