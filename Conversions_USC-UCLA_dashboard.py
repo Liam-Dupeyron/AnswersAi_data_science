@@ -658,6 +658,7 @@ def cancellations_demo():
     st.markdown("###MMonthly subscribers and calcellations")
 
     monthly_vs_lost_customers = monthly_vs_lost_customers.round({'churn_rate': 2})
+    monthly_vs_lost_customers["churn_rate_2"] = monthly_vs_lost_customers["customers_lost"] / monthly_vs_lost_customers["subscribers_at_start"]
     st.dataframe(monthly_vs_lost_customers)
 
 
