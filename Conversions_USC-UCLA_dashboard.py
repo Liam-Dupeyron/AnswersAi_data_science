@@ -678,12 +678,13 @@ def cancellations_demo():
         line=dict(color='#A1C181', width=3)  # Custom pastel color for the line
     )
 
-    # Add a dotted vertical line at x=0
+    # Add a vertical dotted line at x=0 (if you want a reference line at a specific point, update the x0 and x1 values accordingly)
     fig.add_shape(
         type="line",
-        x0=0, x1=0,
-        y0=monthly_vs_lost_customers['churn_rate_2'].min(),
-        y1=monthly_vs_lost_customers['churn_rate_2'].max(),
+        x0=monthly_vs_lost_customers['month_start'].min(),
+        x1=monthly_vs_lost_customers['month_start'].max(),
+        y0=0,  # Place at y=0 (adjust as needed)
+        y1=0,  # Extend to the end of y-axis
         line=dict(
             color="LightSeaGreen",
             width=2,
