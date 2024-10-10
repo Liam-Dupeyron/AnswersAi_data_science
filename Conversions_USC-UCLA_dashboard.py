@@ -306,6 +306,8 @@ def usc_ucla_demo ():
     Ip_merged = pd.read_csv('IP_merged.csv')
 
     USC_UCLA = Ip_merged.value_counts('nearest_university').reset_index()
+    usc_count = USC_UCLA.loc[USC_UCLA['nearest_university'] == 'USC', 'count'].values[0]
+    ucla_count = USC_UCLA.loc[USC_UCLA['nearest_university'] == 'UCLA', 'count'].values[0]
 
 
     # University Assignment and Aggregation
@@ -324,9 +326,9 @@ def usc_ucla_demo ():
     st.markdown("### Key Metrics")
     col1, col2 = st.columns(2)
     with col1:
-        st.metric(label="Total USC Users", value=USC_users["count"])
+        st.metric(label="Total USC Users", value=usc_count)
     with col2:
-        st.metric(label="Total UCLA Users", value=UCLA_users["count"])
+        st.metric(label="Total UCLA Users", value=ucla_count)
 
     # Bar chart for USC vs UCLA users
     st.markdown("### Comparison of Users by University")
