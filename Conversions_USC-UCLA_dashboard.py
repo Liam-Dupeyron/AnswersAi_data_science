@@ -334,13 +334,22 @@ def usc_ucla_demo ():
     st.markdown("### Comparison of Users by University")
     university_counts = {
         'University': ['USC', 'UCLA'],
-        'Users': [USC_users, UCLA_users]
+        'Users': [usc_count, ucla_count]  # Use the counts here
     }
     df_counts = pd.DataFrame(university_counts)
-    fig_bar = px.bar(df_counts, x='University', y='Users', title="USC vs UCLA Users", color='University', text="Users",
-                     color_discrete_map={'USC': '#990000', 'UCLA': '#2774AE'})
+
+    fig_bar = px.bar(df_counts, 
+                    x='University', 
+                    y='Users', 
+                    title="USC vs UCLA Users", 
+                    color='University', 
+                    text="Users",
+                    color_discrete_map={'USC': '#990000', 'UCLA': '#2774AE'})
+
     # Update the layout to ensure the text is displayed clearly and adjust font size
     fig_bar.update_traces(textposition='auto', textfont_size=16)  # Adjust text font size here
+
+    # Display the bar chart
     st.plotly_chart(fig_bar)
 
     # Scatter plot on map using Plotly with custom legend
