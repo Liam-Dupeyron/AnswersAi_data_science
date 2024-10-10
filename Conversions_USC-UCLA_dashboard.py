@@ -324,9 +324,9 @@ def usc_ucla_demo ():
     st.markdown("### Key Metrics")
     col1, col2 = st.columns(2)
     with col1:
-        st.metric(label="Total USC Users", value=USC_users)
+        st.metric(label="Total USC Users", value=USC_users["count"])
     with col2:
-        st.metric(label="Total UCLA Users", value=UCLA_users)
+        st.metric(label="Total UCLA Users", value=UCLA_users["count"])
 
     # Bar chart for USC vs UCLA users
     st.markdown("### Comparison of Users by University")
