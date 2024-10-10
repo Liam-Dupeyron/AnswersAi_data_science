@@ -387,14 +387,18 @@ def usc_ucla_demo ():
     st.plotly_chart(fig_density)
 
 
+##############################################################################################################
+##############################################################################################################
+
+
 def cancellations_demo():
     st.markdown("<h1 style='text-align: center;'>Cancellation Insights</h1>", unsafe_allow_html=True)
 
     ### KPI Cards for Key Metrics
     st.markdown("### Key Performance Indicators (KPIs)")
 
-    Total_subscriptions =  20881 
-    Total_cancellations = 10179 
+    Total_subscriptions =  21444 
+    Total_cancellations = 10387
     Cancellation_rate = round(Total_cancellations /  Total_subscriptions, 2)
 
     st.metric(label="Total number of Cancellations", value=Total_subscriptions)
@@ -706,6 +710,52 @@ def cancellations_demo():
 
     # Display the line plot in Streamlit
     st.plotly_chart(fig, use_container_width=True)
+
+        # Manually define the data
+    churn_data = {
+        "month_start": [
+            "2023-04-01", "2023-05-01", "2023-06-01", "2023-07-01",
+            "2023-08-01", "2023-09-01", "2023-10-01", "2023-11-01",
+            "2023-12-01", "2024-01-01", "2024-02-01", "2024-03-01",
+            "2024-04-01", "2024-05-01", "2024-06-01", "2024-07-01",
+            "2024-08-01", "2024-09-01", "2024-10-01"
+        ],
+        "total_active_subscriptions": [
+            0, 1316, 3125, 2184, 1789, 1857, 3570, 4275,
+            3705, 3153, 3486, 3134, 4008, 4689, 4412,
+            4006, 3671, 4592, 5967
+        ],
+        "number_of_cancellations": [
+            0, 219, 545, 428, 240, 252, 556, 526,
+            658, 425, 242, 278, 387, 625, 520,
+            425, 314, 420, 2253
+        ],
+        "churn_rate_percentage": [
+            None, 16.64, 17.43, 19.60, 13.43, 13.56, 15.58,
+            12.28, 17.77, 13.48, 6.95, 8.88, 9.66,
+            13.34, 11.79, 10.61, 8.56, 9.16, 37.72
+        ]
+    }
+
+    # Create DataFrame
+    df = pd.DataFrame(churn_data)
+
+    # Display DataFrame
+    st.dataframe(df)
+
+    # Convert DataFrame to CSV
+    def convert_df(df):
+        return df.to_csv(index=False).encode('utf-8')
+
+    csv = convert_df(df)
+
+    # Download button
+    st.download_button(
+        label="📥 Download Churn Rate Data as CSV",
+        data=csv,
+        file_name='churn_rate_report.csv',
+        mime='text/csv',
+    )
 
 def main():
 
