@@ -658,11 +658,21 @@ def cancellations_demo():
 
     ####CHURN RATE
 
+        # Load the CSV file
     monthly_vs_lost_customers = pd.read_csv("churn_rate_report.csv")
     st.markdown("### Monthly Churn Rate")
 
-    monthly_vs_lost_customers = monthly_vs_lost_customers.drop(columns="churn_rate")
-    monthly_vs_lost_customers["churn_rate_2"] =( monthly_vs_lost_customers["customers_lost"] / monthly_vs_lost_customers["subscribers_at_start"]) * 100
+    # Drop the existing churn rate column if necessary
+    # Adjust the column name based on your CSV. It seems to be 'churn_rate_percentage'
+    monthly_vs_lost_customers = monthly_vs_lost_customers.drop(columns="churn_rate_percentage", errors='ignore')
+
+    # Calculate churn rate
+    monthly_vs_lost_customers["churn_rate_2"] = (
+        monthly_vs_lost_customers["number_of_cancellations"] / 
+        monthly_vs_lost_customers["total_active_subscriptions"]
+    ) * 100
+
+    # Display the DataFrame
     st.dataframe(monthly_vs_lost_customers)
 
     # Create a line plot for churn rate over time
@@ -672,43 +682,32 @@ def cancellations_demo():
         y='churn_rate_2',  # Y-axis: churn rate
         title="Churn Rate Over Time",
         labels={'month_start': 'Month', 'churn_rate_2': 'Churn Rate (%)'},  # Custom labels
-        template='plotly_dark'  # Dark theme (you can change this to 'plotly_white' for light)
+        template='plotly_dark'  # Dark theme
     )
 
-    # Customize the plot (e.g., pastel line color)
+    # Customize the plot
     fig.update_traces(
-        mode='lines+markers',  # Display lines with markers
-        marker=dict(size=8, symbol='circle', color='#FFAA4D'),  # Custom pastel color for markers
-        line=dict(color='#A1C181', width=3)  # Custom pastel color for the line
+        mode='lines+markers',
+        marker=dict(size=8, symbol='circle', color='#FFAA4D'),
+        line=dict(color='#A1C181', width=3)
     )
 
-    # Add a vertical dotted line at x=0 (if you want a reference line at a specific point, update the x0 and x1 values accordingly)
-    fig.add_shape(
-        type="line",
-        x0=monthly_vs_lost_customers['month_start'].min(),
-        x1=monthly_vs_lost_customers['month_start'].max(),
-        y0=0,  # Place at y=0 (adjust as needed)
-        y1=0,  # Extend to the end of y-axis
-        line=dict(
-            color="LightSeaGreen",
-            width=2,
-            dash="dot",  # Make the line dotted
-        ),
-    )
+    # Optional: Remove or adjust the vertical line if not needed
+    # Removed the vertical line for simplicity
 
-    # Show grid lines, enhanced font size, and hover mode
+    # Enhance layout
     fig.update_layout(
         title_font_size=20,
         xaxis_title="Month",
         yaxis_title="Churn Rate (%)",
         font=dict(size=14),
-        height=500,  # Adjust height if needed
+        height=500,
         xaxis=dict(showgrid=True),
         yaxis=dict(showgrid=True),
-        hovermode="x unified"  # Unify hover information
+        hovermode="x unified"
     )
 
-    # Display the line plot in Streamlit
+    # Display the plot
     st.plotly_chart(fig, use_container_width=True)
 
         
