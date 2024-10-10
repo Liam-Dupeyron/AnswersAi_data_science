@@ -261,7 +261,9 @@ def tiktok_instagram_demo ():
     st.plotly_chart(fig_tiktok_funnel)
     st.plotly_chart(fig_tiktok_organic_funnel)
 
-
+#######################################################################################################################
+# UCLA/USC
+########################################################################################################################
 
 usc_coordinates = (34.022415, -118.285530)
 ucla_coordinates = (34.0700 ,  -118.4398)
@@ -303,6 +305,9 @@ def usc_ucla_demo ():
     # Load IP address data
     Ip_merged = pd.read_csv('IP_merged.csv')
 
+    USC_UCLA = Ip_merged.value_counts('nearest_university').reset_index()
+
+
     # University Assignment and Aggregation
     Ip_merged[['nearest_university', 'distance_to_nearest', 'distance_to_other']] = Ip_merged.apply(
         lambda row: pd.Series(nearest_university(row['latitude'], row['longitude'])), axis=1)
@@ -311,6 +316,7 @@ def usc_ucla_demo ():
     USC_users = Ip_merged[(Ip_merged['nearest_university'] == 'USC')]
     total_USC_users = USC_users["count"].sum()
 
+
     UCLA_users = Ip_merged[(Ip_merged['nearest_university'] == 'UCLA')]
     total_UCLA_users = UCLA_users["count"].sum()
 
@@ -318,15 +324,15 @@ def usc_ucla_demo ():
     st.markdown("### Key Metrics")
     col1, col2 = st.columns(2)
     with col1:
-        st.metric(label="Total USC Users", value=total_USC_users)
+        st.metric(label="Total USC Users", value=USC_users)
     with col2:
-        st.metric(label="Total UCLA Users", value=total_UCLA_users)
+        st.metric(label="Total UCLA Users", value=UCLA_users)
 
     # Bar chart for USC vs UCLA users
     st.markdown("### Comparison of Users by University")
     university_counts = {
         'University': ['USC', 'UCLA'],
-        'Users': [total_USC_users, total_UCLA_users]
+        'Users': [USC_users, UCLA_users]
     }
     df_counts = pd.DataFrame(university_counts)
     fig_bar = px.bar(df_counts, x='University', y='Users', title="USC vs UCLA Users", color='University', text="Users",
@@ -387,9 +393,9 @@ def usc_ucla_demo ():
     st.plotly_chart(fig_density)
 
 
-##############################################################################################################
-##############################################################################################################
-
+#######################################################################################################################
+# CHURN
+#######################################################################################################################
 
 def cancellations_demo():
     st.markdown("<h1 style='text-align: center;'>Cancellation Insights</h1>", unsafe_allow_html=True)
