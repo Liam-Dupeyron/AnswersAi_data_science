@@ -482,7 +482,7 @@ def cancellations_demo():
 
         ## Visualization: Bar Chart for Cancellation Reasons
     st.markdown("### Top Cancellation Reasons")
-    bar_fig_top10 = px.bar(cancellation_report, 
+    bar_fig_top10 = px.bar(cancellation_reasons, 
                         x='cancellation_reason',  
                         y='reason_count', 
                         title="Top Reasons for Cancellation",
