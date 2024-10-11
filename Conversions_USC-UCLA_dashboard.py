@@ -623,6 +623,19 @@ def cancellations_demo():
 
 
     #-------------------------------------------------------------------------------
+    monthly_cancellation_data = {
+    'month_date': ['2023-09-01', '2023-10-01', '2023-11-01', '2023-12-01', '2024-01-01', '2024-02-01', 
+                   '2024-03-01', '2024-04-01', '2024-05-01', '2024-06-01', '2024-07-01', '2024-08-01', 
+                   '2024-09-01'],
+    'total_subscribers': [28894, 23182, 11088, 7141, 16803, 19885, 40542, 55185, 49927, 25413, 20768, 
+                          142084, 209016],
+    'total_cancellations': [591, 1880, 2981, 3218, 1068, 689, 980, 2302, 3535, 2408, 1663, 958, 1715],
+    'cancellation_rate_percentage': [2.0454, 8.1097, 26.8849, 45.0637, 6.3560, 3.4649, 2.4172, 4.1714, 
+                                     7.0803, 9.4755, 8.0075, 0.6742, 0.8205]
+}
+
+    # Create a DataFrame
+    monthly_cancellation_df = pd.DataFrame(monthly_cancellation_data)
 
     # MAU Line Plot
     st.markdown("## Cancellation Rate by Months After Subscription")
@@ -631,12 +644,12 @@ def cancellations_demo():
     mau_data = pd.read_csv("cancellation_rate_by_month.csv")
 
     # Display the dataframe
-    st.dataframe(mau_data)
+    st.dataframe(monthly_cancellation_df)
 
     # Create a line plot for cancellation rates over months of subscription (MAU)
-    fig_mau = px.line(mau_data, 
-                    x='months_after_subscription',  # X-axis: months after subscription
-                    y='cancellation_rate',  # Y-axis: cancellation rate
+    fig_mau = px.line(monthly_cancellation_df, 
+                    x='month_date',  # X-axis: months after subscription
+                    y='cancellation_rate_percentage',  # Y-axis: cancellation rate
                     title="Cancellation Rates Over Time (First 12 Months)", 
                     labels={'months_after_subscription': 'Months After Subscription', 'cancellation_rate': 'Cancellation Rate (%)'},
                     template='plotly_dark')
