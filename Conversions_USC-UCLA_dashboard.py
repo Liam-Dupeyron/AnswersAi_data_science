@@ -740,8 +740,11 @@ def cancellations_demo():
     retention_data['month'] = retention_data['month'].dt.to_period('M')
 
     # Check the column names to ensure they're correctly referenced
-    #st.write(week_retention.columns)
+    st.write(retention_data.columns)
 
+    retention_data['total_customers'] = pd.to_numeric(retention_data['total_customers'], errors='coerce')
+    retention_data['active_after_7_days'] = pd.to_numeric(retention_data['active_after_7_days'], errors='coerce')
+    retention_data['weekly_retention_rate'] = pd.to_numeric(retention_data['weekly_retention_rate'], errors='coerce')
 
     # Calculate retention rate
     retention_data['weekly_retention_rate'] = (retention_data['active_after_7_days'] / retention_data['total_customers']) * 100
@@ -763,20 +766,21 @@ def cancellations_demo():
     )
     st.plotly_chart(line_fig)
 
-        # Create bar chart for new customers and active after 7 days with distinct colors
-    #st.markdown("### New Customers and Active Customers After 7 Days")
+    # Create bar chart for new customers and active after 7 days with distinct colors
+    st.markdown("### New Customers and Active Customers After 7 Days")
     bar_fig = px.bar(
         retention_data, 
         x='month', 
         y=['total_customers', 'active_after_7_days'], 
         title='New Customers and Active Customers After 7 Days',
         labels={'value': 'Count', 'variable': 'Customer Type'},
-        barmode='group',
-        color_discrete_map={
-            'total_customers': 'rgb(31, 119, 180)',   # Assign a custom blue color for new customers
-            'active_after_7_days': 'rgb(255, 127, 14)'  # Assign a custom orange color for active customers after 7 days
-        }
+        barmode='group'
     )
+
+    # Update colors for the bar chart
+    bar_fig.update_traces(marker_color=['#1f77b4', '#ff7f0e'])
+
+    # Display the bar chart
     st.plotly_chart(bar_fig)
 
     
