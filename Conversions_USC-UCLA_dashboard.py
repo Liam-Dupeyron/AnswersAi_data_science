@@ -418,8 +418,8 @@ def cancellations_demo():
     Total_cancellations = 10387
     Cancellation_rate = round(Total_cancellations /  Total_subscriptions, 2)
 
-    st.metric(label="Total number of Cancellations", value=Total_subscriptions)
-    st.metric(label="Total subscriptions", value=Total_cancellations)
+    st.metric(label="Total number of Subscriptions", value=Total_subscriptions)
+    st.metric(label="Total cancellations", value=Total_cancellations)
     st.metric(label="Cancellation rate", value=f"{Cancellation_rate}%")
 
     # Data for the charts
@@ -557,18 +557,42 @@ def cancellations_demo():
 
     #---------------------------------------------------------------------------------------------------------
 
+
+    # Sample data for average daily subscribers
+    avg_subscribers_data = {
+        'day_of_month': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+                        11, 12, 13, 14, 15, 16, 17, 18,
+                        19, 20, 21, 22, 23, 24, 25, 26,
+                        27, 28, 29, 30, 31],
+        'avg_daily_subscribers': [3221.0000, 3326.1667, 3630.0000, 2962.5000, 2725.3333,
+                                3752.5000, 3580.1667, 3601.6667, 3575.8333, 3061.0000,
+                                2335.7143, 2101.6667, 2655.6667, 2978.8333, 3072.8333,
+                                2606.1667, 2287.8333, 2106.8333, 2058.5000, 1977.8333,
+                                2090.6667, 2357.5000, 3655.1667, 4229.6667, 3859.8333,
+                                4330.3333, 3475.0000, 3085.5000, 3238.8333, 3274.8333,
+                                2242.0000],
+        'avg_daily_cancellations': [7.0000, 22.0000, 5.0000, 9.0000, 15.0000,
+                                 66.0000, 12.0000, 38.0000, 1.5000, 14.0000,
+                                 13.0000, 10.0000, 27.0000, 15.0000, 13.0000,
+                                 19.5000, 19.5000, 24.5000, 18.0000, 11.0000,
+                                 24.0000, 24.5000, 18.5000, 19.0000, 20.0000,
+                                 13.5000, 8.0000, 16.0000, 23.0000, 25.0000,
+                                 27.0000]
+    }
     # DAU Data
     st.markdown("## Cancellation Rate by day After Subscription")
 
     # Load the DAU data from the CSV
     dau_data = pd.read_csv("DAU_data.csv")
 
+    avg_subscribers_data["cancellation_rate"] = avg_subscribers_data['avg_daily_cancellations'] /  avg_subscribers_data['avg_daily_subscribers']
+
     # Display the dataframe
-    st.dataframe(dau_data)
+    st.dataframe(avg_subscribers_data)
 
     # Create a line plot for cancellation rates over days of use
-    fig = px.line(dau_data, 
-                x='days_of_use',  # X-axis: days of use
+    fig = px.line(avg_subscribers_data, 
+                x='day_of_month',  # X-axis: days of use
                 y='cancellation_rate',  # Y-axis: cancellation rate
                 title="Cancellation Rates Over Time (First 30 Days)", 
                 labels={'days_of_use': 'Days of Use', 'cancellation_rate': 'Cancellation Rate (%)'},
