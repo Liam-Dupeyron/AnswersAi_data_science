@@ -514,18 +514,6 @@ def cancellations_demo():
     # Display the top 10 reasons for cancellations bar chart
     st.plotly_chart(bar_fig_top10, use_container_width=True)
 
-    # Visualization: Pie Chart for the Distribution of Cancellation Counts
-    st.markdown("### Distribution of Cancellation Reasons")
-    pie_fig_dist = px.pie(top_10_cancellations, 
-                          names='short_reason',  # Use the shortened version of cancellation reasons
-                          values='cancellation_count', 
-                          title="Distribution of Top 10 Cancellation Reasons",
-                          color_discrete_sequence=px.colors.qualitative.Pastel)
-
-    pie_fig_dist.update_traces(textposition='inside', textinfo='percent+label', pull=[0.1 for _ in range(len(top_10_cancellations))])
-
-    # Display the pie chart for the distribution
-    st.plotly_chart(pie_fig_dist, use_container_width=True)
 
     # Define the data from the query result
     tools_data = {
