@@ -730,22 +730,34 @@ def cancellations_demo():
     ### Retention Rates
 
         # Load the CSV file into a DataFrame
-    week_retention = pd.read_csv('subscriptions_first_7.csv')
+    retention_data = pd.read_csv('Retention_data.csv')
+    retention_data = retention_data.rename(columns={"first_of_month": "month"})
+
+    # Convert the 'first_of_month' column to datetime format if it's not already
+    retention_data['month'] = pd.to_datetime(retention_data['month'])
+
+    # Format the 'first_of_month' column to display only the year and month
+    retention_data['month'] = retention_data['month'].dt.to_period('M')
 
     # Check the column names to ensure they're correctly referenced
     #st.write(week_retention.columns)
 
+
     # Calculate retention rate
-    week_retention['retention_rate'] = (week_retention['active_after_7_days_count'] / week_retention['new_customers_count']) * 100
-    st.dataframe(week_retention)
+    retention_data['weekly_retention_rate'] = (retention_data['active_after_7_days'] / retention_data['total_customers']) * 100
+    retention_data['monthly_retention_rate'] = (retention_data['active_after_30_days'] / retention_data['total_customers']) * 100
+    retention_data['semesterly_retention_rate'] = (retention_data['active_after_6_months'] / retention_data['total_customers']) * 100
+
+    st.dataframe(retention_data)
+
 
     # Create line plot for retention rate
-    st.markdown("### Retention Rates Over Time")
+    st.markdown("### Weekly Retention Rates ")
     line_fig = px.line(
-        week_retention, 
+        retention_data, 
         x='month', 
-        y='retention_rate', 
-        title='Retention Rates Over Time',
+        y='weekly_retention_rate', 
+        title='Weekly Retention Rate',
         labels={'month': 'Month', 'retention_rate': 'Retention Rate (%)'},
         markers=True
     )
@@ -754,20 +766,20 @@ def cancellations_demo():
         # Create bar chart for new customers and active after 7 days with distinct colors
     #st.markdown("### New Customers and Active Customers After 7 Days")
     bar_fig = px.bar(
-        week_retention, 
+        retention_data, 
         x='month', 
-        y=['new_customers_count', 'active_after_7_days_count'], 
+        y=['total_customers', 'active_after_7_days'], 
         title='New Customers and Active Customers After 7 Days',
         labels={'value': 'Count', 'variable': 'Customer Type'},
         barmode='group',
         color_discrete_map={
-            'new_customers_count': 'rgb(31, 119, 180)',   # Assign a custom blue color for new customers
-            'active_after_7_days_count': 'rgb(255, 127, 14)'  # Assign a custom orange color for active customers after 7 days
+            'total_customers': 'rgb(31, 119, 180)',   # Assign a custom blue color for new customers
+            'active_after_7_days': 'rgb(255, 127, 14)'  # Assign a custom orange color for active customers after 7 days
         }
     )
     st.plotly_chart(bar_fig)
 
-
+    
 
 
 def main():
