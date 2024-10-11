@@ -474,25 +474,23 @@ def cancellations_demo():
     """)
 
     # Load and display the cancellation report table
-    cancellation_report = pd.read_csv("cancellations_report_2.csv")
+    cancellation_report = pd.read_csv("cancellation_reasons.csv")
 
-    # Shorten long cancellation reasons for display
-    cancellation_report['short_reason'] = cancellation_report['cancel_reason'].apply(lambda x: (x[:50] + '...') if len(x) > 50 else x)
     
     # Display the DataFrame
-    st.dataframe(cancellation_report[['cancel_reason', "cancellation_count"]])
+    st.dataframe(cancellation_report)
 
 
     #---------------------------------------------------------------------------------------------------------
 
 
     # Visualization: Bar Chart for Top 10 Cancellation Reasons
-    st.markdown("### Top 10 Cancellation Reasons")
+    st.markdown("### Top Cancellation Reasons")
     top_10_cancellations = cancellation_report.nlargest(10, 'cancellation_count')  # Select top 10 rows by cancellation count
     bar_fig_top10 = px.bar(top_10_cancellations, 
-                           x='short_reason',  # Use the shortened version of cancellation reasons
-                           y='cancellation_count', 
-                           title="Top 10 Reasons for Cancellation",
+                           x='cancellation_reason',  # Use the shortened version of cancellation reasons
+                           y='reason_count', 
+                           title="Top Reasons for Cancellation",
                            color='short_reason', 
                            color_discrete_sequence=px.colors.qualitative.Pastel,
                            text='cancellation_count',
