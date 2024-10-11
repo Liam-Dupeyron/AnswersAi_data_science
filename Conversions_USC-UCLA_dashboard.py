@@ -486,8 +486,7 @@ def cancellations_demo():
 
     # Visualization: Bar Chart for Top 10 Cancellation Reasons
     st.markdown("### Top Cancellation Reasons")
-    top_10_cancellations = cancellation_report.nlargest(10, 'cancellation_count')  # Select top 10 rows by cancellation count
-    bar_fig_top10 = px.bar(top_10_cancellations, 
+    bar_fig_top10 = px.bar(cancellation_report, 
                            x='cancellation_reason',  # Use the shortened version of cancellation reasons
                            y='reason_count', 
                            title="Top Reasons for Cancellation",
