@@ -678,7 +678,7 @@ def cancellations_demo():
     ####CHURN RATE
 
         # Load the CSV file
-    monthly_vs_lost_customers = pd.read_csv("churn_data.csv")
+    monthly_vs_lost_customers = pd.read_csv("/Users/liamdupeyron/Desktop/AnswersAi/chun_data.csv")
     st.markdown("### Monthly Churn Rate")
 
     # Calculate churn rate
