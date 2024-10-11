@@ -732,8 +732,33 @@ def cancellations_demo():
     st.markdown("### Retention Rates")
 
     week_retention = pd.read_csv('subscriptions_first_7.csv')
-    st.dataframe(week_retention)
+    #st.dataframe(week_retention)
+    # Calculate retention rate
+    df['retention_rate'] = (df['active_after_7_days_count'] / df['new_customers_count']) * 100
 
+    # Create line plot for retention rate
+    st.markdown("### Retention Rates Over Time")
+    line_fig = px.line(
+        df, 
+        x='month', 
+        y='retention_rate', 
+        title='Retention Rates Over Time',
+        labels={'month': 'Month', 'retention_rate': 'Retention Rate (%)'},
+        markers=True
+    )
+    st.plotly_chart(line_fig)
+
+    # Create bar chart for new customers and active after 7 days
+    st.markdown("### New Customers and Active Customers After 7 Days")
+    bar_fig = px.bar(
+        df, 
+        x='month', 
+        y=['new_customers_count', 'active_after_7_days_count'], 
+        title='New Customers and Active Customers After 7 Days',
+        labels={'value': 'Count', 'variable': 'Customer Type'},
+        barmode='group'
+    )
+    st.plotly_chart(bar_fig)
 
 def main():
 
