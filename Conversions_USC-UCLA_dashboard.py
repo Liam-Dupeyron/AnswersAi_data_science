@@ -678,17 +678,13 @@ def cancellations_demo():
     ####CHURN RATE
 
         # Load the CSV file
-    monthly_vs_lost_customers = pd.read_csv("churn_rate_report.csv")
+    monthly_vs_lost_customers = pd.read_csv("churn_data.csv")
     st.markdown("### Monthly Churn Rate")
 
-    # Drop the existing churn rate column if necessary
-    # Adjust the column name based on your CSV. It seems to be 'churn_rate_percentage'
-    monthly_vs_lost_customers = monthly_vs_lost_customers.drop(columns="churn_rate_percentage", errors='ignore')
-
     # Calculate churn rate
-    monthly_vs_lost_customers["churn_rate_2"] = (
-        monthly_vs_lost_customers["number_of_cancellations"] / 
-        monthly_vs_lost_customers["total_active_subscriptions"]
+    monthly_vs_lost_customers["churn_rate"] = (
+        monthly_vs_lost_customers["monthly_cancellations"] / 
+        monthly_vs_lost_customers["cumulative_subscribers"]
     ) * 100
 
     # Display the DataFrame
@@ -697,8 +693,8 @@ def cancellations_demo():
     # Create a line plot for churn rate over time
     fig = px.line(
         monthly_vs_lost_customers,
-        x='month_start',  # X-axis: months
-        y='churn_rate_2',  # Y-axis: churn rate
+        x='month',  # X-axis: months
+        y='churn_rate',  # Y-axis: churn rate
         title="Churn Rate Over Time",
         labels={'month_start': 'Month', 'churn_rate_2': 'Churn Rate (%)'},  # Custom labels
         template='plotly_dark'  # Dark theme
