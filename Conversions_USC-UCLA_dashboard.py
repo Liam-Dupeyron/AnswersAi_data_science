@@ -584,14 +584,16 @@ def cancellations_demo():
 
     # Load the DAU data from the CSV
     dau_data = pd.read_csv("DAU_data.csv")
+    avg_subscribers_df = pd.DataFrame(avg_subscribers_data)
 
-    avg_subscribers_data["cancellation_rate"] = avg_subscribers_data['avg_daily_cancellations'] /  avg_subscribers_data['avg_daily_subscribers']
+
+    avg_subscribers_df["cancellation_rate"] = avg_subscribers_df['avg_daily_cancellations'] /  avg_subscribers_df['avg_daily_subscribers']
 
     # Display the dataframe
-    st.dataframe(avg_subscribers_data)
+    st.dataframe(avg_subscribers_df)
 
     # Create a line plot for cancellation rates over days of use
-    fig = px.line(avg_subscribers_data, 
+    fig = px.line(avg_subscribers_df, 
                 x='day_of_month',  # X-axis: days of use
                 y='cancellation_rate',  # Y-axis: cancellation rate
                 title="Cancellation Rates Over Time (First 30 Days)", 
