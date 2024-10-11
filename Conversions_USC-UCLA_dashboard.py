@@ -512,14 +512,13 @@ def cancellations_demo():
     # Define the data from the query result
     tools_data = {
         "feature_used": [
-            "No tool recorded",
-            "Snapshot",
-            "Highlight",
-            "Mobile OCR Mode",
-            "Auto Mode",
-            "Summarize"
+            "highlight", 
+            "snapshot", 
+            "mobile ocr mode", 
+            "auto mode", 
+            "Summary"
         ],
-        "usage_count": [56949, 28471, 19597, 5428, 4479, 980]
+        "usage_count": [16355, 10888, 2732, 1219, 411]
     }
 
 
@@ -554,24 +553,6 @@ def cancellations_demo():
 
     # Display the bar chart
     st.plotly_chart(bar_fig, use_container_width=True)
-
-    # Pie Chart for Most Used Tools Before Cancellation
-    pie_fig = px.pie(most_used_tools, 
-                    names='feature_used', 
-                    values='usage_count', 
-                    title='Distribution of Tools Used Before Cancellation',
-                    color_discrete_sequence=px.colors.qualitative.Pastel)
-
-    # Customize the pie chart
-    pie_fig.update_traces(textposition='inside', textinfo='percent+label', pull=[0.1, 0, 0, 0, 0])
-
-    # Customize layout with larger font size
-    pie_fig.update_layout(
-        font=dict(size=16)  # Set font size to 16
-    )
-
-    # Display the pie chart
-    st.plotly_chart(pie_fig, use_container_width=True)
 
 
     #---------------------------------------------------------------------------------------------------------
