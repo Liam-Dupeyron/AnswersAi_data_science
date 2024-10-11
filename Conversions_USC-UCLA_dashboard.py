@@ -509,6 +509,10 @@ def cancellations_demo():
     st.plotly_chart(bar_fig_top10, use_container_width=True)
 
 
+    
+
+
+    #------------------------------------------------------------------------------------------------
     # Define the data from the query result
     tools_data = {
         "feature_used": [
@@ -521,17 +525,13 @@ def cancellations_demo():
         "usage_count": [16355, 10888, 2732, 1219, 411]
     }
 
-
-    #------------------------------------------------------------------------------------------------
-
-
     # Most Used Tools Before Cancellation
     st.markdown("## Most Used Tools Before Cancellation")
     most_used_tools = pd.read_csv("most_used_tools_before_cancellation_2.csv")
     st.dataframe(most_used_tools)
 
     # Bar Chart for Most Used Tools Before Cancellation
-    bar_fig = px.bar(most_used_tools, 
+    bar_fig = px.bar(tools_data, 
                     x='feature_used', 
                     y='usage_count', 
                     title='Most Used Tools Before Cancellation',
