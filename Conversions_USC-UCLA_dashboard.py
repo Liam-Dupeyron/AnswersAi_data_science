@@ -729,17 +729,19 @@ def cancellations_demo():
 
     ### Retention Rates
 
-    st.markdown("### Retention Rates")
-
+        # Load the CSV file into a DataFrame
     week_retention = pd.read_csv('subscriptions_first_7.csv')
-    #st.dataframe(week_retention)
+
+    # Check the column names to ensure they're correctly referenced
+    st.write(week_retention.columns)
+
     # Calculate retention rate
-    df['retention_rate'] = (df['active_after_7_days_count'] / df['new_customers_count']) * 100
+    week_retention['retention_rate'] = (week_retention['active_after_7_days_count'] / week_retention['new_customers_count']) * 100
 
     # Create line plot for retention rate
     st.markdown("### Retention Rates Over Time")
     line_fig = px.line(
-        df, 
+        week_retention, 
         x='month', 
         y='retention_rate', 
         title='Retention Rates Over Time',
@@ -751,7 +753,7 @@ def cancellations_demo():
     # Create bar chart for new customers and active after 7 days
     st.markdown("### New Customers and Active Customers After 7 Days")
     bar_fig = px.bar(
-        df, 
+        week_retention, 
         x='month', 
         y=['new_customers_count', 'active_after_7_days_count'], 
         title='New Customers and Active Customers After 7 Days',
