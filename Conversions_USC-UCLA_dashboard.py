@@ -477,11 +477,11 @@ def cancellations_demo():
     cancellation_reasons = pd.read_csv("cancellation_reasons.csv")
 
     # Display the DataFrame
-    st.dataframe(cancellation_reasons)
+    #st.dataframe(cancellation_reasons)
 
 
         ## Visualization: Bar Chart for Cancellation Reasons
-    st.markdown("### Top Cancellation Reasons")
+    #st.markdown("### Top Cancellation Reasons")
     bar_fig_top10 = px.bar(cancellation_reasons, 
                         x='cancellation_reason',  
                         y='reason_count', 
@@ -528,7 +528,7 @@ def cancellations_demo():
     # Most Used Tools Before Cancellation
     st.markdown("## Most Used Tools Before Cancellation")
     most_used_tools = pd.read_csv("most_used_tools_before_cancellation_2.csv")
-    st.dataframe(most_used_tools)
+    #st.dataframe(most_used_tools)
 
     # Bar Chart for Most Used Tools Before Cancellation
     bar_fig = px.bar(tools_data, 
@@ -725,7 +725,13 @@ def cancellations_demo():
     # Display the plot
     st.plotly_chart(fig, use_container_width=True)
 
-        
+   #---------------------------------------------------------------------------------------------------------------------------------------    
+
+    ### Retention Rates
+
+    st.markdown("### Retention Rates")
+
+
 
 def main():
 
