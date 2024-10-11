@@ -738,6 +738,7 @@ def cancellations_demo():
     # Calculate retention rate
     week_retention['retention_rate'] = (week_retention['active_after_7_days_count'] / week_retention['new_customers_count']) * 100
 
+
     # Create line plot for retention rate
     st.markdown("### Retention Rates Over Time")
     line_fig = px.line(
@@ -750,7 +751,7 @@ def cancellations_demo():
     )
     st.plotly_chart(line_fig)
 
-    # Create bar chart for new customers and active after 7 days
+        # Create bar chart for new customers and active after 7 days with distinct colors
     st.markdown("### New Customers and Active Customers After 7 Days")
     bar_fig = px.bar(
         week_retention, 
@@ -758,7 +759,11 @@ def cancellations_demo():
         y=['new_customers_count', 'active_after_7_days_count'], 
         title='New Customers and Active Customers After 7 Days',
         labels={'value': 'Count', 'variable': 'Customer Type'},
-        barmode='group'
+        barmode='group',
+        color_discrete_map={
+            'new_customers_count': 'rgb(31, 119, 180)',   # Assign a custom blue color for new customers
+            'active_after_7_days_count': 'rgb(255, 127, 14)'  # Assign a custom orange color for active customers after 7 days
+        }
     )
     st.plotly_chart(bar_fig)
 
