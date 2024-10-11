@@ -467,7 +467,7 @@ def cancellations_demo():
 
 
     # Markdown header for the cancellation report
-    st.markdown("## Detailed Cancellation Report")
+    st.markdown("## Reason Cancellation Report")
     st.markdown("""
     The following table provides insights into the reasons why users have canceled their subscriptions.
     The data is grouped by the cancellation reason, and the total count of cancellations is displayed for each reason.
@@ -480,16 +480,16 @@ def cancellations_demo():
     st.dataframe(cancellation_reasons)
 
 
-    # Visualization: Bar Chart for Top 10 Cancellation Reasons
+        ## Visualization: Bar Chart for Cancellation Reasons
     st.markdown("### Top Cancellation Reasons")
-    bar_fig_top10 = px.bar(cancellation_reasons, 
-                           x='cancellation_reason',  
-                           y='reason_count', 
-                           title="Top Reasons for Cancellation",
-                           color='short_reason', 
-                           color_discrete_sequence=px.colors.qualitative.Pastel,
-                           text='reason_count',
-                           template='plotly_dark')
+    bar_fig_top10 = px.bar(cancellation_report, 
+                        x='cancellation_reason',  
+                        y='reason_count', 
+                        title="Top Reasons for Cancellation",
+                        color='cancellation_reason',  # Use cancellation reason for coloring
+                        color_discrete_sequence=px.colors.qualitative.Pastel,
+                        text='reason_count',
+                        template='plotly_dark')
 
     # Customize the layout for better readability
     bar_fig_top10.update_layout(
@@ -498,13 +498,14 @@ def cancellations_demo():
         yaxis_title="Cancellation Count",
         font=dict(size=14),
         showlegend=False,
-        height=800,  # Increased height for better visibility
-        margin=dict(l=30, r=30, t=80, b=250),  # Increased bottom margin to allow space for long text in x-axis
+        height=600,  # Adjust height as necessary
+        margin=dict(l=30, r=30, t=80, b=200),  # Adjust margins to allow space for long text
     )
+
     bar_fig_top10.update_xaxes(tickangle=-45)  # Rotate x-axis labels for better fit
     bar_fig_top10.update_traces(texttemplate='%{text:.0f}', textposition='outside')
 
-    # Display the top 10 reasons for cancellations bar chart
+    # Display the chart
     st.plotly_chart(bar_fig_top10, use_container_width=True)
 
 
