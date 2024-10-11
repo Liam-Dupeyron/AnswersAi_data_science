@@ -731,6 +731,8 @@ def cancellations_demo():
 
     st.markdown("### Retention Rates")
 
+    week_retention = pd.read_csv('subscriptions_first_7.csv')
+    st.dataframe(week_retention)
 
 
 def main():
