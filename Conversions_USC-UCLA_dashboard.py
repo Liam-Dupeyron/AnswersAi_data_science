@@ -690,7 +690,8 @@ def cancellations_demo():
         {"start_of_month": "2024-06-01", "start_of_month_customers": 292338, "start_of_month_subscribers": 3065, "customers_lost": 873, "churn_rate": 28.482871},
         {"start_of_month": "2024-07-01", "start_of_month_customers": 317897, "start_of_month_subscribers": 2782, "customers_lost": 659, "churn_rate": 23.687994},
         {"start_of_month": "2024-08-01", "start_of_month_customers": 338669, "start_of_month_subscribers": 2511, "customers_lost": 1134, "churn_rate": 45.161290},
-        {"start_of_month": "2024-09-01", "start_of_month_customers": 486985, "start_of_month_subscribers": 2916, "customers_lost": 1790, "churn_rate": 61.385460}
+        {"start_of_month": "2024-09-01", "start_of_month_customers": 486985, "start_of_month_subscribers": 2916, "customers_lost": 1790, "churn_rate": 61.385460},
+        {"start_of_month": "2024-10-01", "start_of_month_customers": 698388, "start_of_month_subscribers": 3668, "customers_lost": 907, "churn_rate": 24.727372}
     ]
 
     # Create a DataFrame from the data
