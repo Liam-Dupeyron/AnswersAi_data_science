@@ -680,99 +680,27 @@ def cancellations_demo():
 
     st.markdown("## Churn Rate")
 
-    #Extracting Relevant Data
-    customer_data_2024 = pd.read_csv('2024_customer_data.csv')
-    subscriptions = pd.read_csv('subscriptions_stipe.csv')
-    starting_number_of_customers = 92985
+        # Define the data as a list of dictionaries
+    monthly_customer_data = [
+        {"start_of_month": "2024-01-01", "start_of_month_customers": 93012, "start_of_month_subscribers": 2707, "customers_lost": 1011, "churn_rate": 37.347617},
+        {"start_of_month": "2024-02-01", "start_of_month_customers": 110370, "start_of_month_subscribers": 2681, "customers_lost": 557, "churn_rate": 20.775830},
+        {"start_of_month": "2024-03-01", "start_of_month_customers": 140392, "start_of_month_subscribers": 2741, "customers_lost": 1046, "churn_rate": 38.161255},
+        {"start_of_month": "2024-04-01", "start_of_month_customers": 188183, "start_of_month_subscribers": 3156, "customers_lost": 1226, "churn_rate": 38.846641},
+        {"start_of_month": "2024-05-01", "start_of_month_customers": 244266, "start_of_month_subscribers": 3384, "customers_lost": 1120, "churn_rate": 33.096927},
+        {"start_of_month": "2024-06-01", "start_of_month_customers": 292338, "start_of_month_subscribers": 3065, "customers_lost": 873, "churn_rate": 28.482871},
+        {"start_of_month": "2024-07-01", "start_of_month_customers": 317897, "start_of_month_subscribers": 2782, "customers_lost": 659, "churn_rate": 23.687994},
+        {"start_of_month": "2024-08-01", "start_of_month_customers": 338669, "start_of_month_subscribers": 2511, "customers_lost": 1134, "churn_rate": 45.161290},
+        {"start_of_month": "2024-09-01", "start_of_month_customers": 486985, "start_of_month_subscribers": 2916, "customers_lost": 1790, "churn_rate": 61.385460},
+        {"start_of_month": "2024-10-01", "start_of_month_customers": 698388, "start_of_month_subscribers": 3668, "customers_lost": 907, "churn_rate": 24.727372}
+    ]
 
+    # Create a DataFrame from the data
+    monthly_customer_data_df = pd.DataFrame(monthly_customer_data)
 
-    #Data Cleaning
+    # Convert 'start_of_month' to datetime for proper handling of dates
+    monthly_customer_data_df['start_of_month'] = pd.to_datetime(monthly_customer_data_df['start_of_month'])
 
-    subscriptions = subscriptions.rename(columns={'Created (UTC)': 'Created', "Start Date (UTC)": "Start_Date", 'Current Period Start (UTC)': 'Current_Period_Start', 'Current Period End (UTC)': 'Current_Period_End', 'Canceled At (UTC)': 'Canceled_At','Cancel At Period End': 'Cancel_At_Period_End' })
-    #Convert specified columns to datetime objects
-    for col in ['Created', 'Start_Date', 'Current_Period_Start', 'Current_Period_End', 'Canceled_At']:
-        subscriptions[col] = pd.to_datetime(subscriptions[col]) 
-
-    #Extract year, month, and day and format as 'YYYY-MM-DD'
-    for col in ['Created', 'Start_Date', 'Current_Period_Start', 'Current_Period_End', 'Canceled_At']:
-        subscriptions[col] = subscriptions[col].dt.strftime('%Y-%m-%d') 
-
-
-    #Data Analysis
-
-    #Add a column for the month (year-month) based on the 'Created' date
-    #Convert 'Created' column to datetime if it's not already
-    customer_data_2024['Created'] = pd.to_datetime(customer_data_2024['Created'])  
-    customer_data_2024['month'] = customer_data_2024['Created'].dt.to_period('M')
-    customer_data_2024
-
-    # Group by month and calculate the number of new customers added each month
-    new_customers_per_month = customer_data_2024.groupby('month').size()
-    
-    # Group customers based on the 1st of each month (only count those active as of the 1st day of the month)
-    # We assume a customer is active if their 'Created' date is before or on the 1st day of the month
-    def customers_as_of_first(df, date):
-        return df[df['Created'] <= date].shape[0]
-
-    # List to store the number of customers as of the 1st of each month
-    customers_at_start_of_month = []
-
-    # Generate a list of the 1st day of each month from the start to the end of the data range
-    date_range = pd.date_range(start='2024-01-01', end='2024-10-01', freq='MS')
-
-    # Calculate the number of customers as of the 1st day of each month
-    for date in date_range:
-        customers_count = customers_as_of_first(customer_data_2024, date)
-        customers_at_start_of_month.append(customers_count)
-
-    # Create a DataFrame to store customer counts at the start of each month
-    monthly_customer_data = pd.DataFrame({
-        'start_of_month': date_range,
-        'start_of_month_customers': [x + starting_number_of_customers for x in customers_at_start_of_month] 
-    })
-
-    # Convert relevant columns to datetime in subscriptions data
-    subscriptions['Start_Date'] = pd.to_datetime(subscriptions['Start_Date'])
-    subscriptions['Canceled_At'] = pd.to_datetime(subscriptions['Canceled_At'])
-
-    # Define the date range: Jan 1st, 2024 to Oct 1st, 2024 (monthly starts)
-    date_range = pd.date_range(start='2024-01-01', end='2024-10-01', freq='MS')
-
-    # Initialize a list to store the starting number of subscribers for each month
-    starting_subscribers_per_month = []
-
-    # For each month, calculate the number of active subscribers on the 1st of the month
-    for date in date_range:
-        # Subscribers whose Start_Date is on or before the 1st of the month
-        # AND who have not canceled before that date
-        active_subscribers = subscriptions[
-            (subscriptions['Start_Date'] <= date) & 
-            ((subscriptions['Canceled_At'] >= date) | (subscriptions['Canceled_At'].isna()))
-        ].shape[0]
-        
-        # Append the count to the list
-        starting_subscribers_per_month.append(active_subscribers)
-
-    # Create a DataFrame to store starting subscribers for each month
-    monthly_customer_data['start_of_month_subscribers'] = starting_subscribers_per_month
-
-    # Now add the cancellation data (from the previous steps) and calculate churn rate
-
-    # Extract cancellation month
-    subscriptions['cancellation_month'] = subscriptions['Canceled_At'].dt.to_period('M')
-
-    # Count the number of cancellations for each month
-    cancellations_per_month = subscriptions.groupby('cancellation_month').size()
-
-
-    # Add cancellation data from subscriptions (already done in the previous step)
-    monthly_customer_data['customers_lost'] = cancellations_per_month.reindex(monthly_customer_data['start_of_month'].dt.to_period('M'), fill_value=0).values
-
-    # Calculate churn rate
-    monthly_customer_data['churn_rate'] = (monthly_customer_data['customers_lost'] / monthly_customer_data['start_of_month_subscribers']) * 100
-
-    st.dataframe(monthly_customer_data)
-
+    st.dataframe(monthly_customer_data_df)
 
    #---------------------------------------------------------------------------------------------------------------------------------------    
 """
