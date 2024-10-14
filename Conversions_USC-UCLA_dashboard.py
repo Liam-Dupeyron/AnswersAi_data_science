@@ -704,16 +704,25 @@ def cancellations_demo():
 
     # Set up the Streamlit app
     st.markdown("** Monthly Churn Rate (Jan-Oct 2024) **")
-    # Line plot for churn rate over time
-    fig, ax = plt.subplots()
-    ax.plot(monthly_customer_data_df['start_of_month'], monthly_customer_data_df['churn_rate'], marker='o')
-    ax.set_xlabel("Month")
-    ax.set_ylabel("Churn Rate (%)")
-    ax.set_title("Churn Rate from January to October 2024")
-    ax.grid(True)
+
+    # Create a Plotly line plot with pastel colors and dots
+    fig = px.line(monthly_customer_data_df, 
+                x='start_of_month', 
+                y='churn_rate', 
+                title='Monthly Churn Rate (Jan to Oct 2024)',
+                markers=True)
+
+    # Customize the appearance (pastel colors, larger dots)
+    fig.update_traces(line_color='lightcoral', marker=dict(size=10, color='lightskyblue', line=dict(width=2, color='black')))
+    fig.update_layout(plot_bgcolor='whitesmoke', 
+                    xaxis_title="Month", 
+                    yaxis_title="Churn Rate (%)", 
+                    title_font_size=20, 
+                    font=dict(size=12),
+                    hovermode="x unified")
 
     # Display the plot in Streamlit
-    st.pyplot(fig)
+    st.plotly_chart(fig)
 
    #---------------------------------------------------------------------------------------------------------------------------------------    
 """
