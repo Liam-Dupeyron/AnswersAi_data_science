@@ -677,6 +677,9 @@ def cancellations_demo():
 
     ####CHURN RATE
 
+
+    st.markdown("## Churn Rate")
+
     #Extracting Relevant Data
     customer_data_2024 = pd.read_csv('2024_customer_data.csv')
     subscriptions = pd.read_csv('subscriptions_stipe.csv')
