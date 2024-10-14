@@ -702,6 +702,20 @@ def cancellations_demo():
 
     st.dataframe(monthly_customer_data_df)
 
+    # Set up the Streamlit app
+    st.title("Churn Rate Over Time")
+
+    # Line plot for churn rate over time
+    fig, ax = plt.subplots()
+    ax.plot(df['start_of_month'], df['churn_rate'], marker='o')
+    ax.set_xlabel("Month")
+    ax.set_ylabel("Churn Rate (%)")
+    ax.set_title("Churn Rate from January to October 2024")
+    ax.grid(True)
+
+    # Display the plot in Streamlit
+    st.pyplot(fig)
+
    #---------------------------------------------------------------------------------------------------------------------------------------    
 """
     ### Retention Rates
