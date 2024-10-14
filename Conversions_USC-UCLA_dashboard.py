@@ -677,56 +677,102 @@ def cancellations_demo():
 
     ####CHURN RATE
 
-        # Load the CSV file
-    monthly_vs_lost_customers = pd.read_csv("chun_data.csv")
-    st.markdown("### Monthly Churn Rate")
+    #Extracting Relevant Data
+    customer_data_2024 = pd.read_csv('2024_customer_data.csv')
+    subscriptions = pd.read_csv('subscriptions_stipe.csv')
+    starting_number_of_customers = 92985
+
+
+    #Data Cleaning
+
+    subscriptions = subscriptions.rename(columns={'Created (UTC)': 'Created', "Start Date (UTC)": "Start_Date", 'Current Period Start (UTC)': 'Current_Period_Start', 'Current Period End (UTC)': 'Current_Period_End', 'Canceled At (UTC)': 'Canceled_At','Cancel At Period End': 'Cancel_At_Period_End' })
+    #Convert specified columns to datetime objects
+    for col in ['Created', 'Start_Date', 'Current_Period_Start', 'Current_Period_End', 'Canceled_At']:
+        subscriptions[col] = pd.to_datetime(subscriptions[col]) 
+
+    #Extract year, month, and day and format as 'YYYY-MM-DD'
+    for col in ['Created', 'Start_Date', 'Current_Period_Start', 'Current_Period_End', 'Canceled_At']:
+        subscriptions[col] = subscriptions[col].dt.strftime('%Y-%m-%d') 
+
+
+    #Data Analysis
+
+    #Add a column for the month (year-month) based on the 'Created' date
+    #Convert 'Created' column to datetime if it's not already
+    customer_data_2024['Created'] = pd.to_datetime(customer_data_2024['Created'])  
+    customer_data_2024['month'] = customer_data_2024['Created'].dt.to_period('M')
+    customer_data_2024
+
+    # Group by month and calculate the number of new customers added each month
+    new_customers_per_month = customer_data_2024.groupby('month').size()
+    
+    # Group customers based on the 1st of each month (only count those active as of the 1st day of the month)
+    # We assume a customer is active if their 'Created' date is before or on the 1st day of the month
+    def customers_as_of_first(df, date):
+        return df[df['Created'] <= date].shape[0]
+
+    # List to store the number of customers as of the 1st of each month
+    customers_at_start_of_month = []
+
+    # Generate a list of the 1st day of each month from the start to the end of the data range
+    date_range = pd.date_range(start='2024-01-01', end='2024-10-01', freq='MS')
+
+    # Calculate the number of customers as of the 1st day of each month
+    for date in date_range:
+        customers_count = customers_as_of_first(customer_data_2024, date)
+        customers_at_start_of_month.append(customers_count)
+
+    # Create a DataFrame to store customer counts at the start of each month
+    monthly_customer_data = pd.DataFrame({
+        'start_of_month': date_range,
+        'start_of_month_customers': [x + starting_number_of_customers for x in customers_at_start_of_month] 
+    })
+
+    # Convert relevant columns to datetime in subscriptions data
+    subscriptions['Start_Date'] = pd.to_datetime(subscriptions['Start_Date'])
+    subscriptions['Canceled_At'] = pd.to_datetime(subscriptions['Canceled_At'])
+
+    # Define the date range: Jan 1st, 2024 to Oct 1st, 2024 (monthly starts)
+    date_range = pd.date_range(start='2024-01-01', end='2024-10-01', freq='MS')
+
+    # Initialize a list to store the starting number of subscribers for each month
+    starting_subscribers_per_month = []
+
+    # For each month, calculate the number of active subscribers on the 1st of the month
+    for date in date_range:
+        # Subscribers whose Start_Date is on or before the 1st of the month
+        # AND who have not canceled before that date
+        active_subscribers = subscriptions[
+            (subscriptions['Start_Date'] <= date) & 
+            ((subscriptions['Canceled_At'] >= date) | (subscriptions['Canceled_At'].isna()))
+        ].shape[0]
+        
+        # Append the count to the list
+        starting_subscribers_per_month.append(active_subscribers)
+
+    # Create a DataFrame to store starting subscribers for each month
+    monthly_customer_data['start_of_month_subscribers'] = starting_subscribers_per_month
+
+    # Now add the cancellation data (from the previous steps) and calculate churn rate
+
+    # Extract cancellation month
+    subscriptions['cancellation_month'] = subscriptions['Canceled_At'].dt.to_period('M')
+
+    # Count the number of cancellations for each month
+    cancellations_per_month = subscriptions.groupby('cancellation_month').size()
+
+
+    # Add cancellation data from subscriptions (already done in the previous step)
+    monthly_customer_data['customers_lost'] = cancellations_per_month.reindex(monthly_customer_data['start_of_month'].dt.to_period('M'), fill_value=0).values
 
     # Calculate churn rate
-    monthly_vs_lost_customers["churn_rate"] = (
-        monthly_vs_lost_customers["monthly_cancellations"] / 
-        monthly_vs_lost_customers["cumulative_subscribers"]
-    ) * 100
+    monthly_customer_data['churn_rate'] = (monthly_customer_data['customers_lost'] / monthly_customer_data['start_of_month_subscribers']) * 100
 
-    # Display the DataFrame
-    st.dataframe(monthly_vs_lost_customers)
+    st.dataframe(monthly_customer_data)
 
-    # Create a line plot for churn rate over time
-    fig = px.line(
-        monthly_vs_lost_customers,
-        x='month',  # X-axis: months
-        y='churn_rate',  # Y-axis: churn rate
-        title="Churn Rate Over Time",
-        labels={'month_start': 'Month', 'churn_rate_2': 'Churn Rate (%)'},  # Custom labels
-        template='plotly_dark'  # Dark theme
-    )
-
-    # Customize the plot
-    fig.update_traces(
-        mode='lines+markers',
-        marker=dict(size=8, symbol='circle', color='#FFAA4D'),
-        line=dict(color='#A1C181', width=3)
-    )
-
-    # Optional: Remove or adjust the vertical line if not needed
-    # Removed the vertical line for simplicity
-
-    # Enhance layout
-    fig.update_layout(
-        title_font_size=20,
-        xaxis_title="Month",
-        yaxis_title="Churn Rate (%)",
-        font=dict(size=14),
-        height=500,
-        xaxis=dict(showgrid=True),
-        yaxis=dict(showgrid=True),
-        hovermode="x unified"
-    )
-
-    # Display the plot
-    st.plotly_chart(fig, use_container_width=True)
 
    #---------------------------------------------------------------------------------------------------------------------------------------    
-
+"""
     ### Retention Rates
 
         # Load the CSV file into a DataFrame
@@ -784,7 +830,7 @@ def cancellations_demo():
     st.plotly_chart(bar_fig)
 
     
-
+"""
 
 def main():
 
