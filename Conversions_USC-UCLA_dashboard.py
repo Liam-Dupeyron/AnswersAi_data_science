@@ -703,7 +703,7 @@ def cancellations_demo():
     st.dataframe(monthly_customer_data_df)
 
     # Create a Plotly line plot with pastel colors and dots
-    fig = px.line(df, 
+    fig = px.line(monthly_customer_data_df, 
                 x='start_of_month', 
                 y='churn_rate', 
                 title='Monthly Churn Rate (Jan to Oct 2024)',
