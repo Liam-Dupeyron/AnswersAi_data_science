@@ -702,11 +702,8 @@ def cancellations_demo():
 
     st.dataframe(monthly_customer_data_df)
 
-    # Set up the Streamlit app
-    st.markdown("** Monthly Churn Rate (Jan-Oct 2024) **")
-
     # Create a Plotly line plot with pastel colors and dots
-    fig = px.line(monthly_customer_data_df, 
+    fig = px.line(df, 
                 x='start_of_month', 
                 y='churn_rate', 
                 title='Monthly Churn Rate (Jan to Oct 2024)',
@@ -714,12 +711,20 @@ def cancellations_demo():
 
     # Customize the appearance (pastel colors, larger dots)
     fig.update_traces(line_color='lightcoral', marker=dict(size=10, color='lightskyblue', line=dict(width=2, color='black')))
-    fig.update_layout(plot_bgcolor='whitesmoke', 
-                    xaxis_title="Month", 
-                    yaxis_title="Churn Rate (%)", 
-                    title_font_size=20, 
-                    font=dict(size=12),
-                    hovermode="x unified")
+    fig.update_layout(
+        plot_bgcolor='whitesmoke',
+        xaxis_title="Month",
+        yaxis_title="Churn Rate (%)",
+        title_font_size=20,
+        font=dict(size=12),
+        hovermode="x unified",
+        xaxis=dict(
+            tickmode='linear',  # Ensure every month is shown
+            dtick="M1",         # One tick for each month
+            tickformat="%b %Y",  # Format the ticks as 'Jan 2024', 'Feb 2024', etc.
+            ticks="outside"
+        )
+    )
 
     # Display the plot in Streamlit
     st.plotly_chart(fig)
