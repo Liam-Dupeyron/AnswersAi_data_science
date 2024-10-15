@@ -680,55 +680,6 @@ def cancellations_demo():
 
     st.markdown("## Churn Rate")
 
-        # Define the data as a list of dictionaries
-    monthly_customer_data = [
-        {"start_of_month": "2024-01-01", "start_of_month_customers": 93012, "start_of_month_subscribers": 2707, "customers_lost": 1011, "churn_rate": 37.347617},
-        {"start_of_month": "2024-02-01", "start_of_month_customers": 110370, "start_of_month_subscribers": 2681, "customers_lost": 557, "churn_rate": 20.775830},
-        {"start_of_month": "2024-03-01", "start_of_month_customers": 140392, "start_of_month_subscribers": 2741, "customers_lost": 1046, "churn_rate": 38.161255},
-        {"start_of_month": "2024-04-01", "start_of_month_customers": 188183, "start_of_month_subscribers": 3156, "customers_lost": 1226, "churn_rate": 38.846641},
-        {"start_of_month": "2024-05-01", "start_of_month_customers": 244266, "start_of_month_subscribers": 3384, "customers_lost": 1120, "churn_rate": 33.096927},
-        {"start_of_month": "2024-06-01", "start_of_month_customers": 292338, "start_of_month_subscribers": 3065, "customers_lost": 873, "churn_rate": 28.482871},
-        {"start_of_month": "2024-07-01", "start_of_month_customers": 317897, "start_of_month_subscribers": 2782, "customers_lost": 659, "churn_rate": 23.687994},
-        {"start_of_month": "2024-08-01", "start_of_month_customers": 338669, "start_of_month_subscribers": 2511, "customers_lost": 1134, "churn_rate": 45.161290},
-        {"start_of_month": "2024-09-01", "start_of_month_customers": 486985, "start_of_month_subscribers": 2916, "customers_lost": 1790, "churn_rate": 61.385460},
-        {"start_of_month": "2024-10-01", "start_of_month_customers": 698388, "start_of_month_subscribers": 3668, "customers_lost": 907, "churn_rate": 24.727372}
-    ]
-
-    # Create a DataFrame from the data
-    monthly_customer_data_df = pd.DataFrame(monthly_customer_data)
-
-    # Convert 'start_of_month' to datetime for proper handling of dates
-    monthly_customer_data_df['start_of_month'] = pd.to_datetime(monthly_customer_data_df['start_of_month'])
-
-    st.dataframe(monthly_customer_data_df)
-
-    # Create a Plotly line plot with pastel colors and dots
-    fig = px.line(monthly_customer_data_df, 
-                x='start_of_month', 
-                y='churn_rate', 
-                title='Monthly Churn Rate (Jan to Oct 2024)',
-                markers=True)
-
-    # Customize the appearance (pastel colors, larger dots)
-    fig.update_traces(line_color='lightcoral', marker=dict(size=10, color='lightskyblue', line=dict(width=2, color='black')))
-    fig.update_layout(
-        plot_bgcolor='whitesmoke',
-        xaxis_title="Month",
-        yaxis_title="Churn Rate (%)",
-        title_font_size=20,
-        font=dict(size=12),
-        hovermode="x unified",
-        xaxis=dict(
-            tickmode='linear',  # Ensure every month is shown
-            dtick="M1",         # One tick for each month
-            tickformat="%b %Y",  # Format the ticks as 'Jan 2024', 'Feb 2024', etc.
-            ticks="outside"
-        )
-    )
-
-    # Display the plot in Streamlit
-    st.plotly_chart(fig)
-
     # Creating a DataFrame with the data you provided
     new_churn = {
         'start_of_month': ['2024-01-01', '2024-02-01', '2024-03-01', '2024-04-01', '2024-05-01',
