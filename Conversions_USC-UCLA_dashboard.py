@@ -764,6 +764,8 @@ def cancellations_demo():
         title_font_size=20,
         font=dict(size=12),
         hovermode="x unified",
+        width=1000,  # Set the plot width to make it wider
+        height=500,  # Optionally, set height for a balanced aspect ratio
         xaxis=dict(
             tickmode='linear',  # Ensure every month is shown
             dtick="M1",         # One tick for each month
@@ -774,7 +776,6 @@ def cancellations_demo():
 
     # Display the plot in Streamlit
     st.plotly_chart(churn_fig)
-
    #---------------------------------------------------------------------------------------------------------------------------------------    
 
 #    ### Retention Rates
