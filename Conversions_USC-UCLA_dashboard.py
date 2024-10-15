@@ -740,7 +740,7 @@ def cancellations_demo():
     }
 
     # Convert to DataFrame
-    new_churn_df = pd.DataFrame(new_churn_df)
+    new_churn_df = pd.DataFrame(new_churn)
 
     # Convert 'start_of_month' to datetime for proper formatting
     new_churn_df['start_of_month'] = pd.to_datetime(new_churn_df['start_of_month'])
