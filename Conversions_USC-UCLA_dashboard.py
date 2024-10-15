@@ -729,6 +729,52 @@ def cancellations_demo():
     # Display the plot in Streamlit
     st.plotly_chart(fig)
 
+    # Creating a DataFrame with the data you provided
+    new_churn = {
+        'start_of_month': ['2024-01-01', '2024-02-01', '2024-03-01', '2024-04-01', '2024-05-01',
+                        '2024-06-01', '2024-07-01', '2024-08-01', '2024-09-01', '2024-10-01'],
+        'new_start_of_month_subscribers': [5618, 5855, 6091, 6814, 7521, 7573, 7708, 7749, 8621, 10239],
+        'customers_lost': [1011, 557, 1046, 1226, 1120, 873, 659, 1134, 1790, 907],
+        'new_churn_rate': [17.995728, 9.513237, 17.172878, 17.992369, 14.891637, 11.527796, 8.549559, 
+                        14.634146, 20.763253, 8.858287]
+    }
+
+    # Convert to DataFrame
+    new_churn_df = pd.DataFrame(new_churn_df)
+
+    # Convert 'start_of_month' to datetime for proper formatting
+    new_churn_df['start_of_month'] = pd.to_datetime(new_churn_df['start_of_month'])
+
+    # Display DataFrame
+    st.dataframe(new_churn_df)
+
+    # Create a Plotly line plot with pastel colors and dots
+    churn_fig = px.line(new_churn_df, 
+                x='start_of_month', 
+                y='new_churn_rate', 
+                title='New Monthly Churn Rate (Jan to Oct 2024)',
+                markers=True)
+
+    # Customize the appearance (pastel colors, larger dots)
+    churn_fig.update_traces(line_color='lightcoral', marker=dict(size=10, color='lightskyblue', line=dict(width=2, color='black')))
+    churn_fig.update_layout(
+        plot_bgcolor='whitesmoke',
+        xaxis_title="Month",
+        yaxis_title="Churn Rate (%)",
+        title_font_size=20,
+        font=dict(size=12),
+        hovermode="x unified",
+        xaxis=dict(
+            tickmode='linear',  # Ensure every month is shown
+            dtick="M1",         # One tick for each month
+            tickformat="%b %Y",  # Format the ticks as 'Jan 2024', 'Feb 2024', etc.
+            ticks="outside"
+        )
+    )
+
+    # Display the plot in Streamlit
+    st.plotly_chart(churn_fig)
+
    #---------------------------------------------------------------------------------------------------------------------------------------    
 
 #    ### Retention Rates
