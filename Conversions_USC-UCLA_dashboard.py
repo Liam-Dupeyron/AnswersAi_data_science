@@ -682,13 +682,13 @@ def cancellations_demo():
 
     # Creating a DataFrame with the data you provided
     new_churn = {
-        'start_of_month': ['2024-01-01', '2024-02-01', '2024-03-01', '2024-04-01', '2024-05-01',
-                        '2024-06-01', '2024-07-01', '2024-08-01', '2024-09-01', '2024-10-01'],
-        'new_start_of_month_subscribers': [5618, 5855, 6091, 6814, 7521, 7573, 7708, 7749, 8621, 10239],
-        'customers_lost': [1011, 557, 1046, 1226, 1120, 873, 659, 1134, 1790, 907],
-        'new_churn_rate': [17.995728, 9.513237, 17.172878, 17.992369, 14.891637, 11.527796, 8.549559, 
-                        14.634146, 20.763253, 8.858287]
-    }
+    'start_of_month': ['2024-01-01', '2024-02-01', '2024-03-01', '2024-04-01', '2024-05-01',
+                       '2024-06-01', '2024-07-01', '2024-08-01', '2024-09-01', '2024-10-01'],
+    'new_start_of_month_subscribers': [5618, 5855, 6091, 6814, 7521, 7573, 7708, 7749, 8621, 10239],
+    'customers_lost': [1197, 749, 1174, 1430, 1462, 1192, 935, 1327, 2153, 1508],
+    'new_churn_rate': [21.306515, 12.792485, 19.274339, 20.986205, 19.438904, 15.740129, 12.130254, 
+                       17.124790, 24.973901, 14.728001]
+}
 
     # Convert to DataFrame
     new_churn_df = pd.DataFrame(new_churn)
@@ -703,7 +703,7 @@ def cancellations_demo():
     churn_fig = px.line(new_churn_df, 
                 x='start_of_month', 
                 y='new_churn_rate', 
-                title='New Monthly Churn Rate (Jan to Oct 2024)',
+                title='Monthly Churn Rate (Jan to Oct 2024)',
                 markers=True)
 
     # Customize the appearance (pastel colors, larger dots)
