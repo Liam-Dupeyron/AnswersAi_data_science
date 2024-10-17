@@ -813,21 +813,37 @@ def tools_demo():
     # Create the DataFrame
     tools_df = pd.DataFrame(tools_data)
 
-    # Create the bar chart using Altair with pastel colors
+    # Define darker pastel colors
+    darker_pastel_colors = ['#ff9999', '#ffcc99', '#ffff99', '#99ff99', '#99ccff', '#cc99ff']
+
+    # Create the bar chart using Altair with darker pastel colors and added text for counts
     chart = alt.Chart(tools_df).mark_bar().encode(
         x=alt.X('feature_used_category', sort=None, title='Feature Used Category'),
         y=alt.Y('usage_count', title='Usage Count'),
         color=alt.Color('feature_used_category', 
-                        scale=alt.Scale(range=['#ffb3ba', '#ffdfba', '#ffffba', '#baffc9', '#bae1ff', '#cba6e8']),
+                        scale=alt.Scale(range=darker_pastel_colors),
                         legend=None),
     ).properties(
         width=600,
         height=400,
-        title='Feature Usage Count by Category (Pastel Colors)'
+        title='Feature Usage Count by Category (Darker Pastel Colors)'
     )
 
+    # Adding text labels on top of the bars
+    text = chart.mark_text(
+        align='center',
+        baseline='middle',
+        dy=-10,  # Adjust the position of the text
+        color='black'
+    ).encode(
+        text='usage_count:Q'
+    )
+
+    # Layering the bar chart and the text labels
+    final_chart = chart + text
+
     # Display the chart in Streamlit
-    st.altair_chart(chart, use_container_width=True)
+    st.altair_chart(final_chart, use_container_width=True)
 
 
 def main():
