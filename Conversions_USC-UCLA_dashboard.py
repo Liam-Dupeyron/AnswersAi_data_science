@@ -786,6 +786,49 @@ def cancellations_demo():
 #    st.plotly_chart(bar_fig)
 
     
+def tools_demo():
+    st.markdown("<h1 style='text-align: center;'>Tools Insights</h1>", unsafe_allow_html=True)
+
+    st.markdonwn("## Most Used Tools")
+
+    # Data from the SQL query result
+    tools_data = {
+        "feature_used_category": [
+            "Mobile OCR Mode", 
+            "Unrecorded", 
+            "Snapshot", 
+            "Highlight", 
+            "Auto Mode", 
+            "summarize"
+        ],
+        "usage_count": [
+            1265261, 
+            512619, 
+            500531, 
+            198078, 
+            80271, 
+            8632
+        ]
+    }
+
+    # Create the DataFrame
+    tools_df = pd.DataFrame(tools_data)
+
+    # Create the bar chart using Altair with pastel colors
+    chart = alt.Chart(tools_df).mark_bar().encode(
+        x=alt.X('feature_used_category', sort=None, title='Feature Used Category'),
+        y=alt.Y('usage_count', title='Usage Count'),
+        color=alt.Color('feature_used_category', 
+                        scale=alt.Scale(range=['#ffb3ba', '#ffdfba', '#ffffba', '#baffc9', '#bae1ff', '#cba6e8']),
+                        legend=None),
+    ).properties(
+        width=600,
+        height=400,
+        title='Feature Usage Count by Category (Pastel Colors)'
+    )
+
+    # Display the chart in Streamlit
+    st.altair_chart(chart, use_container_width=True)
 
 
 def main():
@@ -794,7 +837,8 @@ def main():
     "Intro": intro,
     "Tiktok/Instagram Conversion Rates": tiktok_instagram_demo,
     "UCLA/USC users": usc_ucla_demo,
-    "Cancellation Insights": cancellations_demo
+    "Cancellation Insights": cancellations_demo,
+    "Tool Insights": tools_demo
 }
 
     demo_name = st.sidebar.selectbox("Choose a demo", page_names_to_funcs.keys())
