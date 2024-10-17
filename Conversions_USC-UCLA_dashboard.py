@@ -813,28 +813,28 @@ def tools_demo():
     # Create the DataFrame
     tools_df = pd.DataFrame(tools_data)
 
-    # Define darker pastel colors
-    darker_pastel_colors = ['#ff9999', '#ffcc99', '#ffff99', '#99ff99', '#99ccff', '#cc99ff']
+        # Define darker tones for better visibility in light mode
+    darker_tones = ['#c44d56', '#c4744d', '#c4c44d', '#4dc44d', '#4d7cc4', '#9a4dc4']
 
-    # Create the bar chart using Altair with darker pastel colors and added text for counts
+    # Create the bar chart using Altair with darker tones
     chart = alt.Chart(tools_df).mark_bar().encode(
         x=alt.X('feature_used_category', sort=None, title='Feature Used Category'),
         y=alt.Y('usage_count', title='Usage Count'),
         color=alt.Color('feature_used_category', 
-                        scale=alt.Scale(range=darker_pastel_colors),
+                        scale=alt.Scale(range=darker_tones),
                         legend=None),
     ).properties(
         width=600,
         height=400,
-        title='Feature Usage Count by Category (Darker Pastel Colors)'
+        title='Feature Usage Count by Category (Darker Tones for Light Mode)'
     )
 
-    # Adding text labels on top of the bars
+    # Adding text labels on top of the bars with a standard color (black)
     text = chart.mark_text(
         align='center',
         baseline='middle',
         dy=-10,  # Adjust the position of the text
-        color='black'
+        color='black'  # Standard black color for the text
     ).encode(
         text='usage_count:Q'
     )
