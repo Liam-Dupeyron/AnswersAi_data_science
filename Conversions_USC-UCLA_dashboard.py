@@ -821,7 +821,7 @@ def tools_demo():
         text='usage_count',  # This adds the number counts directly on the bars
         title="Feature Usage Count by Category (Optimized for Light Mode)",
         color='feature_used_category',  # Color by feature category
-        color_discrete_sequence=px.colors.qualitative.Dark24  # Use a dark yet distinguishable color set
+        color_discrete_sequence=px.colors.qualitative.Pastel  # Use a dark yet distinguishable color set
     )
 
     # Customize the appearance of the chart
