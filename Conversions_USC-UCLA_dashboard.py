@@ -813,37 +813,30 @@ def tools_demo():
     # Create the DataFrame
     tools_df = pd.DataFrame(tools_data)
 
-        # Define darker tones for better visibility in light mode
-    darker_tones = ['#c44d56', '#c4744d', '#c4c44d', '#4dc44d', '#4d7cc4', '#9a4dc4']
-
-    # Create the bar chart using Altair with darker tones
-    chart = alt.Chart(tools_df).mark_bar().encode(
-        x=alt.X('feature_used_category', sort=None, title='Feature Used Category'),
-        y=alt.Y('usage_count', title='Usage Count'),
-        color=alt.Color('feature_used_category', 
-                        scale=alt.Scale(range=darker_tones),
-                        legend=None),
-    ).properties(
-        width=600,
-        height=400,
-        title='Feature Usage Count by Category (Darker Tones for Light Mode)'
+        # Create the bar chart using Plotly Express with text labels and darker colors
+    fig_tools = px.bar(
+        tools_df, 
+        x='feature_used_category', 
+        y='usage_count', 
+        text='usage_count',  # This adds the number counts directly on the bars
+        title="Feature Usage Count by Category (Optimized for Light Mode)",
+        color='feature_used_category',  # Color by feature category
+        color_discrete_sequence=px.colors.qualitative.Dark24  # Use a dark yet distinguishable color set
     )
 
-    # Adding text labels on top of the bars with a standard color (black)
-    text = chart.mark_text(
-        align='center',
-        baseline='middle',
-        dy=-10,  # Adjust the position of the text
-        color='black'  # Standard black color for the text
-    ).encode(
-        text='usage_count:Q'
+    # Customize the appearance of the chart
+    fig_tools.update_traces(textposition='outside', textfont=dict(color='black'))  # Text labels outside the bars and in black
+    fig_tools.update_layout(
+        xaxis_title='Feature Used Category',
+        yaxis_title='Usage Count',
+        showlegend=False,  # Hide legend if not needed
+        plot_bgcolor='white',  # Light background for better readability
+        width=800,  # Set width of the plot
+        height=500  # Set height of the plot
     )
-
-    # Layering the bar chart and the text labels
-    final_chart = chart + text
 
     # Display the chart in Streamlit
-    st.altair_chart(final_chart, use_container_width=True)
+    st.plotly_chart(fig_tools, use_container_width=True)
 
 
 def main():
