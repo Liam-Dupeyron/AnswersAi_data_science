@@ -789,8 +789,7 @@ def cancellations_demo():
 def tools_demo():
     st.markdown("<h1 style='text-align: center;'>Tools Insights</h1>", unsafe_allow_html=True)
 
-    st.markdonwn("## Most Used Tools")
-
+    st.markdown("## Most Used Tools")
     # Data from the SQL query result
     tools_data = {
         "feature_used_category": [
