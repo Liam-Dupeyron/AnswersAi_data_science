@@ -412,7 +412,7 @@ def cancellations_demo():
     st.markdown("<h1 style='text-align: center;'>Cancellation Insights</h1>", unsafe_allow_html=True)
 
     ### KPI Cards for Key Metrics
-    st.markdown("### Monthly Cancellation Rate)")
+    st.markdown("### Monthly Cancellation Rate")
 
     # Step 1: Load the CSV data into a DataFrame
     monthly_cancellation_data = pd.read_csv("subscriptions_output.csv")
@@ -449,7 +449,7 @@ def cancellations_demo():
     cancellation_rate_df.rename(columns={'customer_id': 'cancellation_rate'}, inplace=True)
 
     # Step 10: Create the line chart with pastel tones and markers
-    fig = px.line(
+    fig_cancellations = px.line(
         cancellation_rate_df,
         x='cancellation_month',  # x-axis uses the cancellation_month column
         y='cancellation_rate',   # y-axis uses the cancellation_rate column
@@ -458,13 +458,13 @@ def cancellations_demo():
     )
 
     # Step 11: Customize the chart with pastel tones
-    fig.update_traces(
+    fig_cancellations.update_traces(
         marker=dict(size=8),  # Customize marker size
         line=dict(color='rgba(255,182,193,0.6)')  # Light pastel pink for the line
     )
 
     # Step 12: Update the layout for better readability
-    fig.update_layout(
+    fig_cancellations.update_layout(
         xaxis_title="Month",
         yaxis_title="Cancellation Rate (%)",
         xaxis_tickangle=-45,  # Angle the month labels
@@ -473,7 +473,8 @@ def cancellations_demo():
     )
 
     # Step 13: Show the figure
-    fig.show()
+    # Show the line chart in Streamlit
+    st.plotly_chart(fig_cancellations, use_container_width=True)
 
 
 
