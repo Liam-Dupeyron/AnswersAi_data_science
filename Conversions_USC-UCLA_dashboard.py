@@ -414,61 +414,51 @@ def cancellations_demo():
     ### KPI Cards for Key Metrics
     st.markdown("### Monthly Cancellation Rate")
 
-    # Step 1: Load the CSV data into a DataFrame
     monthly_cancellation_data = pd.read_csv("subscriptions_output.csv")
     monthly_cancellation_df = pd.DataFrame(monthly_cancellation_data)
 
-    # Step 2: Convert the 'subscription_start_date' and 'cancellation_date' to datetime format
     monthly_cancellation_df['subscription_start_date'] = pd.to_datetime(monthly_cancellation_df['subscription_start_date'])
-    monthly_cancellation_df['cancellation_date'] = pd.to_datetime(monthly_cancellation_df['cancellation_date'], errors='coerce')  # Handles 'active' as NaT
+    monthly_cancellation_df['cancellation_date'] = pd.to_datetime(monthly_cancellation_df['cancellation_date'], errors='coerce')
 
-    # Step 3: Add columns for the subscription and cancellation month
     monthly_cancellation_df['subscription_month'] = monthly_cancellation_df['subscription_start_date'].dt.to_period('M')
     monthly_cancellation_df['cancellation_month'] = monthly_cancellation_df['cancellation_date'].dt.to_period('M')
 
-    # Step 4: Filter the data for calculating cancellations
-    # Users with NaN in 'cancellation_date' are still active, so they're not included in the cancellation count
-    df_canceled_subscribers = monthly_cancellation_df[~monthly_cancellation_df['cancellation_date'].isna()]  # Canceled users
+    df_canceled_subscribers = monthly_cancellation_df[~monthly_cancellation_df['cancellation_date'].isna()]
 
-    # Step 5: Aggregate data for subscriptions and cancellations per month
-    cancellations_per_month = df_canceled_subscribers.groupby('cancellation_month')['customer_id'].count()
     subscriptions_per_month = monthly_cancellation_df.groupby('subscription_month')['customer_id'].count()
+    cancellations_per_month = df_canceled_subscribers.groupby('cancellation_month')['customer_id'].count()
 
-    # Step 6: Calculate cumulative subscriptions for each month
     cumulative_subscriptions = subscriptions_per_month.cumsum()
+    cumulative_cancellations = cancellations_per_month.cumsum()
 
-    # Step 7: Calculate the cancellation rate as (Cancellations / Cumulative Subscriptions) * 100
-    cancellation_rate = (cancellations_per_month / cumulative_subscriptions) * 100
-    cancellation_rate = cancellation_rate.fillna(0)  # Fill NaN values with 0 for months with no cancellations
+    adjusted_cumulative_subscriptions = cumulative_subscriptions - cumulative_cancellations.reindex(cumulative_subscriptions.index, fill_value=0)
 
-    # Step 8: Prepare the DataFrame for visualization
-    cancellation_rate_df = cancellation_rate.reset_index()  # Reset index for Plotly
-    cancellation_rate_df['cancellation_month'] = cancellation_rate_df['cancellation_month'].astype(str)  # Convert period to string
+    cancellation_rate = (cancellations_per_month / adjusted_cumulative_subscriptions) * 100
+    cancellation_rate = cancellation_rate.fillna(0)
 
-    # Step 9: Rename the 'customer_id' column to 'cancellation_rate'
+    cancellation_rate_df = cancellation_rate.reset_index()
+    cancellation_rate_df['cancellation_month'] = cancellation_rate_df['cancellation_month'].astype(str)
+
     cancellation_rate_df.rename(columns={'customer_id': 'cancellation_rate'}, inplace=True)
 
-    # Step 10: Create the line chart with pastel tones and markers
     fig_cancellations = px.line(
         cancellation_rate_df,
-        x='cancellation_month',  # x-axis uses the cancellation_month column
-        y='cancellation_rate',   # y-axis uses the cancellation_rate column
+        x='cancellation_month',
+        y='cancellation_rate',
         title="Monthly Cancellation Rate (%)",
-        markers=True  # Add markers for each point
+        markers=True
     )
 
-    # Step 11: Customize the chart with pastel tones
     fig_cancellations.update_traces(
-        marker=dict(size=8),  # Customize marker size
-        line=dict(color='rgba(255,182,193,0.6)')  # Light pastel pink for the line
+        marker=dict(size=8),
+        line=dict(color='rgba(255,182,193,0.6)')
     )
 
-    # Step 12: Update the layout for better readability
     fig_cancellations.update_layout(
         xaxis_title="Month",
         yaxis_title="Cancellation Rate (%)",
-        xaxis_tickangle=-45,  # Angle the month labels
-        plot_bgcolor='rgba(240, 240, 240, 0.8)',  # Light pastel background
+        xaxis_tickangle=-45,
+        plot_bgcolor='rgba(240, 240, 240, 0.8)',
         showlegend=False
     )
 
