@@ -450,7 +450,7 @@ def cancellations_demo():
     )
 
     fig_cancellations.update_traces(
-        marker=dict(size=8),
+        marker=dict(size=8, color='rgba(255, 165, 0, 1)'),
         line=dict(color='rgba(135, 206, 250, 0.8)')
     )
 
