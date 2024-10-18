@@ -412,7 +412,7 @@ def cancellations_demo():
     st.markdown("<h1 style='text-align: center;'>Cancellation Insights</h1>", unsafe_allow_html=True)
 
     ### KPI Cards for Key Metrics
-    st.markdown("### Monthly Cancellation Rate")
+    st.markdown("### Cancellation Rate")
 
     monthly_cancellation_data = pd.read_csv("subscriptions_output.csv")
     monthly_cancellation_df = pd.DataFrame(monthly_cancellation_data)
@@ -467,9 +467,8 @@ def cancellations_demo():
     st.plotly_chart(fig_cancellations, use_container_width=True)
 
 
-
-    #-------------------------------------------------------------------------------------------------------
-
+#----------------------------------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------------------------------
 
     # Markdown header for the cancellation report
     st.markdown("## Reason Cancellation Report")
@@ -512,8 +511,9 @@ def cancellations_demo():
 
     
 
-
-    #------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------------------------------
+   
     # Define the data from the query result
     tools_data = {
         "feature_used": [
@@ -555,124 +555,7 @@ def cancellations_demo():
     # Display the bar chart
     st.plotly_chart(bar_fig, use_container_width=True)
 
-
-    #---------------------------------------------------------------------------------------------------------
-
-
-    # Sample data for average daily subscribers
-    avg_subscribers_data = {
-        'day_of_month': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-                        11, 12, 13, 14, 15, 16, 17, 18,
-                        19, 20, 21, 22, 23, 24, 25, 26,
-                        27, 28, 29, 30, 31],
-        'avg_daily_subscribers': [3221.0000, 3326.1667, 3630.0000, 2962.5000, 2725.3333,
-                                3752.5000, 3580.1667, 3601.6667, 3575.8333, 3061.0000,
-                                2335.7143, 2101.6667, 2655.6667, 2978.8333, 3072.8333,
-                                2606.1667, 2287.8333, 2106.8333, 2058.5000, 1977.8333,
-                                2090.6667, 2357.5000, 3655.1667, 4229.6667, 3859.8333,
-                                4330.3333, 3475.0000, 3085.5000, 3238.8333, 3274.8333,
-                                2242.0000],
-        'avg_daily_cancellations': [7.0000, 22.0000, 5.0000, 9.0000, 15.0000,
-                                 66.0000, 12.0000, 38.0000, 1.5000, 14.0000,
-                                 13.0000, 10.0000, 27.0000, 15.0000, 13.0000,
-                                 19.5000, 19.5000, 24.5000, 18.0000, 11.0000,
-                                 24.0000, 24.5000, 18.5000, 19.0000, 20.0000,
-                                 13.5000, 8.0000, 16.0000, 23.0000, 25.0000,
-                                 27.0000]
-    }
-    # DAU Data
-    st.markdown("## Cancellation Rate by day After Subscription")
-
-    # Load the DAU data from the CSV
-    dau_data = pd.read_csv("DAU_data.csv")
-    avg_subscribers_df = pd.DataFrame(avg_subscribers_data)
-
-
-    avg_subscribers_df["cancellation_rate"] = avg_subscribers_df['avg_daily_cancellations'] /  avg_subscribers_df['avg_daily_subscribers']
-
-    # Display the dataframe
-    st.dataframe(avg_subscribers_df)
-
-    # Create a line plot for cancellation rates over days of use
-    fig = px.line(avg_subscribers_df, 
-                x='day_of_month',  # X-axis: days of use
-                y='cancellation_rate',  # Y-axis: cancellation rate
-                title="Cancellation Rates Over Time (First 30 Days)", 
-                labels={'days_of_use': 'Days of Use', 'cancellation_rate': 'Cancellation Rate (%)'},
-                template='plotly_dark')
-
-    # Change the line color to a pastel color (e.g., light blue)
-    fig.update_traces(mode='lines+markers', marker=dict(size=8, symbol='circle', color='#FFCAA4'), line=dict(color='#9EDCE1'))  # Pastel color
-
-    # Customize the layout with grid lines and enhanced font size
-    fig.update_layout(
-        title_font_size=22,
-        xaxis_title="Days of Use",
-        yaxis_title="Cancellation Rate (%)",
-        font=dict(size=16),
-        height=600,
-        xaxis=dict(showgrid=True),  # Add grid lines to x-axis
-        yaxis=dict(showgrid=True),  # Add grid lines to y-axis
-        hovermode="x unified",  # Unify hover information for both axes
-    )
-
-    # Optionally, you can smooth the line (if desired)
-    # fig.update_traces(line_shape='spline')
-
-    # Show the line chart in Streamlit
-    st.plotly_chart(fig, use_container_width=True)
-
-
-    #-------------------------------------------------------------------------------
-    monthly_cancellation_data = {
-    'month_date': ['2023-09-01', '2023-10-01', '2023-11-01', '2023-12-01', '2024-01-01', '2024-02-01', 
-                   '2024-03-01', '2024-04-01', '2024-05-01', '2024-06-01', '2024-07-01', '2024-08-01', 
-                   '2024-09-01'],
-    'total_subscribers': [28894, 23182, 11088, 7141, 16803, 19885, 40542, 55185, 49927, 25413, 20768, 
-                          142084, 209016],
-    'total_cancellations': [591, 1880, 2981, 3218, 1068, 689, 980, 2302, 3535, 2408, 1663, 958, 1715],
-    'cancellation_rate_percentage': [2.0454, 8.1097, 26.8849, 45.0637, 6.3560, 3.4649, 2.4172, 4.1714, 
-                                     7.0803, 9.4755, 8.0075, 0.6742, 0.8205]
-}
-
-    # Create a DataFrame
-    monthly_cancellation_df = pd.DataFrame(monthly_cancellation_data)
-
-    # MAU Line Plot
-    st.markdown("## Cancellation Rate by Months After Subscription")
-
-    # Load the MAU data from the CSV
-    mau_data = pd.read_csv("cancellation_rate_by_month.csv")
-
-    # Display the dataframe
-    st.dataframe(monthly_cancellation_df)
-
-    # Create a line plot for cancellation rates over months of subscription (MAU)
-    fig_mau = px.line(monthly_cancellation_df, 
-                    x='month_date',  # X-axis: months after subscription
-                    y='cancellation_rate_percentage',  # Y-axis: cancellation rate
-                    title="Cancellation Rates Over Time (First 12 Months)", 
-                    labels={'months_after_subscription': 'Months After Subscription', 'cancellation_rate': 'Cancellation Rate (%)'},
-                    template='plotly_dark')
-
-    # Customize the line and marker colors for contrast
-    fig_mau.update_traces(mode='lines+markers', marker=dict(size=8, symbol='circle', color='#FFCAA4'), line=dict(color='#9EDCE1'))
-
-    # Customize the layout with grid lines and enhanced font size
-    fig_mau.update_layout(
-        title_font_size=22,
-        xaxis_title="Months After Subscription",
-        yaxis_title="Cancellation Rate (%)",
-        font=dict(size=16),
-        height=600,
-        xaxis=dict(showgrid=True),  # Add grid lines to x-axis
-        yaxis=dict(showgrid=True),  # Add grid lines to y-axis
-        hovermode="x unified",  # Unify hover information for both axes
-    )
-
-    # Show the MAU line chart in Streamlit
-    st.plotly_chart(fig_mau, use_container_width=True)
-    
+#---------------------------------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------------------------------------------
 
 
