@@ -414,36 +414,67 @@ def cancellations_demo():
     ### KPI Cards for Key Metrics
     st.markdown("### Cancellation Rate")
 
+    # Load the CSV data
     monthly_cancellation_data = pd.read_csv("subscriptions_output.csv")
     monthly_cancellation_df = pd.DataFrame(monthly_cancellation_data)
 
-    monthly_cancellation_df['subscription_start_date'] = pd.to_datetime(monthly_cancellation_df['subscription_start_date'])
+    # Convert 'subscription_start_date' and 'cancellation_date' to datetime format
+    monthly_cancellation_df['subscription_start_date'] = pd.to_datetime(monthly_cancellation_df['subscription_start_date'], errors='coerce')
     monthly_cancellation_df['cancellation_date'] = pd.to_datetime(monthly_cancellation_df['cancellation_date'], errors='coerce')
 
+    # Step 1: Create 'subscription_month' and 'cancellation_month' columns
     monthly_cancellation_df['subscription_month'] = monthly_cancellation_df['subscription_start_date'].dt.to_period('M')
     monthly_cancellation_df['cancellation_month'] = monthly_cancellation_df['cancellation_date'].dt.to_period('M')
 
-    df_canceled_subscribers = monthly_cancellation_df[~monthly_cancellation_df['cancellation_date'].isna()]
-
+    # Step 2: Count new subscriptions per month (ignore cancellations here)
     subscriptions_per_month = monthly_cancellation_df.groupby('subscription_month')['customer_id'].count()
-    cancellations_per_month = df_canceled_subscribers.groupby('cancellation_month')['customer_id'].count()
 
+    # Step 3: Count new cancellations per month (ignoring NaT values in 'cancellation_month')
+    cancellations_per_month = monthly_cancellation_df[~monthly_cancellation_df['cancellation_month'].isna()].groupby('cancellation_month')['customer_id'].count()
+
+        # Step 1: Calculate cumulative subscriptions
     cumulative_subscriptions = subscriptions_per_month.cumsum()
-    cumulative_cancellations = cancellations_per_month.cumsum()
 
-    adjusted_cumulative_subscriptions = cumulative_subscriptions - cumulative_cancellations.reindex(cumulative_subscriptions.index, fill_value=0)
+    # Step 2: Calculate cumulative cancellations (shift by 1 to exclude current month's cancellations)
+    cumulative_cancellations = cancellations_per_month.cumsum().shift(1, fill_value=0)
 
-    cancellation_rate = (cancellations_per_month / adjusted_cumulative_subscriptions) * 100
+    # Step 3: Calculate active subscribers at the start of each month
+    active_subscribers_per_month = cumulative_subscriptions - cumulative_cancellations
+    active_subscribers_per_month = active_subscribers_per_month.clip(lower=0)  # Ensure no negative values
+
+    # Step 4: Adjust cancellations per month to ensure cancellations do not exceed active subscribers
+    adjusted_cancellations_per_month = cancellations_per_month.clip(upper=active_subscribers_per_month)
+
+    # Step 1: Calculate cumulative subscriptions
+    cumulative_subscriptions = subscriptions_per_month.cumsum()
+
+    # Step 2: Calculate cumulative cancellations (shift by 1 to exclude current month's cancellations)
+    cumulative_cancellations = cancellations_per_month.cumsum().shift(1, fill_value=0)
+
+    # Step 3: Calculate active subscribers at the start of each month
+    active_subscribers_per_month = cumulative_subscriptions - cumulative_cancellations
+    active_subscribers_per_month = active_subscribers_per_month.clip(lower=0)  # Ensure no negative values
+
+    # Step 4: Ensure cancellations in each month do not exceed the active subscribers at the start of the month
+    adjusted_cancellations_per_month = cancellations_per_month.copy()
+
+    for month in cancellations_per_month.index:
+        if cancellations_per_month[month] > active_subscribers_per_month[month]:
+            adjusted_cancellations_per_month[month] = active_subscribers_per_month[month]
+
+    # Step 6: Calculate the cancellation rate (adjusted cancellations / active subscribers)
+    cancellation_rate = (adjusted_cancellations_per_month / active_subscribers_per_month) * 100
     cancellation_rate = cancellation_rate.fillna(0)
 
+
     cancellation_rate_df = cancellation_rate.reset_index()
-    cancellation_rate_df['cancellation_month'] = cancellation_rate_df['cancellation_month'].astype(str)
+    cancellation_rate_df.columns = ['month', 'cancellation_rate']
+    cancellation_rate_df['month'] = cancellation_rate_df['month'].astype(str)
 
-    cancellation_rate_df.rename(columns={'customer_id': 'cancellation_rate'}, inplace=True)
-
+    # Create the line chart
     fig_cancellations = px.line(
         cancellation_rate_df,
-        x='cancellation_month',
+        x='month',
         y='cancellation_rate',
         title="Monthly Cancellation Rate (%)",
         markers=True
