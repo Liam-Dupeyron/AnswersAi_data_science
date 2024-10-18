@@ -405,73 +405,90 @@ def usc_ucla_demo ():
 
 
 #######################################################################################################################
-# CHURN
+# CHURN/CANCELLATIONS
 #######################################################################################################################
 
 def cancellations_demo():
     st.markdown("<h1 style='text-align: center;'>Cancellation Insights</h1>", unsafe_allow_html=True)
 
     ### KPI Cards for Key Metrics
-    st.markdown("### Key Performance Indicators (KPIs)")
+    st.markdown("### Monthly Cancellation Rate)")
 
-    Total_subscriptions =  21444 
-    Total_cancellations = 10387
-    Cancellation_rate = round(Total_cancellations /  Total_subscriptions, 2)
+    monthly_cancellation_data = pd.read_csv("subscriptions_output.csv")
 
-    st.metric(label="Total number of Subscriptions", value=Total_subscriptions)
-    st.metric(label="Total cancellations", value=Total_cancellations)
-    st.metric(label="Cancellation rate", value=f"{Cancellation_rate}%")
+    monthly_cancellation_df = pd.DataFrame(monthly_cancellation_data)
 
-    # Data for the charts
-    data = {
-        'Category': ['Total Subscriptions', 'Total Cancellations'],
-        'Count': [Total_subscriptions, Total_cancellations]
-    }
-    df = pd.DataFrame(data)
-
-    # Bar Chart for Total Subscriptions and Cancellations using Plotly
-    bar_fig = px.bar(df, x='Category', y='Count', title="Total Subscriptions vs Cancellations",
-                     color='Category', color_discrete_sequence=px.colors.qualitative.Pastel,
-                     text='Count', template='plotly_dark')
-
-    # Adjust layout to fit better
-    bar_fig.update_layout(
-        title_font_size=20,
-        xaxis_title=None,
-        yaxis_title="Count",
-        font=dict(size=14),
-        showlegend=False,
-        height=450,  # Adjust the height to fit better in the layout
-        margin=dict(l=30, r=30, t=80, b=40),  # Adjust margins to fit the chart
-        bargap=0.2,  # Reduce gap between bars
-    )
-    bar_fig.update_traces(texttemplate='%{text:.0f}', textposition='outside')
-
-
-    # Pie Chart for Cancellation Rate using Plotly
-    pie_fig = px.pie(
-        names=['Cancellations', 'Active Subscriptions'],
-        values=[Total_cancellations, Total_subscriptions - Total_cancellations],
-        title="Cancellation Rate",
-        color_discrete_sequence=px.colors.qualitative.Pastel
-    )
-
-    pie_fig.update_traces(textposition='inside', textinfo='percent+label', pull=[0.1, 0])
-
-    # Display the charts in Streamlit
-    st.plotly_chart(bar_fig, use_container_width=True)
-    st.plotly_chart(pie_fig, use_container_width=True)
-
+    # Convert the 'subscription_start_date' and 'cancellation_date' to datetime format
+    monthly_cancellation_df['subscription_start_date'] = pd.to_datetime(monthly_cancellation_df['subscription_start_date'])
+    monthly_cancellation_df['cancellation_date'] = pd.to_datetime(monthly_cancellation_df['cancellation_date'], errors='coerce')  # Handles 'active' as NaT
     
+    # Add a column for the subscription month
+    monthly_cancellation_df['subscription_month'] = monthly_cancellation_df['subscription_start_date'].dt.to_period('M')
+    # Add a column for the cancellation month (only for users who canceled)
+    monthly_cancellation_df['cancellation_month'] = monthly_cancellation_df['cancellation_date'].dt.to_period('M')
+
+    # Users with NaN in 'cancellation_date' are still active, so they're not included in the cancellation count
+    monthly_cancellation_df['is_active'] = monthly_cancellation_df['cancellation_date'].isna()  # Mark active users
+
+    # For calculating cancellations, only users with non-null cancellation dates are considered
+    df_active_subscribers = monthly_cancellation_df[monthly_cancellation_df['cancellation_date'].isna()]  # Active users
+    df_canceled_subscribers = monthly_cancellation_df[~monthly_cancellation_df['cancellation_date'].isna()]  # Canceled users
+
+    # Aggregating active and canceled users
+    cancellations_per_month = monthly_cancellation_df.groupby('cancellation_month')['customer_id'].count()
+    subscriptions_per_month = monthly_cancellation_df.groupby('subscription_month')['customer_id'].count()
+
+    # Calculate cumulative subscriptions for each month
+    cumulative_subscriptions = subscriptions_per_month.cumsum()
+
+    # Calculate the cancellation rate as (Cancellations / Cumulative Subscriptions) * 100
+    cancellation_rate = (cancellations_per_month / cumulative_subscriptions) * 100
+
+    # Fill NaN values with 0 for months with no cancellations
+    cancellation_rate = cancellation_rate.fillna(0)
+
+    # Create a DataFrame for the cancellation rate
+    cancellation_rate_df = pd.DataFrame({'cancellation_rate': cancellation_rate})
+
+    # Rename the column to reflect that it holds the cancellation rate, not customer IDs
+    cancellation_rate_df.rename(columns={'customer_id': 'cancellation_rate'}, inplace=True)
+
+
+    # Create the line chart with pastel tones and markers
+    fig = px.line(
+        cancellation_rate_df,
+        x='cancellation_month',
+        y='cancellation_rate',
+        title="Monthly Cancellation Rate (%)",
+        labels={'customer_id': 'Cancellation Rate (%)'},
+        markers=True  # Add markers to each point
+    )
+
+    # Customize the chart with pastel tones
+    fig.update_traces(
+        marker=dict(size=8),  # Customize marker size
+        line=dict(color='rgba(255,182,193,0.6)')  # Light pastel pink for the line
+    )
+
+    # Update the layout for readability and light background
+    fig.update_layout(
+        xaxis_title="Month",
+        yaxis_title="Cancellation Rate (%)",
+        xaxis_tickangle=-45,  # Angle the month labels
+        plot_bgcolor='rgba(240, 240, 240, 0.8)',  # Light pastel background
+        showlegend=False
+    )
+
+    # Show the figure
+    fig.show()
+
+
+
     #-------------------------------------------------------------------------------------------------------
 
 
     # Markdown header for the cancellation report
     st.markdown("## Reason Cancellation Report")
-    st.markdown("""
-    The following table provides insights into the reasons why users have canceled their subscriptions.
-    The data is grouped by the cancellation reason, and the total count of cancellations is displayed for each reason.
-    """)
 
     # Load and display the cancellation report table
     cancellation_reasons = pd.read_csv("cancellation_reasons.csv")
