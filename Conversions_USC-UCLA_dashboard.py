@@ -467,9 +467,14 @@ def cancellations_demo():
     cancellation_rate = cancellation_rate.fillna(0)
 
 
+
     cancellation_rate_df = cancellation_rate.reset_index()
     cancellation_rate_df.columns = ['month', 'cancellation_rate']
     cancellation_rate_df['month'] = cancellation_rate_df['month'].astype(str)
+
+    cancellations_monthly_df = pd.DataFrame({'Starting Active Subscribers': active_subscribers_per_month , 'Cancellations': adjusted_cancellations_per_month, 'Cancellation_Rate': cancellation_rate})
+
+    st.dataframe(cancellations_monthly_df)
 
     # Create the line chart
     fig_cancellations = px.line(
