@@ -476,34 +476,45 @@ def cancellations_demo():
 
     st.dataframe(cancellations_monthly_df)
 
-    # Create the line chart
+    # Create the line chart for cancellation rate with pastel tones and larger markers
     fig_cancellations = px.line(
         cancellation_rate_df,
-        x='month',
-        y='cancellation_rate',
+        x='month',  # Make sure 'month' is the column representing your date
+        y='cancellation_rate',  # Your y-axis data
         title="Monthly Cancellation Rate (%)",
-        markers=True
+        markers=True  # Adds dots to each data point
     )
 
+    # Customize marker and line colors, marker size, and outline
     fig_cancellations.update_traces(
-        marker=dict(size=8, color='rgba(255, 165, 0, 1)'),
-        line=dict(color='rgba(135, 206, 250, 0.8)')
+        marker=dict(size=10, color='lightskyblue', line=dict(width=2, color='black')),  # Larger markers with black outline
+        line=dict(color='lightcoral')  # Pastel line color
     )
 
+    # Customize the layout of the chart for better readability and pastel background
     fig_cancellations.update_layout(
+        plot_bgcolor='whitesmoke',  # Light pastel background
         xaxis_title="Month",
         yaxis_title="Cancellation Rate (%)",
-        xaxis_tickangle=-45,
-        plot_bgcolor='rgba(240, 240, 240, 0.8)',
-        showlegend=False
+        title_font_size=20,
+        font=dict(size=12),  # Adjust general font size
+        hovermode="x unified",  # Show tooltip for the full x-axis
+        width=1000,  # Set the width of the plot
+        height=500,  # Set height for a balanced aspect ratio
+        xaxis=dict(
+            tickmode='linear',  # Ensure every month is shown
+            dtick="M1",  # Tick every month
+            tickformat="%b %Y",  # Format ticks as 'Jan 2024', etc.
+            ticks="outside"
+        )
     )
 
-    # Step 13: Show the figure
-    # Show the line chart in Streamlit
+    # Display the figure in Streamlit
     st.plotly_chart(fig_cancellations, use_container_width=True)
 
 
 #----------------------------------------------------------------------------------------------------------------------------
+# CANCELLATION REASONS  
 #----------------------------------------------------------------------------------------------------------------------------
 
     # Markdown header for the cancellation report
@@ -548,6 +559,7 @@ def cancellations_demo():
     
 
 #----------------------------------------------------------------------------------------------------------------------------
+# TOOLS
 #----------------------------------------------------------------------------------------------------------------------------
    
     # Define the data from the query result
