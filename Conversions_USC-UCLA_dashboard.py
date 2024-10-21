@@ -565,13 +565,14 @@ def cancellations_demo():
     # Define the data from the query result
     tools_data = {
         "feature_used": [
-            "highlight", 
-            "snapshot", 
-            "mobile ocr mode", 
-            "auto mode", 
-            "Summary"
+            "Mobile OCR Mode", 
+            "Snapshot", 
+            "No tool recorded", 
+            "Highlight", 
+            "Auto Mode",
+            "Summarize"
         ],
-        "usage_count": [16355, 10888, 2732, 1219, 411]
+        "usage_count": [1304661, 515561, 512619, 199332, 80988, 9058]
     }
 
     # Most Used Tools Before Cancellation
@@ -604,11 +605,8 @@ def cancellations_demo():
     st.plotly_chart(bar_fig, use_container_width=True)
 
 #---------------------------------------------------------------------------------------------------------------------------
+# CHURN RATE
 #---------------------------------------------------------------------------------------------------------------------------------------
-
-
-    ####CHURN RATE
-
 
     st.markdown("## Churn Rate")
 
