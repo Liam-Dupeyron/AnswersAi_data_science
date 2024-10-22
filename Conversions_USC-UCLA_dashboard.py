@@ -625,14 +625,14 @@ def cancellations_demo():
     # Define the data from the query result
     tools_data = {
         "feature_used": [
-            "No_Tool_Recorded"
-            "highlight", 
-            "snapshot", 
-            "mobile ocr mode", 
+            "Mobile OCR Mode"
+            "Snapshot", 
+            "Highlight", 
+            "Auto Mode", 
             "auto mode", 
-            "Summary"
+            "Summarize"
         ],
-        "usage_count": [16355, 10888, 2732, 1219, 411]
+        "usage_count": [199571, 5533, 4035, 600, 52]
     }
 
     # Most Used Tools Before Cancellation
