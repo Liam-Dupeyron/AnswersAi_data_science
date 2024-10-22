@@ -518,10 +518,11 @@ def cancellations_demo():
 #----------------------------------------------------------------------------------------------------------------------------
 
     # Markdown header for the cancellation report
-    st.markdown("## Reason Cancellation Report")
+    st.markdown("## Cancellation Reason Insights")
 
     # Load and display the cancellation report table
-    cancellation_reasons = pd.read_csv("cancellation_reasons.csv")
+    cancellation_reasons = pd.read_csv("Updated_cancellation_reasons.csv")
+    monthly_cancellation_counts = pd.read_csv("monthly_cancellation_reasons.csv")
 
     # Display the DataFrame
     #st.dataframe(cancellation_reasons)
@@ -555,7 +556,47 @@ def cancellations_demo():
     # Display the chart
     st.plotly_chart(bar_fig_top10, use_container_width=True)
 
+    # Prepare the data for visualization
+    cancellation_reason_trends = pd.pivot_table(monthly_cancellation_counts, 
+                                                index='cancellation_month', 
+                                                columns='cancellation_reason', 
+                                                values='total_cancellations', 
+                                                aggfunc='sum', 
+                                                fill_value=0)
 
+    # Reset index to bring 'cancellation_month' back as a column
+    cancellation_reason_trends = cancellation_reason_trends.reset_index()
+
+    # Plot the trends using Plotly
+    fig_cancellation_trends = px.line(
+        cancellation_reason_trends, 
+        x='cancellation_month', 
+        y=cancellation_reason_trends.columns[1:],  # All columns except 'cancellation_month'
+        title="Trends of Cancellation Reasons Over Time", 
+        markers=True
+    )
+
+    # Customize the appearance
+    fig_cancellation_trends.update_traces(marker=dict(size=8, line=dict(width=1)))
+    fig_cancellation_trends.update_layout(
+        plot_bgcolor='whitesmoke', 
+        xaxis_title="Month", 
+        yaxis_title="Number of Cancellations", 
+        title_font_size=20, 
+        font=dict(size=12),
+        hovermode="x unified", 
+        width=1000, 
+        height=500,
+        xaxis=dict(
+            tickmode='linear',
+            dtick="M1",
+            tickformat="%b %Y",
+            ticks="outside"
+        )
+    )
+
+    # Display the figure in Streamlit
+    st.plotly_chart(fig_cancellation_trends, use_container_width=True)
     
 
 #----------------------------------------------------------------------------------------------------------------------------
@@ -575,7 +616,7 @@ def cancellations_demo():
     }
 
     # Most Used Tools Before Cancellation
-    st.markdown("## Most Used Tools Before Cancellation")
+    st.markdown("## Tool Insights")
     most_used_tools = pd.read_csv("most_used_tools_before_cancellation_2.csv")
     #st.dataframe(most_used_tools)
 
