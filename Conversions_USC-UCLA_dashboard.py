@@ -709,31 +709,7 @@ def cancellations_demo():
     # Display the line chart in Streamlit
     st.plotly_chart(line_fig, use_container_width=True)
 
-    # Create a grouped bar chart to visualize the monthly changes for tool usage before cancellation
-    grouped_bar_fig = px.bar(
-        monthly_cancellations_df,
-        x='usage_month',
-        y='usage_count',
-        color='feature_used',
-        title='Monthly Tool Usage Before Cancellation (Grouped Bar Chart)',
-        barmode='group',
-        color_discrete_map=color_mapping
-    )
 
-    # Customize the layout for better readability
-    grouped_bar_fig.update_layout(
-        title_font_size=20,
-        xaxis_title='Month',
-        yaxis_title='Usage Count',
-        font=dict(size=14),
-        height=600,
-        margin=dict(l=30, r=30, t=80, b=150),
-        plot_bgcolor='whitesmoke',
-        hovermode='x unified'
-    )
-
-    # Display the grouped bar chart in Streamlit
-    st.plotly_chart(grouped_bar_fig, use_container_width=True)
 
 
 #---------------------------------------------------------------------------------------------------------------------------
