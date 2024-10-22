@@ -900,6 +900,30 @@ def tools_demo():
     # Display the area chart in Streamlit
     st.plotly_chart(fig_area_tools, use_container_width=True)
 
+        # Create a pivot table for heatmap
+    heatmap_data = monthly_used_tools.pivot(index='usage_month', columns='feature_used', values='monthly_usage_count')
+
+    # Heatmap Plot for Monthly Tools Usage Breakdown
+    fig_heatmap_tools = px.imshow(
+        heatmap_data,
+        title="Monthly Tools Usage Breakdown (Heatmap)",
+        aspect="auto",
+        color_continuous_scale='Viridis'  # Apply a color gradient for intensity
+    )
+
+    # Customize the appearance of the heatmap
+    fig_heatmap_tools.update_layout(
+        plot_bgcolor='whitesmoke',
+        title_font_size=20,
+        font=dict(size=12),
+        width=1000,
+        height=600
+    )
+
+    # Display the heatmap in Streamlit
+    st.plotly_chart(fig_heatmap_tools, use_container_width=True)
+
+
 
 
 def main():
