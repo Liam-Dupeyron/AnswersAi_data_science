@@ -528,8 +528,11 @@ def cancellations_demo():
     #st.dataframe(cancellation_reasons)
 
 
-        ## Visualization: Bar Chart for Cancellation Reasons
+    ## Visualization: Bar Chart for Cancellation Reasons
+
     #st.markdown("### Top Cancellation Reasons")
+
+    cancellation_reasons = cancellation_reasons.rename(columns={"total_cancellations": "reason_count"})
     bar_fig_top10 = px.bar(cancellation_reasons, 
                         x='cancellation_reason',  
                         y='reason_count', 
@@ -564,15 +567,13 @@ def cancellations_demo():
     st.write(monthly_cancellation_counts.head())
 
 
-    # Prepare the data for visualization by pivoting it to get one column per cancellation reason
-    cancellation_reason_trends = pd.pivot_table(
-        monthly_cancellation_counts, 
-        index='cancellation_month', 
-        columns='cancellation_reason', 
-        values='total_cancellations', 
-        aggfunc='sum', 
-        fill_value=0  # Replace missing values with 0
-    )
+     # Prepare the data for visualization
+    cancellation_reason_trends = pd.pivot_table(monthly_cancellation_counts, 
+                                                index='cancellation_month', 
+                                                columns='cancellation_reason', 
+                                                values='total_cancellations', 
+                                                aggfunc='sum', 
+                                                fill_value=0)
 
     # Reset index to bring 'cancellation_month' back as a column
     cancellation_reason_trends = cancellation_reason_trends.reset_index()
