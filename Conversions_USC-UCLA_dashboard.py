@@ -562,10 +562,6 @@ def cancellations_demo():
     # Ensure total_cancellations is numeric
     monthly_cancellation_counts['total_cancellations'] = pd.to_numeric(monthly_cancellation_counts['total_cancellations'], errors='coerce')
 
-    # Check for any missing or invalid data
-    st.write(monthly_cancellation_counts.info())
-    st.write(monthly_cancellation_counts.head())
-
 
      # Prepare the data for visualization
     cancellation_reason_trends = pd.pivot_table(monthly_cancellation_counts, 
@@ -587,27 +583,63 @@ def cancellations_demo():
         markers=True
     )
 
-    # Customize the appearance
-    fig_cancellation_trends.update_traces(marker=dict(size=8, line=dict(width=1)))
+        # Customize the appearance
+    fig_cancellation_trends.update_traces(marker=dict(size=10, line=dict(width=1)))
+
+    # Adjust x-axis to show fewer ticks, and rotate labels for better readability
     fig_cancellation_trends.update_layout(
         plot_bgcolor='whitesmoke', 
         xaxis_title="Month", 
         yaxis_title="Number of Cancellations", 
         title_font_size=20, 
-        font=dict(size=12),
+        font=dict(size=14),
         hovermode="x unified", 
         width=1000, 
-        height=500,
+        height=600,
         xaxis=dict(
             tickmode='linear',
-            dtick="M1",
+            dtick="M2",  # Show every second month to avoid crowding
             tickformat="%b %Y",
-            ticks="outside"
+            ticks="outside",
+            tickangle=-45  # Rotate x-axis labels for better fit
         )
     )
 
-    # Display the figure in Streamlit
+    # Display the updated figure in Streamlit
     st.plotly_chart(fig_cancellation_trends, use_container_width=True)
+
+    # Create a stacked area chart for easier trend comparison
+    fig_area_cancellation_trends = px.area(
+        cancellation_reason_trends,
+        x='cancellation_month',
+        y=cancellation_reason_trends.columns[1:],  # All columns except 'cancellation_month'
+        title="Trends of Cancellation Reasons Over Time (Stacked Area Chart)"
+    )
+
+    # Customize appearance for better readability
+    fig_area_cancellation_trends.update_traces(mode='lines+markers', marker=dict(size=6, line=dict(width=1)))
+    fig_area_cancellation_trends.update_layout(
+        plot_bgcolor='whitesmoke',
+        xaxis_title="Month",
+        yaxis_title="Number of Cancellations",
+        title_font_size=20,
+        font=dict(size=12),
+        hovermode="x unified",
+        width=1000,
+        height=600,
+        xaxis=dict(
+            tickmode='linear',
+            dtick="M2",  # Show every second month
+            tickformat="%b %Y",
+            ticks="outside",
+            tickangle=-45
+        )
+    )
+
+    # Display the stacked area chart in Streamlit
+    st.plotly_chart(fig_area_cancellation_trends, use_container_width=True)
+
+
         
 
 #----------------------------------------------------------------------------------------------------------------------------
