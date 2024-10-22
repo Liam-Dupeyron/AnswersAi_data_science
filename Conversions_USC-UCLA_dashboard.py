@@ -847,19 +847,19 @@ def tools_demo():
     # Display the chart
     st.plotly_chart(bar_fig_top_tools, use_container_width=True)
 
-    # Grouped Bar Chart: Monthly Tools Usage by Tool
-    fig_grouped_bar_tools = px.bar(
+    # Line Plot for Monthly Tools Usage Breakdown
+    fig_line_tools = px.line(
         monthly_used_tools,
         x='usage_month',
         y='monthly_usage_count',
         color='feature_used',
-        barmode='group',  # Grouped bars
-        title="Monthly Tools Usage Breakdown (Grouped Bar Chart)",
+        title="Monthly Tools Usage Breakdown (Line Plot with Markers)",
+        markers=True,  # Add markers to each point for better visualization
         color_discrete_map=color_mapping_tools  # Apply the same color mapping
     )
 
-    # Customize the appearance of the grouped bar chart
-    fig_grouped_bar_tools.update_layout(
+    # Customize the appearance of the line plot
+    fig_line_tools.update_layout(
         plot_bgcolor='whitesmoke',
         xaxis_title="Month",
         yaxis_title="Usage Count",
@@ -868,11 +868,12 @@ def tools_demo():
         hovermode="x unified",
         width=1000,
         height=600,
-        xaxis=dict(tickangle=-45)
+        xaxis=dict(tickangle=-45)  # Rotate x-axis labels for readability
     )
 
-    # Display the grouped bar chart in Streamlit
-    st.plotly_chart(fig_grouped_bar_tools, use_container_width=True)
+    # Display the line plot in Streamlit
+    st.plotly_chart(fig_line_tools, use_container_width=True)
+
 
 def main():
 
