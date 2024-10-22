@@ -647,11 +647,6 @@ def cancellations_demo():
         title="Monthly Cancellations with Annotations"
     )
 
-    # Add annotations (example: annotate spike in June 2024)
-    fig_time_series.add_annotation(x="2024-06", y=300,
-        text="June Promotion Spike",
-        showarrow=True,
-        arrowhead=1)
 
     fig_time_series.update_layout(
         plot_bgcolor='whitesmoke',
@@ -668,6 +663,28 @@ def cancellations_demo():
     st.plotly_chart(fig_time_series, use_container_width=True)
 
 
+    fig_stacked_bar = px.bar(
+        monthly_cancellation_counts,
+        x='cancellation_month',
+        y='total_cancellations',
+        color='cancellation_reason',
+        barmode='stack',  # Stacked bars
+        title="Monthly Cancellations by Reason (Stacked Bar Chart)"
+    )
+
+    fig_stacked_bar.update_layout(
+        plot_bgcolor='whitesmoke',
+        xaxis_title="Month",
+        yaxis_title="Number of Cancellations",
+        title_font_size=20,
+        font=dict(size=12),
+        hovermode="x unified",
+        width=1000,
+        height=600,
+        xaxis=dict(tickangle=-45)
+    )
+
+    st.plotly_chart(fig_stacked_bar, use_container_width=True)
 
         
 
