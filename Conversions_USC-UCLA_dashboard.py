@@ -864,41 +864,7 @@ def tools_demo():
     # Display the chart in Streamlit
     st.plotly_chart(fig_tools, use_container_width=True)
 
-      # Check if the arrays have the same length
-    st.write(f"Length of 'feature_used': {len(monthly_tools_data['feature_used'])}")
-    st.write(f"Length of 'usage_month': {len(monthly_tools_data['usage_month'])}")
-    st.write(f"Length of 'monthly_usage_count': {len(monthly_tools_data['monthly_usage_count'])}")
-
-    # If the lengths are equal, proceed to create DataFrame
-    if (len(monthly_tools_data['feature_used']) == len(monthly_tools_data['usage_month']) == len(monthly_tools_data['monthly_usage_count'])):
-        # Convert to DataFrame
-        monthly_used_tools = pd.DataFrame(monthly_tools_data)
-
-        # Create the bar chart using Plotly Express with pastel colors
-        fig_monthly_tools = px.bar(
-            monthly_used_tools, 
-            x='usage_month', 
-            y='monthly_usage_count', 
-            color='feature_used', 
-            title="Monthly Feature Usage Count by Tool",
-            labels={'monthly_usage_count': 'Usage Count'},
-            color_discrete_sequence=px.colors.qualitative.Pastel  # Pastel color scheme
-        )
-
-        # Customize the appearance of the chart
-        fig_monthly_tools.update_layout(
-            xaxis_title='Month',
-            yaxis_title='Usage Count',
-            plot_bgcolor='white',  # Light background for better readability
-            width=900,  # Set width of the plot
-            height=600  # Set height of the plot
-        )
-
-        # Display the chart in Streamlit
-        st.plotly_chart(fig_monthly_tools, use_container_width=True)
-    else:
-        st.error("Data arrays are not of the same length, cannot create DataFrame.")
-
+    st.dataframe(monthly_used_tools)
 
 def main():
 
