@@ -17,6 +17,27 @@ from streamlit_folium import st_folium
 import sys
 import altair as alt
 
+# Simple authentication setup with a single password
+def check_password(password):
+    # Replace this with a more secure password storage method
+    correct_password = "dss"  # Set your password here
+    return password == correct_password
+
+
+# Function to handle the login screen
+def login():
+    st.sidebar.title("Login")
+    password = st.sidebar.text_input("Password", type="password")
+    if st.sidebar.button("Login"):
+        if check_password(password):
+            st.sidebar.success("Login successful!")
+            return True
+        else:
+            st.sidebar.error("Invalid password")
+            return False
+    return False
+
+
 
 def intro():
  # Title shown in the app
@@ -953,19 +974,25 @@ def tools_demo():
 
 
 def main():
+   # Check if the user is authenticated
+    if login():
+        # Page navigation after successful login
+        page_names_to_funcs = {
+            "Home": intro,
+            "Tiktok/Instagram Conversion Rates": tiktok_instagram_demo,
+            "UCLA/USC users": usc_ucla_demo,
+            "Cancellation Insights": cancellations_demo,
+            "Tool Insights": tools_demo
+        }
 
-    st.sidebar.title("Navigation")
-    
-    if st.sidebar.button("Home"):
-        intro()
-    elif st.sidebar.button("Tiktok/Instagram Conversion Rates"):
-        tiktok_instagram_demo()
-    elif st.sidebar.button("UCLA/USC users"):
-        usc_ucla_demo()
-    elif st.sidebar.button("Cancellation Insights"):
-        cancellations_demo()
-    elif st.sidebar.button("Tool Insights"):
-        tools_demo()
+        # Sidebar selectbox for demo navigation
+        demo_name = st.sidebar.selectbox("Choose a demo", page_names_to_funcs.keys())
+        
+        # Execute the function corresponding to the selected demo
+        page_names_to_funcs[demo_name]()
+    else:
+        # Display login screen if not authenticated
+        st.write("Please enter the password to access the dashboard.")
 
 if __name__ == "__main__":
     main()
