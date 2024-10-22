@@ -954,17 +954,18 @@ def tools_demo():
 
 def main():
 
-    page_names_to_funcs = {
-    "Intro": intro,
-    "Tiktok/Instagram Conversion Rates": tiktok_instagram_demo,
-    "UCLA/USC users": usc_ucla_demo,
-    "Cancellation Insights": cancellations_demo,
-    "Tool Insights": tools_demo
-}
-
-    demo_name = st.sidebar.selectbox("Choose a demo", page_names_to_funcs.keys())
-    page_names_to_funcs[demo_name]()
-
+    st.sidebar.title("Navigation")
+    
+    if st.sidebar.button("Home"):
+        intro()
+    elif st.sidebar.button("Tiktok/Instagram Conversion Rates"):
+        tiktok_instagram_demo()
+    elif st.sidebar.button("UCLA/USC users"):
+        usc_ucla_demo()
+    elif st.sidebar.button("Cancellation Insights"):
+        cancellations_demo()
+    elif st.sidebar.button("Tool Insights"):
+        tools_demo()
 
 if __name__ == "__main__":
     main()
