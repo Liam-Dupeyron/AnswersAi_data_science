@@ -849,7 +849,7 @@ def tools_demo():
 
     # Grouped Bar Chart: Monthly Tools Usage by Tool
     fig_grouped_bar_tools = px.bar(
-        monthly_tools_data,
+        monthly_used_tools,
         x='usage_month',
         y='monthly_usage_count',
         color='feature_used',
@@ -871,8 +871,8 @@ def tools_demo():
         xaxis=dict(tickangle=-45)
     )
 
-# Display the grouped bar chart in Streamlit
-st.plotly_chart(fig_grouped_bar_tools, use_container_width=True)
+    # Display the grouped bar chart in Streamlit
+    st.plotly_chart(fig_grouped_bar_tools, use_container_width=True)
 
 def main():
 
