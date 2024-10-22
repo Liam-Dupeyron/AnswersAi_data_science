@@ -807,32 +807,72 @@ def tools_demo():
     # Create the DataFrame
     tools_df = pd.DataFrame(tools_data)
 
-        # Create the bar chart using Plotly Express with text labels and darker colors
-    fig_tools = px.bar(
-        tools_df, 
-        x='feature_used_category', 
-        y='usage_count', 
-        text='usage_count',  # This adds the number counts directly on the bars
-        title="Feature Usage Count by Category (Optimized for Light Mode)",
-        color='feature_used_category',  # Color by feature category
-        color_discrete_sequence=px.colors.qualitative.Pastel  # Use a dark yet distinguishable color set
+        # Ensure total_tools_used is numeric (for monthly data)
+    monthly_used_tools['monthly_usage_count'] = pd.to_numeric(monthly_used_tools['monthly_usage_count'], errors='coerce')
+
+    # First Bar Chart: Top Tools Used
+    color_mapping_tools = {
+        'Mobile OCR Mode': '#66c2a5',       # Cyan
+        'Snapshot': '#fc8d62',              # Yellow
+        'No Tool Recorded': '#e78ac3',      # Orange
+        'Highlight': '#a6d854',             # Light Purple
+        'Auto Mode': '#ffd92f',             # Light Green
+        'summarize': '#8da0cb'              # Light Blue
+    }
+
+    # First Bar Chart: Top Tools Used
+    bar_fig_top_tools = px.bar(tools_data, 
+                            x='feature_used_category',  
+                            y='usage_count', 
+                            title="Top Tools Used",
+                            color='feature_used_category',  # Use tool category for coloring
+                            color_discrete_map=color_mapping_tools,  # Apply color mapping
+                            text='usage_count',
+                            template='plotly_dark')
+
+    # Customize the layout for better readability
+    bar_fig_top_tools.update_layout(
+        title_font_size=20,
+        xaxis_title=None,
+        yaxis_title="Usage Count",
+        font=dict(size=14),
+        showlegend=False,
+        height=600,  # Adjust height as necessary
+        margin=dict(l=30, r=30, t=80, b=200),  # Adjust margins to allow space for long text
     )
 
-    # Customize the appearance of the chart
-    fig_tools.update_traces(textposition='outside', textfont=dict(color='black'))  # Text labels outside the bars and in black
-    fig_tools.update_layout(
-        xaxis_title='Feature Used Category',
-        yaxis_title='Usage Count',
-        showlegend=False,  # Hide legend if not needed
-        plot_bgcolor='white',  # Light background for better readability
-        width=800,  # Set width of the plot
-        height=500  # Set height of the plot
+    bar_fig_top_tools.update_xaxes(tickangle=-45)  # Rotate x-axis labels for better fit
+    bar_fig_top_tools.update_traces(texttemplate='%{text:.0f}', textposition='outside')
+
+    # Display the chart
+    st.plotly_chart(bar_fig_top_tools, use_container_width=True)
+
+    # Grouped Bar Chart: Monthly Tools Usage by Tool
+    fig_grouped_bar_tools = px.bar(
+        monthly_tools_data,
+        x='usage_month',
+        y='monthly_usage_count',
+        color='feature_used',
+        barmode='group',  # Grouped bars
+        title="Monthly Tools Usage Breakdown (Grouped Bar Chart)",
+        color_discrete_map=color_mapping_tools  # Apply the same color mapping
     )
 
-    # Display the chart in Streamlit
-    st.plotly_chart(fig_tools, use_container_width=True)
+    # Customize the appearance of the grouped bar chart
+    fig_grouped_bar_tools.update_layout(
+        plot_bgcolor='whitesmoke',
+        xaxis_title="Month",
+        yaxis_title="Usage Count",
+        title_font_size=20,
+        font=dict(size=12),
+        hovermode="x unified",
+        width=1000,
+        height=600,
+        xaxis=dict(tickangle=-45)
+    )
 
-    st.dataframe(monthly_used_tools)
+# Display the grouped bar chart in Streamlit
+st.plotly_chart(fig_grouped_bar_tools, use_container_width=True)
 
 def main():
 
