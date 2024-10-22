@@ -556,13 +556,15 @@ def cancellations_demo():
     # Display the chart
     st.plotly_chart(bar_fig_top10, use_container_width=True)
 
-    # Prepare the data for visualization
-    cancellation_reason_trends = pd.pivot_table(monthly_cancellation_counts, 
-                                                index='cancellation_month', 
-                                                columns='cancellation_reason', 
-                                                values='total_cancellations', 
-                                                aggfunc='sum', 
-                                                fill_value=0)
+    # Prepare the data for visualization by pivoting it to get one column per cancellation reason
+    cancellation_reason_trends = pd.pivot_table(
+        monthly_cancellation_counts, 
+        index='cancellation_month', 
+        columns='cancellation_reason', 
+        values='total_cancellations', 
+        aggfunc='sum', 
+        fill_value=0  # Replace missing values with 0
+    )
 
     # Reset index to bring 'cancellation_month' back as a column
     cancellation_reason_trends = cancellation_reason_trends.reset_index()
@@ -597,7 +599,7 @@ def cancellations_demo():
 
     # Display the figure in Streamlit
     st.plotly_chart(fig_cancellation_trends, use_container_width=True)
-    
+        
 
 #----------------------------------------------------------------------------------------------------------------------------
 # TOOLS
