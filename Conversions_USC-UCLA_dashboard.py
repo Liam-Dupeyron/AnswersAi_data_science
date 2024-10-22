@@ -26,15 +26,25 @@ def check_password(password):
 
 # Function to handle the login screen
 def login():
+    if "logged_in" not in st.session_state:
+        st.session_state["logged_in"] = False
+
+    # If user is already logged in, don't show the login prompt again
+    if st.session_state["logged_in"]:
+        return True
+
+    # Display login form
     st.sidebar.title("Login")
     password = st.sidebar.text_input("Password", type="password")
     if st.sidebar.button("Login"):
         if check_password(password):
+            st.session_state["logged_in"] = True
             st.sidebar.success("Login successful!")
             return True
         else:
             st.sidebar.error("Invalid password")
             return False
+
     return False
 
 
