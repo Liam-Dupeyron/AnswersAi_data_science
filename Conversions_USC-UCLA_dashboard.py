@@ -556,6 +556,14 @@ def cancellations_demo():
     # Display the chart
     st.plotly_chart(bar_fig_top10, use_container_width=True)
 
+    # Ensure total_cancellations is numeric
+    monthly_cancellation_counts['total_cancellations'] = pd.to_numeric(monthly_cancellation_counts['total_cancellations'], errors='coerce')
+
+    # Check for any missing or invalid data
+    st.write(monthly_cancellation_counts.info())
+    st.write(monthly_cancellation_counts.head())
+
+
     # Prepare the data for visualization by pivoting it to get one column per cancellation reason
     cancellation_reason_trends = pd.pivot_table(
         monthly_cancellation_counts, 
