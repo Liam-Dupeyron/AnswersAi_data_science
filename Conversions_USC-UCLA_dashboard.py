@@ -20,7 +20,7 @@ import altair as alt
 # Simple authentication setup with a single password
 def check_password(password):
     # Replace this with a more secure password storage method
-    correct_password = "dss"  # Set your password here
+    correct_password = "gobears"  # Set your password here
     return password == correct_password
 
 
