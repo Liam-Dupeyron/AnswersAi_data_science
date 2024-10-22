@@ -574,27 +574,18 @@ def cancellations_demo():
     # Reset index to bring 'cancellation_month' back as a column
     cancellation_reason_trends = cancellation_reason_trends.reset_index()
 
-    # Plot the trends using Plotly
-    fig_cancellation_trends = px.line(
-        cancellation_reason_trends, 
-        x='cancellation_month', 
-        y=cancellation_reason_trends.columns[1:],  # All columns except 'cancellation_month'
-        title="Trends of Cancellation Reasons Over Time", 
-        markers=True
-    )
-
-        # Customize the appearance
-    fig_cancellation_trends.update_traces(marker=dict(size=10, line=dict(width=1)))
-        
+    # Grouped Bar Chart
     fig_grouped_bar = px.bar(
         monthly_cancellation_counts,
         x='cancellation_month',
         y='total_cancellations',
         color='cancellation_reason',
         barmode='group',  # Grouped bars
-        title="Monthly Cancellations by Reason (Grouped Bar Chart)"
+        title="Monthly Cancellations by Reason (Grouped Bar Chart)",
+        color_discrete_sequence=px.colors.qualitative.Pastel  # Match color sequence from the previous bar chart
     )
 
+    # Customize the appearance
     fig_grouped_bar.update_layout(
         plot_bgcolor='whitesmoke',
         xaxis_title="Month",
@@ -607,7 +598,9 @@ def cancellations_demo():
         xaxis=dict(tickangle=-45)
     )
 
+    # Display the grouped bar chart in Streamlit
     st.plotly_chart(fig_grouped_bar, use_container_width=True)
+
 
 
 #----------------------------------------------------------------------------------------------------------------------------
