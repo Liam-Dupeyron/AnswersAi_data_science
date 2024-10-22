@@ -639,15 +639,30 @@ def cancellations_demo():
     st.markdown("## Tool Insights")
     most_used_tools = pd.read_csv("most_used_tools_before_cancellation_2.csv")
     #st.dataframe(most_used_tools)
+    monthly_cancellations_df = pd.read_csv("monthly_tool_cancellation.csv")
+
+        # Define a color mapping for each tool used (using a variation of pastel colors)
+    color_mapping = {
+        'Mobile OCR Mode': '#a1dab4',  # Light Green
+        'Snapshot': '#41b6c4',         # Cyan
+        'Highlight': '#225ea8',        # Dark Blue
+        'Auto Mode': '#ffeda0',        # Light Yellow
+        'Summarize': '#f03b20'         # Red
+    }
+
+    # Most Used Tools Before Cancellation
+    st.markdown("## Tool Insights")
 
     # Bar Chart for Most Used Tools Before Cancellation
-    bar_fig = px.bar(tools_data, 
-                    x='feature_used', 
-                    y='usage_count', 
-                    title='Most Used Tools Before Cancellation',
-                    color='feature_used',
-                    text='usage_count',
-                    color_discrete_sequence=px.colors.qualitative.Pastel)
+    bar_fig = px.bar(
+        tools_data, 
+        x='feature_used', 
+        y='usage_count', 
+        title='Most Used Tools Before Cancellation',
+        color='feature_used',
+        text='usage_count',
+        color_discrete_map=color_mapping
+    )
 
     # Customize the layout
     bar_fig.update_layout(
@@ -663,6 +678,38 @@ def cancellations_demo():
 
     # Display the bar chart
     st.plotly_chart(bar_fig, use_container_width=True)
+
+    # Create a line plot to visualize the monthly changes for tool usage before cancellation
+    line_fig = px.line(
+        monthly_cancellations_df,
+        x='usage_month',
+        y='usage_count',
+        color='feature_used',
+        title='Monthly Tool Usage Before Cancellation',
+        line_group='feature_used',
+        markers=True,
+        color_discrete_map=color_mapping
+    )
+
+    # Customize the layout for better readability
+    line_fig.update_layout(
+        title_font_size=20,
+        xaxis_title='Month',
+        yaxis_title='Usage Count',
+        font=dict(size=14),
+        height=600,
+        margin=dict(l=30, r=30, t=80, b=150),
+        plot_bgcolor='whitesmoke',
+        hovermode='x unified'
+    )
+
+    # Customize traces for better visualization
+    line_fig.update_traces(textposition='top center', textfont_size=10)
+
+    # Display the line chart in Streamlit
+    st.plotly_chart(line_fig, use_container_width=True)
+
+
 
 #---------------------------------------------------------------------------------------------------------------------------
 # CHURN RATE
