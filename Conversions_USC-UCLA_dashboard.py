@@ -784,21 +784,57 @@ def tools_demo():
     tools_data = {
         "feature_used_category": [
             "Mobile OCR Mode", 
-            "Unrecorded", 
             "Snapshot", 
+            "Unrecorded", 
             "Highlight", 
             "Auto Mode", 
             "summarize"
         ],
         "usage_count": [
-            1265261, 
-            512619, 
-            500531, 
-            198078, 
-            80271, 
-            8632
+            1321552, 
+            525587, 
+            508233, 
+            199934, 
+            81361, 
+            9367
         ]
     }
+
+        # Define the data from the query result
+    monthly_tools_data = {
+        "feature_used": [
+            "No Tool Recorded", "No Tool Recorded", "No Tool Recorded", "No Tool Recorded", "No Tool Recorded", 
+            "No Tool Recorded", "No Tool Recorded", "Highlight", "Snapshot", "No Tool Recorded", "Mobile OCR Mode", 
+            "No Tool Recorded", "Auto Mode", "Snapshot", "Highlight", "Mobile OCR Mode", "Auto Mode", "No Tool Recorded", 
+            "Mobile OCR Mode", "Snapshot", "Highlight", "Auto Mode", "No Tool Recorded", "Mobile OCR Mode", 
+            "Snapshot", "Highlight", "Auto Mode", "Mobile OCR Mode", "Snapshot", "Highlight", "Auto Mode", 
+            "Mobile OCR Mode", "Snapshot", "Highlight", "Auto Mode", "summarize", "No Tool Recorded", "Mobile OCR Mode", 
+            "Snapshot", "Highlight", "Auto Mode", "Summarize", "Mobile OCR Mode", "Snapshot", "Highlight", 
+            "Auto Mode", "Summarize", "Mobile OCR Mode", "Snapshot", "Highlight", "Auto Mode", "Summarize", 
+            "Mobile OCR Mode", "Snapshot", "Highlight", "Auto Mode", "Mobile OCR Mode", "Snapshot", "Highlight", 
+            "Auto Mode", "summarize", "No Tool Recorded", "Mobile OCR Mode", "Snapshot", "Highlight", "Auto Mode", 
+            "Summarize", "Mobile OCR Mode", "Snapshot", "Highlight", "Auto Mode", "Summarize", "Mobile OCR Mode", 
+            "Snapshot", "Highlight", "Auto Mode", "Summarize"
+        ],
+        "usage_month": [
+            "2023-05", "2023-06", "2023-07", "2023-08", "2023-09", "2023-10", "2023-11", "2023-12", "2023-12", 
+            "2023-12", "2023-12", "2023-12", "2023-12", "2024-01", "2024-01", "2024-01", "2024-01", "2024-01", 
+            "2024-02", "2024-02", "2024-02", "2024-02", "2024-02", "2024-03", "2024-03", "2024-03", "2024-03", 
+            "2024-04", "2024-04", "2024-04", "2024-04", "2024-05", "2024-05", "2024-05", "2024-05", "2024-06", 
+            "2024-06", "2024-06", "2024-06", "2024-06", "2024-06", "2024-07", "2024-07", "2024-07", "2024-07", 
+            "2024-07", "2024-08", "2024-08", "2024-08", "2024-08", "2024-08", "2024-09", "2024-09", "2024-09", 
+            "2024-09", "2024-09", "2024-10", "2024-10", "2024-10", "2024-10", "2024-10"
+        ],
+        "monthly_usage_count": [
+            56714, 16203, 18206, 23333, 91426, 168688, 116859, 37981, 37097, 16804, 13875, 3878, 379, 31100, 23444, 
+            19675, 3839, 439, 40298, 37076, 22154, 10521, 31, 81318, 31888, 18352, 12185, 111840, 45252, 19720, 13863, 
+            106132, 45025, 17299, 11747, 46013, 27591, 11649, 6878, 96, 38, 46794, 21362, 8699, 4722, 25, 148385, 28973, 
+            16903, 4964, 502, 413909, 108547, 13429, 7576, 4915, 293344, 111726, 10304, 4687, 3830
+        ]
+    }
+
+    # Convert to DataFrame
+    monthly_used_tools = pd.DataFrame(monthly_tools_data)
 
     # Create the DataFrame
     tools_df = pd.DataFrame(tools_data)
@@ -827,6 +863,30 @@ def tools_demo():
 
     # Display the chart in Streamlit
     st.plotly_chart(fig_tools, use_container_width=True)
+
+    # Create the bar chart using Plotly Express with pastel colors
+    fig_monthly_tools = px.bar(
+        monthly_used_tools, 
+        x='usage_month', 
+        y='monthly_usage_count', 
+        color='feature_used', 
+        title="Monthly Feature Usage Count by Tool",
+        labels={'monthly_usage_count': 'Usage Count'},
+        color_discrete_sequence=px.colors.qualitative.Pastel  # Pastel color scheme
+    )
+
+    # Customize the appearance of the chart
+    fig_monthly_tools.update_layout(
+        xaxis_title='Month',
+        yaxis_title='Usage Count',
+        plot_bgcolor='white',  # Light background for better readability
+        width=900,  # Set width of the plot
+        height=600  # Set height of the plot
+    )
+
+    # Display the chart in Streamlit
+    st.plotly_chart(fig_monthly_tools, use_container_width=True)
+
 
 
 def main():
