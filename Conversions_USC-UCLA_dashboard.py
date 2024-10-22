@@ -527,18 +527,47 @@ def cancellations_demo():
     # Display the DataFrame
     #st.dataframe(cancellation_reasons)
 
+    # Ensure total_cancellations is numeric
+    monthly_cancellation_counts['total_cancellations'] = pd.to_numeric(monthly_cancellation_counts['total_cancellations'], errors='coerce')
+
+
+     # Prepare the data for visualization
+    cancellation_reason_trends = pd.pivot_table(monthly_cancellation_counts, 
+                                                index='cancellation_month', 
+                                                columns='cancellation_reason', 
+                                                values='total_cancellations', 
+                                                aggfunc='sum', 
+                                                fill_value=0)
+
+    # Reset index to bring 'cancellation_month' back as a column
+    cancellation_reason_trends = cancellation_reason_trends.reset_index()
+
+    cancellation_reasons = cancellation_reasons.rename(columns={"total_cancellations": "reason_count"})
+
 
     ## Visualization: Bar Chart for Cancellation Reasons
 
     #st.markdown("### Top Cancellation Reasons")
 
-    cancellation_reasons = cancellation_reasons.rename(columns={"total_cancellations": "reason_count"})
+    # Define a color mapping for each cancellation reason (based on the first bar chart colors)
+    color_mapping = {
+        'unused': '#66c2a5',           # Cyan
+        'low_quality': '#fc8d62',      # Yellow
+        'too_expensive': '#e78ac3',    # Orange
+        'switched_service': '#a6d854', # Light Purple
+        'other': '#ffd92f',            # Light Green
+        'too_complex': '#8da0cb',      # Light Blue
+        'missing_features': '#e5c494', # Pink
+        'customer_service': '#b3b3b3'  # Light Gray
+    }
+
+    # First Bar Chart: Top Reasons for Cancellation
     bar_fig_top10 = px.bar(cancellation_reasons, 
                         x='cancellation_reason',  
                         y='reason_count', 
                         title="Top Reasons for Cancellation",
                         color='cancellation_reason',  # Use cancellation reason for coloring
-                        color_discrete_sequence=px.colors.qualitative.Pastel,
+                        color_discrete_map=color_mapping,  # Apply color mapping
                         text='reason_count',
                         template='plotly_dark')
 
@@ -559,22 +588,7 @@ def cancellations_demo():
     # Display the chart
     st.plotly_chart(bar_fig_top10, use_container_width=True)
 
-    # Ensure total_cancellations is numeric
-    monthly_cancellation_counts['total_cancellations'] = pd.to_numeric(monthly_cancellation_counts['total_cancellations'], errors='coerce')
-
-
-     # Prepare the data for visualization
-    cancellation_reason_trends = pd.pivot_table(monthly_cancellation_counts, 
-                                                index='cancellation_month', 
-                                                columns='cancellation_reason', 
-                                                values='total_cancellations', 
-                                                aggfunc='sum', 
-                                                fill_value=0)
-
-    # Reset index to bring 'cancellation_month' back as a column
-    cancellation_reason_trends = cancellation_reason_trends.reset_index()
-
-    # Grouped Bar Chart
+    # Grouped Bar Chart: Monthly Cancellations by Reason
     fig_grouped_bar = px.bar(
         monthly_cancellation_counts,
         x='cancellation_month',
@@ -582,10 +596,10 @@ def cancellations_demo():
         color='cancellation_reason',
         barmode='group',  # Grouped bars
         title="Monthly Cancellations by Reason (Grouped Bar Chart)",
-        color_discrete_sequence=px.colors.qualitative.Pastel  # Match color sequence from the previous bar chart
+        color_discrete_map=color_mapping  # Apply the same color mapping
     )
 
-    # Customize the appearance
+    # Customize the appearance of the grouped bar chart
     fig_grouped_bar.update_layout(
         plot_bgcolor='whitesmoke',
         xaxis_title="Month",
@@ -600,6 +614,7 @@ def cancellations_demo():
 
     # Display the grouped bar chart in Streamlit
     st.plotly_chart(fig_grouped_bar, use_container_width=True)
+
 
 
 
