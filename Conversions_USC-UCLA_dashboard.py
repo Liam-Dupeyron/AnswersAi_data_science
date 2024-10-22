@@ -687,6 +687,29 @@ def cancellations_demo():
     st.plotly_chart(fig_stacked_bar, use_container_width=True)
 
         
+    fig_grouped_bar = px.bar(
+        monthly_cancellation_counts,
+        x='cancellation_month',
+        y='total_cancellations',
+        color='cancellation_reason',
+        barmode='group',  # Grouped bars
+        title="Monthly Cancellations by Reason (Grouped Bar Chart)"
+    )
+
+    fig_grouped_bar.update_layout(
+        plot_bgcolor='whitesmoke',
+        xaxis_title="Month",
+        yaxis_title="Number of Cancellations",
+        title_font_size=20,
+        font=dict(size=12),
+        hovermode="x unified",
+        width=1000,
+        height=600,
+        xaxis=dict(tickangle=-45)
+    )
+
+    st.plotly_chart(fig_grouped_bar, use_container_width=True)
+
 
 #----------------------------------------------------------------------------------------------------------------------------
 # TOOLS
