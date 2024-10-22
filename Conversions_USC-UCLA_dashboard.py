@@ -953,33 +953,6 @@ def tools_demo():
     # Display the line plot in Streamlit
     st.plotly_chart(fig_line_tools, use_container_width=True)
 
-        # Stacked Area Chart for Monthly Tools Usage
-    fig_area_tools = px.area(
-        monthly_used_tools,
-        x='usage_month',
-        y='monthly_usage_count',
-        color='feature_used',
-        title="Monthly Tools Usage Breakdown (Stacked Area Chart)",
-        color_discrete_map=color_mapping_tools  # Apply the same color mapping
-    )
-
-    # Customize the appearance of the area chart
-    fig_area_tools.update_layout(
-        plot_bgcolor='whitesmoke',
-        xaxis_title="Month",
-        yaxis_title="Usage Count",
-        title_font_size=20,
-        font=dict(size=12),
-        hovermode="x unified",
-        width=1000,
-        height=600,
-        xaxis=dict(tickangle=-45)  # Rotate x-axis labels for readability
-    )
-
-    # Display the area chart in Streamlit
-    st.plotly_chart(fig_area_tools, use_container_width=True)
-
-
 
 
 
