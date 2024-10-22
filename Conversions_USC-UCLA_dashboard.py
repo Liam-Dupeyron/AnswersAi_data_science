@@ -985,7 +985,6 @@ def tools_demo():
 
 def main():
 
-    intro()
    # Check if the user is authenticated
     if login():
         # Page navigation after successful login
@@ -1003,6 +1002,7 @@ def main():
         # Execute the function corresponding to the selected demo
         page_names_to_funcs[demo_name]()
     else:
+        intro()
         # Display login screen if not authenticated
         st.write("Please enter the password to access the dashboard.")
 
