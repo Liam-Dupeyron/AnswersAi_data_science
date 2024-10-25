@@ -455,7 +455,7 @@ def cancellations_demo():
 
     # Step 1: Create 'subscription_month' and 'cancellation_month' columns
     monthly_cancellation_df['subscription_month'] = monthly_cancellation_df['Subscription_Start'].dt.to_period('M')
-    monthly_cancellation_df['Cancellation_Date'] = monthly_cancellation_df['Cancellation_Date'].dt.to_period('M')
+    monthly_cancellation_df['cancellation_month'] = monthly_cancellation_df['Cancellation_Date'].dt.to_period('M')
 
     # Step 2: Count new subscriptions per month (ignore cancellations here)
     subscriptions_per_month = monthly_cancellation_df.groupby('subscription_month')['customer_id'].count()
