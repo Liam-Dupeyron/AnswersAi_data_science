@@ -898,7 +898,7 @@ def tools_demo():
         'No Tool Recorded': '#e78ac3',      # Orange
         'Highlight': '#a6d854',             # Light Purple
         'Auto Mode': '#ffd92f',             # Light Green
-        'summarize': '#8da0cb'              # Light Blue
+        'Summarize': '#a4b6dd'              # Light Blue
     }
 
     # First Bar Chart: Top Tools Used
