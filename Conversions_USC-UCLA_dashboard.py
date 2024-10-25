@@ -511,7 +511,7 @@ def cancellations_demo():
     fig_cancellations = px.line(
         cancellation_rate_df,
         x='month',  # Make sure 'month' is the column representing your date
-        y='Cancellation_rate',  # Your y-axis data
+        y='cancellation_rate',  # Your y-axis data
         title="Monthly Cancellation Rate (%)",
         markers=True  # Adds dots to each data point
     )
