@@ -867,7 +867,7 @@ def tools_demo():
             "Unrecorded", 
             "Highlight", 
             "Auto Mode", 
-            "summarize"
+            "Summarize"
         ],
         "usage_count": [
             1321552, 
@@ -886,8 +886,10 @@ def tools_demo():
     # Create the DataFrame
     tools_df = pd.DataFrame(tools_data)
 
-        # Ensure total_tools_used is numeric (for monthly data)
+    # Ensure total_tools_used is numeric (for monthly data)
     monthly_used_tools['monthly_usage_count'] = pd.to_numeric(monthly_used_tools['monthly_usage_count'], errors='coerce')
+    # Standardize "summarize" to "Summarize" in the 'feature_used' column
+    monthly_used_tools['feature_used'] = monthly_used_tools['feature_used'].replace('summarize', 'Summarize')
 
     # First Bar Chart: Top Tools Used
     color_mapping_tools = {
