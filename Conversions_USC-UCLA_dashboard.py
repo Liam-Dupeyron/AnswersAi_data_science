@@ -446,16 +446,16 @@ def cancellations_demo():
     st.markdown("### Cancellation Rate")
 
     # Load the CSV data
-    monthly_cancellation_data = pd.read_csv("subscriptions_output.csv")
+    monthly_cancellation_data = pd.read_csv("updated_subscrioptions_output.csv")
     monthly_cancellation_df = pd.DataFrame(monthly_cancellation_data)
 
     # Convert 'subscription_start_date' and 'cancellation_date' to datetime format
-    monthly_cancellation_df['subscription_start_date'] = pd.to_datetime(monthly_cancellation_df['subscription_start_date'], errors='coerce')
-    monthly_cancellation_df['cancellation_date'] = pd.to_datetime(monthly_cancellation_df['cancellation_date'], errors='coerce')
+    monthly_cancellation_df['Subscription_Start'] = pd.to_datetime(monthly_cancellation_df['Subscription_Start'], errors='coerce')
+    monthly_cancellation_df['Cancellation_Date'] = pd.to_datetime(monthly_cancellation_df['Cancellation_Date'], errors='coerce')
 
     # Step 1: Create 'subscription_month' and 'cancellation_month' columns
-    monthly_cancellation_df['subscription_month'] = monthly_cancellation_df['subscription_start_date'].dt.to_period('M')
-    monthly_cancellation_df['cancellation_month'] = monthly_cancellation_df['cancellation_date'].dt.to_period('M')
+    monthly_cancellation_df['subscription_month'] = monthly_cancellation_df['Subscription_Start'].dt.to_period('M')
+    monthly_cancellation_df['Cancellation_Date'] = monthly_cancellation_df['Cancellation_Date'].dt.to_period('M')
 
     # Step 2: Count new subscriptions per month (ignore cancellations here)
     subscriptions_per_month = monthly_cancellation_df.groupby('subscription_month')['customer_id'].count()
