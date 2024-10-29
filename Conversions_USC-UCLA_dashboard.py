@@ -587,18 +587,19 @@ def cancellations_demo():
 
     #st.markdown("### Top Cancellation Reasons")
 
-    # Define a color mapping for each cancellation reason (based on the first bar chart colors)
+        # Define a consistent color mapping for "No_Reason_Provided"
     color_mapping = {
-        'No_Reason_Provided': '#FF033E', #red
-        'unused': '#66c2a5',           # Cyan
-        'low_quality': '#fc8d62',      # Yellow
-        'too_expensive': '#e78ac3',    # Orange
-        'switched_service': '#a6d854', # Light Purple
-        'other': '#ffd92f',            # Light Green
-        'too_complex': '#8da0cb',      # Light Blue
-        'missing_features': '#e5c494', # Pink
-        'customer_service': '#b3b3b3'  # Light Gray
+        'No_Reason_Provided': '#ff686b',  # Red color for "No_Reason_Provided"
+        'unused': '#66c2a5',
+        'low_quality': '#fc8d62',
+        'too_expensive': '#e78ac3',
+        'switched_service': '#a6d854',
+        'other': '#ffd92f',
+        'too_complex': '#8da0cb',
+        'missing_features': '#e5c494',
+        'customer_service': '#b3b3b3'
     }
+
 
     # First Bar Chart: Top Reasons for Cancellation
     bar_fig_top10 = px.bar(cancellation_reasons, 
