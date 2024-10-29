@@ -561,6 +561,10 @@ def cancellations_demo():
     # Display the DataFrame
     #st.dataframe(cancellation_reasons)
 
+        # Rename "No Reason Recorded" to "No_Reason_Provided"
+    cancellation_reasons['cancellation_reason'] = cancellation_reasons['cancellation_reason'].replace('No Reason Recorded', 'No_Reason_Provided')
+    monthly_cancellation_counts['cancellation_reason'] = monthly_cancellation_counts['cancellation_reason'].replace('No Reason Recorded', 'No_Reason_Provided')
+
     # Ensure total_cancellations is numeric
     monthly_cancellation_counts['total_cancellations'] = pd.to_numeric(monthly_cancellation_counts['total_cancellations'], errors='coerce')
 
@@ -585,7 +589,7 @@ def cancellations_demo():
 
     # Define a color mapping for each cancellation reason (based on the first bar chart colors)
     color_mapping = {
-        'No Reason Recorded': '#ff686b', #red
+        'No_Reason_Provided': '#ff686b', #red
         'unused': '#66c2a5',           # Cyan
         'low_quality': '#fc8d62',      # Yellow
         'too_expensive': '#e78ac3',    # Orange
