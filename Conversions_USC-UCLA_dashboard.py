@@ -623,33 +623,54 @@ def cancellations_demo():
     # Display the chart
     st.plotly_chart(bar_fig_top10, use_container_width=True)
 
-        # Line Plot: Monthly Cancellations by Reason
-    fig_line_plot = px.line(
-        monthly_cancellation_counts,
+    # Separate data for 'No Reason Recorded' and other reasons
+    no_reason_data = monthly_cancellation_counts[monthly_cancellation_counts['cancellation_reason'] == 'No Reason Recorded']
+    other_reasons_data = monthly_cancellation_counts[monthly_cancellation_counts['cancellation_reason'] != 'No Reason Recorded']
+
+    # Line Plot for 'No Reason Recorded' cancellations
+    fig_no_reason = px.line(
+        no_reason_data,
         x='cancellation_month',
         y='total_cancellations',
-        color='cancellation_reason',
-        title="Monthly Cancellations by Reason (Line Plot)",
-        color_discrete_map=color_mapping,  # Apply the same color mapping
-        markers=True  # Add markers for each data point
+        title="Monthly Cancellations - 'No Reason Recorded'",
+        markers=True,
+        color_discrete_sequence=['#ff686b']  # Red color for consistency
     )
 
-    # Customize the appearance of the line plot
-    fig_line_plot.update_layout(
-        plot_bgcolor='whitesmoke',
+    fig_no_reason.update_layout(
         xaxis_title="Month",
         yaxis_title="Number of Cancellations",
-        title_font_size=20,
-        font=dict(size=12),
-        hovermode="x unified",
+        plot_bgcolor='whitesmoke',
         width=1000,
-        height=600,
+        height=500,
+        title_font_size=20,
         xaxis=dict(tickangle=-45)
     )
 
-    # Display the line plot in Streamlit
-    st.plotly_chart(fig_line_plot, use_container_width=True)
+    # Line Plot for other cancellation reasons
+    fig_other_reasons = px.line(
+        other_reasons_data,
+        x='cancellation_month',
+        y='total_cancellations',
+        color='cancellation_reason',
+        title="Monthly Cancellations by Reason (Excluding 'No Reason Recorded')",
+        markers=True,
+        color_discrete_map=color_mapping  # Apply the same color mapping
+    )
 
+    fig_other_reasons.update_layout(
+        xaxis_title="Month",
+        yaxis_title="Number of Cancellations",
+        plot_bgcolor='whitesmoke',
+        width=1000,
+        height=500,
+        title_font_size=20,
+        xaxis=dict(tickangle=-45)
+    )
+
+    # Display both plots in Streamlit
+    st.plotly_chart(fig_no_reason, use_container_width=True)
+    st.plotly_chart(fig_other_reasons, use_container_width=True)
 
 
 
