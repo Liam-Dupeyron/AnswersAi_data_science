@@ -585,7 +585,7 @@ def cancellations_demo():
 
     # Define a color mapping for each cancellation reason (based on the first bar chart colors)
     color_mapping = {
-        'No Reason Recorded': '#c23b23', #red
+        'No Reason Recorded': '#ff686b', #red
         'unused': '#66c2a5',           # Cyan
         'low_quality': '#fc8d62',      # Yellow
         'too_expensive': '#e78ac3',    # Orange
@@ -623,19 +623,19 @@ def cancellations_demo():
     # Display the chart
     st.plotly_chart(bar_fig_top10, use_container_width=True)
 
-    # Grouped Bar Chart: Monthly Cancellations by Reason
-    fig_grouped_bar = px.bar(
+        # Line Plot: Monthly Cancellations by Reason
+    fig_line_plot = px.line(
         monthly_cancellation_counts,
         x='cancellation_month',
         y='total_cancellations',
         color='cancellation_reason',
-        barmode='group',  # Grouped bars
-        title="Monthly Cancellations by Reason (Grouped Bar Chart)",
-        color_discrete_map=color_mapping  # Apply the same color mapping
+        title="Monthly Cancellations by Reason (Line Plot)",
+        color_discrete_map=color_mapping,  # Apply the same color mapping
+        markers=True  # Add markers for each data point
     )
 
-    # Customize the appearance of the grouped bar chart
-    fig_grouped_bar.update_layout(
+    # Customize the appearance of the line plot
+    fig_line_plot.update_layout(
         plot_bgcolor='whitesmoke',
         xaxis_title="Month",
         yaxis_title="Number of Cancellations",
@@ -647,8 +647,8 @@ def cancellations_demo():
         xaxis=dict(tickangle=-45)
     )
 
-    # Display the grouped bar chart in Streamlit
-    st.plotly_chart(fig_grouped_bar, use_container_width=True)
+    # Display the line plot in Streamlit
+    st.plotly_chart(fig_line_plot, use_container_width=True)
 
 
 
