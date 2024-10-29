@@ -558,14 +558,17 @@ def cancellations_demo():
     cancellation_reasons = pd.read_csv("Total_cancellations_by_reason.-2024-10-29-06-18-42.csv")
     monthly_cancellation_counts = pd.read_csv("Cancellation_Reasons_and_Total_Cancellations-2024-10-29-06-19-57.csv")
 
+        # Check unique values in the cancellation_reason column before replacement
+    print("Unique values in 'cancellation_reason' column before replacement:")
+    print(cancellation_reasons['cancellation_reason'].unique())
+    print(monthly_cancellation_counts['cancellation_reason'].unique())
+
     
-    
-        # Rename "No Reason Recorded" to "No_Reason_Provided"
+    # Rename "No Reason Recorded" to "No_Reason_Provided"
     cancellation_reasons['cancellation_reason'] = cancellation_reasons['cancellation_reason'].replace('No Reason Recorded', 'No_Reason_Provided')
     monthly_cancellation_counts['cancellation_reason'] = monthly_cancellation_counts['cancellation_reason'].replace('No Reason Recorded', 'No_Reason_Provided')
 
     st.dataframe(cancellation_reasons)
-
 
     # Ensure total_cancellations is numeric
     monthly_cancellation_counts['total_cancellations'] = pd.to_numeric(monthly_cancellation_counts['total_cancellations'], errors='coerce')
