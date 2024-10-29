@@ -628,15 +628,15 @@ def cancellations_demo():
     st.plotly_chart(bar_fig_top10, use_container_width=True)
 
     # Separate data for 'No Reason Recorded' and other reasons
-    no_reason_data = monthly_cancellation_counts[monthly_cancellation_counts['cancellation_reason'] == 'No Reason Recorded']
-    other_reasons_data = monthly_cancellation_counts[monthly_cancellation_counts['cancellation_reason'] != 'No Reason Recorded']
+    no_reason_data = monthly_cancellation_counts[monthly_cancellation_counts['cancellation_reason'] == 'No_Reason_Provided']
+    other_reasons_data = monthly_cancellation_counts[monthly_cancellation_counts['cancellation_reason'] != 'No_Reason_Provided']
 
     # Line Plot for 'No Reason Recorded' cancellations
     fig_no_reason = px.line(
         no_reason_data,
         x='cancellation_month',
         y='total_cancellations',
-        title="Monthly Cancellations - 'No Reason Recorded'",
+        title="Monthly Cancellations - 'No_Reason_Provided'",
         markers=True,
         color_discrete_sequence=['#ff686b']  # Red color for consistency
     )
@@ -657,7 +657,7 @@ def cancellations_demo():
         x='cancellation_month',
         y='total_cancellations',
         color='cancellation_reason',
-        title="Monthly Cancellations by Reason (Excluding 'No Reason Recorded')",
+        title="Monthly Cancellations by Reason (Excluding 'No_Reason_Provided)",
         markers=True,
         color_discrete_map=color_mapping  # Apply the same color mapping
     )
