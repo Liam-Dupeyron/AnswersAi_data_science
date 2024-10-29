@@ -558,16 +558,9 @@ def cancellations_demo():
     cancellation_reasons = pd.read_csv("Total_cancellations_by_reason.-2024-10-29-06-18-42.csv")
     monthly_cancellation_counts = pd.read_csv("Cancellation_Reasons_and_Total_Cancellations-2024-10-29-06-19-57.csv")
 
-        # Display unique values in the 'cancellation_reason' columns to check formatting
-    st.markdown("### Unique values in 'cancellation_reason' column (cancellation_reasons):")
-    st.write(cancellation_reasons['cancellation_reason'].unique())
-
-    st.markdown("### Unique values in 'cancellation_reason' column (monthly_cancellation_counts):")
-    st.write(monthly_cancellation_counts['cancellation_reason'].unique())
-
     
     # Rename "No Reason Recorded" to "No_Reason_Provided"
-    cancellation_reasons['cancellation_reason'] = cancellation_reasons['cancellation_reason'].replace('No Reason Recorded', 'No_Reason_Provided')
+    cancellation_reasons['cancellation_reason'] = cancellation_reasons['cancellation_reason'].replace('No Reason Provided', 'No_Reason_Provided')
     monthly_cancellation_counts['cancellation_reason'] = monthly_cancellation_counts['cancellation_reason'].replace('No Reason Recorded', 'No_Reason_Provided')
 
     st.dataframe(cancellation_reasons)
@@ -646,7 +639,7 @@ def cancellations_demo():
         y='total_cancellations',
         title="Monthly Cancellations - 'No_Reason_Provided'",
         markers=True,
-        color_discrete_sequence=['#FF033E']  # Red color for consistency
+        color_discrete_sequence=['#ff686b']  # Red color for consistency
     )
 
     fig_no_reason.update_layout(
