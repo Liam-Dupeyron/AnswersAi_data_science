@@ -589,7 +589,7 @@ def cancellations_demo():
 
     # Define a color mapping for each cancellation reason (based on the first bar chart colors)
     color_mapping = {
-        'No_Reason_Provided': '#ff686b', #red
+        'No_Reason_Provided': '#FF033E', #red
         'unused': '#66c2a5',           # Cyan
         'low_quality': '#fc8d62',      # Yellow
         'too_expensive': '#e78ac3',    # Orange
@@ -638,7 +638,7 @@ def cancellations_demo():
         y='total_cancellations',
         title="Monthly Cancellations - 'No_Reason_Provided'",
         markers=True,
-        color_discrete_sequence=['#ff686b']  # Red color for consistency
+        color_discrete_sequence=['#FF033E']  # Red color for consistency
     )
 
     fig_no_reason.update_layout(
