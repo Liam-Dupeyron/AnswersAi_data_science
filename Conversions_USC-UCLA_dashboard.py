@@ -544,6 +544,9 @@ def cancellations_demo():
     st.plotly_chart(fig_cancellations, use_container_width=True)
 
 
+
+    
+
 #----------------------------------------------------------------------------------------------------------------------------
 # CANCELLATION REASONS  
 #----------------------------------------------------------------------------------------------------------------------------
@@ -552,8 +555,8 @@ def cancellations_demo():
     st.markdown("## Cancellation Reason Insights")
 
     # Load and display the cancellation report table
-    cancellation_reasons = pd.read_csv("Updated_cancellation_reasons.csv")
-    monthly_cancellation_counts = pd.read_csv("monthly_cancellation_reasons.csv")
+    cancellation_reasons = pd.read_csv("Total_cancellations_by_reason.-2024-10-29-06-18-42.csv")
+    monthly_cancellation_counts = pd.read_csv("Cancellation_Reasons_and_Total_Cancellations-2024-10-29-06-19-57.csv")
 
     # Display the DataFrame
     #st.dataframe(cancellation_reasons)
@@ -582,6 +585,7 @@ def cancellations_demo():
 
     # Define a color mapping for each cancellation reason (based on the first bar chart colors)
     color_mapping = {
+        'No Reason Recorded': '#c23b23', #red
         'unused': '#66c2a5',           # Cyan
         'low_quality': '#fc8d62',      # Yellow
         'too_expensive': '#e78ac3',    # Orange
