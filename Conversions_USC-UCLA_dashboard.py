@@ -558,10 +558,12 @@ def cancellations_demo():
     cancellation_reasons = pd.read_csv("Total_cancellations_by_reason.-2024-10-29-06-18-42.csv")
     monthly_cancellation_counts = pd.read_csv("Cancellation_Reasons_and_Total_Cancellations-2024-10-29-06-19-57.csv")
 
-        # Check unique values in the cancellation_reason column before replacement
-    print("Unique values in 'cancellation_reason' column before replacement:")
-    print(cancellation_reasons['cancellation_reason'].unique())
-    print(monthly_cancellation_counts['cancellation_reason'].unique())
+        # Display unique values in the 'cancellation_reason' columns to check formatting
+    st.markdown("### Unique values in 'cancellation_reason' column (cancellation_reasons):")
+    st.write(cancellation_reasons['cancellation_reason'].unique())
+
+    st.markdown("### Unique values in 'cancellation_reason' column (monthly_cancellation_counts):")
+    st.write(monthly_cancellation_counts['cancellation_reason'].unique())
 
     
     # Rename "No Reason Recorded" to "No_Reason_Provided"
