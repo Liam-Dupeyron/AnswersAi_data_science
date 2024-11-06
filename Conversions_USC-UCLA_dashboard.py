@@ -48,6 +48,8 @@ MYSQL_PASSWORD = st.secrets["MYSQL_PASSWORD"]
 MYSQL_DB = st.secrets["MYSQL_DB"]
 MYSQL_PORT = int(st.secrets["MYSQL_PORT"])
 
+st.write("Loaded secret keys:", list(st.secrets.keys()))
+
 
 # Function to set up the SSH tunnel and database connection
 def create_db_connection():
