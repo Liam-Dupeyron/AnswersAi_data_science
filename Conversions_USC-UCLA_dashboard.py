@@ -16,6 +16,32 @@ import plotly.express as px
 from streamlit_folium import st_folium
 import sys
 import altair as alt
+from sshtunnel import SSHTunnelForwarder
+import pymysql 
+import os
+import re
+import phonenumbers
+from phonenumbers import geocoder
+from phonenumbers import region_code_for_number
+import pycountry
+import pycountry
+import langcodes
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+
+
+# SSH and MySQL connection details
+SSH_KEY_PATH = 'answerai.pem'  # Path to the SSH key file
+SSH_HOST = '3.136.57.217'  # SSH server IP address (Ubuntu server)
+SSH_USER = 'ubuntu'  # SSH username (Ubuntu)
+
+MYSQL_HOST = 'answer-ai-read.ceyenxdmnayo.us-east-2.rds.amazonaws.com'  # MySQL RDS host
+MYSQL_USER = 'admin'  # MySQL username
+MYSQL_PASSWORD = 'XxK33vR7LlYKOVYGOZoC'  # MySQL password (you'll need to fill this in)
+MYSQL_DB = 'answer-ai'  # MySQL database name
+MYSQL_PORT = 3306  # MySQL default por
+
 
 # Simple authentication setup with a single password
 def check_password(password):
@@ -710,7 +736,6 @@ def cancellations_demo():
         'Auto Mode': '#ffeda0',        # Light Yellow
         'Summarize': '#f03b20'         # Red
     }
-
     # Most Used Tools Before Cancellation
     st.markdown("## Tool Insights")
 
