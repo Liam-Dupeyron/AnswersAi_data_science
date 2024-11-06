@@ -28,7 +28,7 @@ import pycountry
 import pycountry
 import langcodes
 
-SSH_KEY_PATH = "answerai.pem"
+SSH_KEY_PATH = "/Users/liamdupeyron/Desktop/AnswersAi/answerai.pem"
 SSH_HOST = "3.136.57.217"
 SSH_USER = "ubuntu"
 
