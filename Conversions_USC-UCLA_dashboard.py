@@ -28,15 +28,18 @@ import pycountry
 import pycountry
 import langcodes
 
-SSH_KEY_PATH = "/Users/liamdupeyron/Desktop/AnswersAi/answerai.pem"
-SSH_HOST = "3.136.57.217"
-SSH_USER = "ubuntu"
+#SSH_KEY_PATH = "/Users/liamdupeyron/Desktop/AnswersAi/answerai.pem"
+#SSH_HOST = "3.136.57.217"
+#SSH_USER = "ubuntu"
 
-MYSQL_HOST = "answer-ai-read.ceyenxdmnayo.us-east-2.rds.amazonaws.com"
-MYSQL_USER = "admin"
-MYSQL_PASSWORD = "XxK33vR7LlYKOVYGOZoC"
-MYSQL_DB = "answer-ai"
-MYSQL_PORT = "3306"
+#MYSQL_HOST = "answer-ai-read.ceyenxdmnayo.us-east-2.rds.amazonaws.com"
+#MYSQL_USER = "admin"
+#MYSQL_PASSWORD = "XxK33vR7LlYKOVYGOZoC"
+#MYSQL_DB = "answer-ai"
+#MYSQL_PORT = "3306"
+
+st.write("Loaded secret keys:", list(st.secrets.keys()))
+
 
 # Load sensitive info from Streamlit secrets management or environment variables
 SSH_KEY_PATH = st.secrets["SSH_KEY_PATH"]
@@ -48,7 +51,6 @@ MYSQL_PASSWORD = st.secrets["MYSQL_PASSWORD"]
 MYSQL_DB = st.secrets["MYSQL_DB"]
 MYSQL_PORT = int(st.secrets["MYSQL_PORT"])
 
-st.write("Loaded secret keys:", list(st.secrets.keys()))
 
 
 # Function to set up the SSH tunnel and database connection
