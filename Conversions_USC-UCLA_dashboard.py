@@ -20,15 +20,13 @@ import os
 from sshtunnel import SSHTunnelForwarder
 import pymysql
 
-
-
-#import re
-#import phonenumbers
-#from phonenumbers import geocoder
-#from phonenumbers import region_code_for_number
-#import pycountry
-#import pycountry
-#import langcodes
+import re
+import phonenumbers
+from phonenumbers import geocoder
+from phonenumbers import region_code_for_number
+import pycountry
+import pycountry
+import langcodes
 
 
 
@@ -39,17 +37,25 @@ import pymysql
 ##############################################################################################################################
 ##############################################################################################################################
 
+SSH_KEY_PATH = "answerai.pem"
+SSH_HOST = "3.136.57.217"
+SSH_USER = "ubuntu"
 
+MYSQL_HOST = "answer-ai-read.ceyenxdmnayo.us-east-2.rds.amazonaws.com"
+MYSQL_USER = "admin"
+MYSQL_PASSWORD = "XxK33vR7LlYKOVYGOZoC"
+MYSQL_DB = "answer-ai"
+MYSQL_PORT = "3306"
 
 # Load sensitive info from Streamlit secrets management or environment variables
-SSH_KEY_PATH = st.secrets["answerai.pem"]
-SSH_HOST = st.secrets["3.136.57.217"]
-SSH_USER = st.secrets["ubuntu"]
-MYSQL_HOST = st.secrets["answer-ai-read.ceyenxdmnayo.us-east-2.rds.amazonaws.com"]
-MYSQL_USER = st.secrets["admin"]
-MYSQL_PASSWORD = st.secrets["XxK33vR7LlYKOVYGOZoC"]
-MYSQL_DB = st.secrets["answer"]
-MYSQL_PORT = int(st.secrets['3306'])
+SSH_KEY_PATH = st.secrets["SSH_KEY_PATH"]
+SSH_HOST = st.secrets["SSH_HOST"]
+SSH_USER = st.secrets["SSH_USER"]
+MYSQL_HOST = st.secrets["MYSQL_HOST"]
+MYSQL_USER = st.secrets["MYSQL_USER"]
+MYSQL_PASSWORD = st.secrets["MYSQL_PASSWORD"]
+MYSQL_DB = st.secrets["MYSQL_DB"]
+MYSQL_PORT = int(st.secrets["MYSQL_PORT"])
 
 
 # Function to set up the SSH tunnel and database connection
