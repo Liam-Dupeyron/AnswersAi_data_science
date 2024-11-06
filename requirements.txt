@@ -8,3 +8,8 @@ contextily
 folium
 plotly
 streamlit-folium
+sshtunnel
+pymysql
+phonenumbers
+pycountry
+langcodes
