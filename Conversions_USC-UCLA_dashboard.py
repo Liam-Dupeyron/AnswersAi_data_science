@@ -32,35 +32,24 @@ import pymysql
 
 
 
-"""
+'''
 ##############################################################################################################################
 ##############################################################################################################################
 SQL IMPLEMENTATION
 ##############################################################################################################################
 ##############################################################################################################################
-"""""
-
-# SSH and MySQL connection details
-SSH_KEY_PATH = 'answerai.pem'  # Path to the SSH key file
-SSH_HOST = '3.136.57.217'  # SSH server IP address (Ubuntu server)
-SSH_USER = 'ubuntu'  # SSH username (Ubuntu)
-
-MYSQL_HOST = 'answer-ai-read.ceyenxdmnayo.us-east-2.rds.amazonaws.com'  # MySQL RDS host
-MYSQL_USER = 'admin'  # MySQL username
-MYSQL_PASSWORD = 'XxK33vR7LlYKOVYGOZoC'  # MySQL password (you'll need to fill this in)
-MYSQL_DB = 'answer-ai'  # MySQL database name
-MYSQL_PORT = 3306  # MySQL default por
+'''
 
 
 # Load sensitive info from Streamlit secrets management or environment variables
-SSH_KEY_PATH = st.secrets["SSH_KEY_PATH"]
-SSH_HOST = st.secrets["SSH_HOST"]
-SSH_USER = st.secrets["SSH_USER"]
-MYSQL_HOST = st.secrets["MYSQL_HOST"]
-MYSQL_USER = st.secrets["MYSQL_USER"]
-MYSQL_PASSWORD = st.secrets["MYSQL_PASSWORD"]
-MYSQL_DB = st.secrets["MYSQL_DB"]
-MYSQL_PORT = int(st.secrets["MYSQL_PORT"])
+SSH_KEY_PATH = st.secrets["answerai.pem"]
+SSH_HOST = st.secrets["3.136.57.217"]
+SSH_USER = st.secrets["ubuntu"]
+MYSQL_HOST = st.secrets["answer-ai-read.ceyenxdmnayo.us-east-2.rds.amazonaws.com"]
+MYSQL_USER = st.secrets["admin"]
+MYSQL_PASSWORD = st.secrets["XxK33vR7LlYKOVYGOZoC"]
+MYSQL_DB = st.secrets["answer"]
+MYSQL_PORT = int(st.secrets[3306])
 
 
 # Function to set up the SSH tunnel and database connection
