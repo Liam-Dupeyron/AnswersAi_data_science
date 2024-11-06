@@ -16,11 +16,12 @@ import plotly.express as px
 from streamlit_folium import st_folium
 import sys
 import altair as alt
+import os
+from sshtunnel import SSHTunnelForwarder
+import pymysql
 
 
-#from sshtunnel import SSHTunnelForwarder
-#import pymysql 
-#import os
+
 #import re
 #import phonenumbers
 #from phonenumbers import geocoder
@@ -28,10 +29,16 @@ import altair as alt
 #import pycountry
 #import pycountry
 #import langcodes
-#import matplotlib.pyplot as plt
-#import seaborn as sns
 
 
+
+"""
+##############################################################################################################################
+##############################################################################################################################
+SQL IMPLEMENTATION
+##############################################################################################################################
+##############################################################################################################################
+"""""
 
 # SSH and MySQL connection details
 SSH_KEY_PATH = 'answerai.pem'  # Path to the SSH key file
@@ -43,6 +50,71 @@ MYSQL_USER = 'admin'  # MySQL username
 MYSQL_PASSWORD = 'XxK33vR7LlYKOVYGOZoC'  # MySQL password (you'll need to fill this in)
 MYSQL_DB = 'answer-ai'  # MySQL database name
 MYSQL_PORT = 3306  # MySQL default por
+
+
+# Load sensitive info from Streamlit secrets management or environment variables
+SSH_KEY_PATH = st.secrets["SSH_KEY_PATH"]
+SSH_HOST = st.secrets["SSH_HOST"]
+SSH_USER = st.secrets["SSH_USER"]
+MYSQL_HOST = st.secrets["MYSQL_HOST"]
+MYSQL_USER = st.secrets["MYSQL_USER"]
+MYSQL_PASSWORD = st.secrets["MYSQL_PASSWORD"]
+MYSQL_DB = st.secrets["MYSQL_DB"]
+MYSQL_PORT = int(st.secrets["MYSQL_PORT"])
+
+
+# Function to set up the SSH tunnel and database connection
+def create_db_connection():
+    try:
+        server = SSHTunnelForwarder(
+            (SSH_HOST, 22),
+            ssh_username=SSH_USER,
+            ssh_pkey=SSH_KEY_PATH,
+            remote_bind_address=(MYSQL_HOST, MYSQL_PORT)
+        )
+        server.start()
+        
+        connection = pymysql.connect(
+            host='127.0.0.1',
+            user=MYSQL_USER,
+            password=MYSQL_PASSWORD,
+            db=MYSQL_DB,
+            port=server.local_bind_port
+        )
+        return server, connection
+    except Exception as e:
+        st.error("Error establishing SSH or database connection: {}".format(e))
+        return None, None
+
+# Cache query results to minimize repeated calls
+@st.cache_data
+def load_data(query):
+    server, connection = create_db_connection()
+    if connection is None:
+        return pd.DataFrame()  # Return empty DataFrame if connection fails
+    
+    try:
+        df = pd.read_sql(query, connection)
+    except Exception as e:
+        st.error("Error executing query: {}".format(e))
+        df = pd.DataFrame()  # Return empty DataFrame if query fails
+    finally:
+        connection.close()
+        server.stop()
+    
+    return df
+
+subscribed_users_query = 'SELECT * FROM subscribed_users;'
+subscribed_users = load_data(subscribed_users_query)
+
+
+"""
+##############################################################################################################################
+##############################################################################################################################
+AUTHENTICATION
+##############################################################################################################################
+##############################################################################################################################
+"""""
 
 
 # Simple authentication setup with a single password
@@ -83,6 +155,8 @@ def intro():
     st.sidebar.success("Select Dashboard above")
 
     st.image("answersai.png")
+
+    st.dataframe(subscribed_users)
 
 
 def tiktok_instagram_demo ():
