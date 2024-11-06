@@ -32,13 +32,13 @@ import pymysql
 
 
 
-'''
+
 ##############################################################################################################################
 ##############################################################################################################################
-SQL IMPLEMENTATION
+# SQL IMPLEMENTATION
 ##############################################################################################################################
 ##############################################################################################################################
-'''
+
 
 
 # Load sensitive info from Streamlit secrets management or environment variables
@@ -49,7 +49,7 @@ MYSQL_HOST = st.secrets["answer-ai-read.ceyenxdmnayo.us-east-2.rds.amazonaws.com
 MYSQL_USER = st.secrets["admin"]
 MYSQL_PASSWORD = st.secrets["XxK33vR7LlYKOVYGOZoC"]
 MYSQL_DB = st.secrets["answer"]
-MYSQL_PORT = int(st.secrets[3306])
+MYSQL_PORT = int(st.secrets['3306'])
 
 
 # Function to set up the SSH tunnel and database connection
@@ -97,13 +97,13 @@ subscribed_users_query = 'SELECT * FROM subscribed_users;'
 subscribed_users = load_data(subscribed_users_query)
 
 
-"""
+
 ##############################################################################################################################
 ##############################################################################################################################
-AUTHENTICATION
+# AUTHENTICATION
 ##############################################################################################################################
 ##############################################################################################################################
-"""""
+
 
 
 # Simple authentication setup with a single password
