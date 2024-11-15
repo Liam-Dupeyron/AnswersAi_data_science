@@ -1,10 +1,3 @@
-"cancellation_reason","reason_count"
-"no reason included","19014"
-"unused","815"
-"low_quality","594"
-"too_expensive","547"
-"switched_service","137"
-"too_complex","123"
-"other","122"
-"missing_features","67"
-"customer_service","52"
+version https://git-lfs.github.com/spec/v1
+oid sha256:1f49f4fdc0822a43fe035d2cbe624d3b30579ce539b73b75fb3db6455b8ab1da
+size 230

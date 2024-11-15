@@ -1,11 +1,3 @@
-cancel_reason,cancellation_count,last_tools_used
-too expensive,49509,"Auto Mode,Highlight,Mobile OCR Mode,Snapshot,Summarize"
-no longer needed,42714,"Auto Mode,Highlight,Mobile OCR Mode,Snapshot"
-not working well,20138,"Auto Mode,Highlight,Mobile OCR Mode,Snapshot"
-it does not work for my exam site and i mistakenly make subcription 2 time intead of one and i have been getting charge twice every month please unsubscribe me from everything please thank you,1193,Highlight
-i didnt request for any subscription,546,"Highlight,Snapshot"
-Multiple charges,482,"Mobile OCR Mode,Snapshot"
-I don't need this for right now.,447,"Mobile OCR Mode,Snapshot"
-not good always error,263,"Highlight,Snapshot"
-No longer in school.,256,Highlight
-Taking a break,229,Snapshot
+version https://git-lfs.github.com/spec/v1
+oid sha256:c87a6c0a710d635cb078496ce8bf6788027ea748ad51e6d437703068edf12b2f
+size 758
