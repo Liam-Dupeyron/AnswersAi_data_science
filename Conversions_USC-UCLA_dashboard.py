@@ -134,8 +134,6 @@ def intro():
 
     st.image("answersai.png")
 
-    st.dataframe(subscribed_users)
-
 
 def tiktok_instagram_demo ():
     st.markdown("<h1 style='text-align: center;'>TikTok and Instagram Conversion Rates</h1>", unsafe_allow_html=True)
@@ -525,6 +523,8 @@ def cancellations_demo():
     ### KPI Cards for Key Metrics
     st.markdown("### Cancellation Rate")
 
+    cancellation_rate_subscriptions = subscribed_users.copy()
+
     # Load the CSV data
     monthly_cancellation_data = pd.read_csv("updated_subscrioptions_output.csv")
     monthly_cancellation_df = pd.DataFrame(monthly_cancellation_data)
@@ -536,6 +536,7 @@ def cancellations_demo():
     # Step 1: Create 'subscription_month' and 'cancellation_month' columns
     monthly_cancellation_df['subscription_month'] = monthly_cancellation_df['Subscription_Start'].dt.to_period('M')
     monthly_cancellation_df['cancellation_month'] = monthly_cancellation_df['Cancellation_Date'].dt.to_period('M')
+
 
     # Step 2: Count new subscriptions per month (ignore cancellations here)
     subscriptions_per_month = monthly_cancellation_df.groupby('subscription_month')['customer_id'].count()
