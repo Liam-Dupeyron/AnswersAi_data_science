@@ -1065,6 +1065,7 @@ def tools_demo():
     # Display the line plot in Streamlit
     st.plotly_chart(fig_line_tools, use_container_width=True)
 
+#
 
 
 
@@ -1090,7 +1091,6 @@ def main():
         intro()
         # Display login screen if not authenticated
         st.write("Please enter the password to access the dashboard.")
-
 
 
 if __name__ == "__main__":
