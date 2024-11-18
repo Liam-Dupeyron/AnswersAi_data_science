@@ -153,6 +153,8 @@ def cancellation_insights():
             
         """, unsafe_allow_html=True,)
 
+    # Monthly Cancellation Rate
+
     st.markdown(
         "## Monthly Cancellation Rate"
     )
@@ -207,7 +209,7 @@ def cancellation_insights():
         results_df,
         x='Month',  # Make sure 'month' is the column representing your date
         y='Cancellation_Rate',  # Your y-axis data
-        title="Monthly Cancellation Rate (%)",
+        title="",
         markers=True  # Adds dots to each data point
     )
 
@@ -219,6 +221,7 @@ def cancellation_insights():
 
     # Customize the layout of the chart for better readability and pastel background
     fig_cancellations.update_layout(
+        title="",
         plot_bgcolor='whitesmoke',  # Light pastel background
         xaxis_title="Month",
         yaxis_title="Cancellation Rate (%)",
@@ -236,14 +239,171 @@ def cancellation_insights():
     )
     st.plotly_chart(fig_cancellations, use_container_width=True)
 
+    # Hourly and Daily Cancellation Rate
+
+    # Calculate overall cancellation rates
+
+    total_subscriptions = len(subscribed_users)
+    total_cancellations = (subscribed_users['status'] == 'canceled').sum()
+
+    # Cancellations within 1 hour
+    cancellations_within_1_hour = subscribed_users[
+        (subscribed_users['status'] == 'canceled') &
+        (subscribed_users['time_to_cancel_hours'] <= 1)
+    ].shape[0]
+
+    # Cancellations within 24 hours
+    cancellations_within_24_hours = subscribed_users[
+        (subscribed_users['status'] == 'canceled') &
+        (subscribed_users['time_to_cancel_hours'] <= 24)
+    ].shape[0]
+
+    # Calculate rates
+    overall_cancellation_rate = total_cancellations / total_subscriptions
+    overall_cancellation_rate_1h = cancellations_within_1_hour / total_subscriptions
+    overall_cancellation_rate_24h = cancellations_within_24_hours / total_subscriptions
+
+
+    # Aggregate cancellations within 1 hour
+    df_one_hour = subscribed_users.groupby('created_month').apply(
+        lambda x: pd.Series({
+            'total_subscriptions': len(x),
+            'cancellations_within_1_hour': x[
+                (x['status'] == 'canceled') & (x['time_to_cancel_hours'] <= 1)
+            ].shape[0],
+            'cancellation_rate_within_one_hour': x[
+                (x['status'] == 'canceled') & (x['time_to_cancel_hours'] <= 1)
+            ].shape[0] / len(x)
+        })
+    ).reset_index()
+
+    # Aggregate cancellations within 24 hours
+    df_24_hours = subscribed_users.groupby('created_month').apply(
+        lambda x: pd.Series({
+            'total_subscriptions': len(x),
+            'cancellations_within_24_hours': x[
+                (x['status'] == 'canceled') & (x['time_to_cancel_hours'] <= 24)
+            ].shape[0],
+            'cancellation_rate_within_24_hours': x[
+                (x['status'] == 'canceled') & (x['time_to_cancel_hours'] <= 24)
+            ].shape[0] / len(x)
+        })
+    ).reset_index()
+
 
     st.markdown(
-        "## Hourly Cancellation Rate"
-    )
+        "## 1 hour vs. 24 hour Cancellation Insights"
+        )
 
-    st.markdown(
-        "## Daily Cancellation Rate"
-    )
+    col1_hourly_daily, col2_proportion = st.columns(2)
+
+    with col1_hourly_daily:
+        # Data for overall cancellation rates
+        data_hourly_daily = {
+            "Cancellation Rate Type": ["1-Hour", "24-Hour"],  # Labels for the bar chart
+            "Cancellation Rate (%)": [overall_cancellation_rate_1h * 100, overall_cancellation_rate_24h * 100]  # Convert to percentage
+        }
+
+        # Create a DataFrame
+        overall_cancellation_df = pd.DataFrame(data_hourly_daily)
+
+        # Plot the bar chart using Plotly Express
+        fig = px.bar(
+            overall_cancellation_df,
+            x="Cancellation Rate Type",
+            y="Cancellation Rate (%)",
+            title="Cancellation Rates: 1 hr vs. 24 hr",
+            text="Cancellation Rate (%)"  # Show values on the bars
+        )
+
+        # Customize the chart
+        fig.update_traces(
+            marker=dict(color=["lightskyblue", "lightcoral"], line=dict(width=2, color="black")),
+            texttemplate='%{text:.2f}',  # Format the text values
+            textposition='outside'  # Position text above the bars
+        )
+        fig.update_layout(
+            title=dict(
+                text="Cancellation Rates: 1 hr vs. 24 hr",
+                font_size=15,
+                x = 0.02# Center the title
+            ),
+            plot_bgcolor="whitesmoke",
+            xaxis_title="Cancellation Rate Type",
+            yaxis_title="Cancellation Rate (%)",
+            title_font_size=20,
+            font=dict(size=12),
+            margin=dict(l=10, r=10, t=50, b=50),  # Adjust margins
+        )
+
+        # Display the chart in Streamlit
+        st.plotly_chart(fig, use_container_width=True)  # Allow dynamic resizing
+            
+
+    with col2_proportion:
+        # Calculate cancellations beyond 24 hours
+        cancellations_beyond_24_hours = total_cancellations - cancellations_within_24_hours
+
+        # Prepare data for the pie chart
+        data_proportions = {
+            "Cancellation Category": [
+                "Within 1 Hour", 
+                "Within 24 Hours", 
+                "Beyond 24 Hours"
+            ],
+            "Count": [
+                cancellations_within_1_hour, 
+                cancellations_within_24_hours - cancellations_within_1_hour,  # Only the 1-24 hour range
+                cancellations_beyond_24_hours
+            ]
+        }
+
+        # Create a DataFrame
+        cancellation_proportions_df = pd.DataFrame(data_proportions)
+
+        # Create the pie chart using Plotly Express
+        fig = px.pie(
+            cancellation_proportions_df,
+            names="Cancellation Category",
+            values="Count",
+            title="User Cancellation Breakdown"
+        )
+
+        # Customize the pie chart
+        fig.update_traces(
+            textinfo="percent",  # Show only percentages inside the slices
+            textfont=dict(size=14),  # Adjust font size for percentages
+            marker=dict(
+                colors=["lightskyblue", "lightcoral", "lightgreen"],  # Pastel tones
+                line=dict(width=2, color="black")  # Black outline for slices
+            )
+        )
+
+        # Update layout for better positioning
+        fig.update_layout(
+            title=dict(
+                text="User Cancellation Breakdown",
+                font_size=18,  
+                x = 0.05, # Center the title
+            ),
+            title_font_size=20,  # Decrease title font size for alignment
+            font=dict(size=12),  # General font size
+            margin=dict(l=10, r=10, t=50, b=50),  # Adjust margins
+            plot_bgcolor="whitesmoke",  # Light pastel background
+            showlegend=True,  # Keep legend visible
+            legend=dict(
+                orientation="h",  # Horizontal layout for legend
+                x=0.5,  # Center legend horizontally
+                xanchor="center",
+                y=0.035,  # Move legend closer to the chart
+                font=dict(size=12)  # Adjust legend font size
+            )
+        )
+
+        # Display the chart in Streamlit
+        st.plotly_chart(fig, use_container_width=True)  # Allow dynamic resizing
+            
+
 
 
 def questions_duplicates():
