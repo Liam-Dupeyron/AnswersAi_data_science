@@ -21,6 +21,11 @@ import contextily as ctx
 from streamlit_folium import st_folium
 import sys
 import altair as alt
+import pymysql
+from sshtunnel import SSHTunnelForwarder
+import plotly.express as px
+import folium
+
 
 
 
@@ -94,7 +99,16 @@ def intro():
         </div>
         """,
         unsafe_allow_html=True,
+        
     )
+
+
+#################################################################################################################################
+# SQL Connection
+#################################################################################################################################
+
+
+
 #################################################################################################################################
 # Data Extraction
 #################################################################################################################################
@@ -129,15 +143,107 @@ master_table = pd.read_csv("/Users/liamdupeyron/Desktop/AnswersAi/main_data/mast
 # Cancellation Rates
 #################################################################################################################################
 
-def cancellation_rate():
+def cancellation_insights():
     # Title and branding
     st.markdown(
         """
         <div style="text-align: center;">
-            <h1>Cancellation rates</h1>
+            <h1>Cancellation Insights</h1>
          </div>
             
         """, unsafe_allow_html=True,)
+
+    st.markdown(
+        "## Monthly Cancellation Rate"
+    )
+    # Assuming 'subscribed_users' is your DataFrame
+    df = subscribed_users.copy()
+
+    # Step 1: Calculate new subscriptions and cancellations per month
+    new_subscriptions = df.groupby('created_month').size()
+    cancellations = df.groupby('cancellation_month').size()
+
+    # Step 2: Create a date range that includes all months
+    all_months = pd.date_range(
+        start=df['created_month'].min(),
+        end=df['cancellation_month'].max(),
+        freq='MS'
+    )
+
+    # Step 3: Reindex the Series to include all months
+    new_subscriptions = new_subscriptions.reindex(all_months, fill_value=0)
+    cancellations = cancellations.reindex(all_months, fill_value=0)
+
+    # Step 4: Calculate cumulative totals
+    cumulative_subscriptions = new_subscriptions.cumsum()
+    cumulative_cancellations = cancellations.cumsum()
+
+    # Step 5: Calculate active subscribers at end of each month
+    active_subscribers_end = cumulative_subscriptions - cumulative_cancellations
+
+    # Step 6: Calculate active subscribers at start of each month
+    active_subscribers_start = active_subscribers_end.shift(1, fill_value=0)
+
+    # Step 7: Calculate cancellation rate
+    cancellation_rate = (cancellations / active_subscribers_end.replace(0, pd.NA)).round(2)
+    cancellation_rate = cancellation_rate.fillna(0)
+
+    # Step 8: Compile the results into a DataFrame
+    results_df = pd.DataFrame({
+        'Month': all_months,
+        'New Subscriptions': new_subscriptions.values,
+        'Cancellations': cancellations.values,
+        'Active Subscribers at Start': active_subscribers_start.values,
+        'Active Subscribers at End': active_subscribers_end.values,
+        'Cancellation_Rate': cancellation_rate.values,
+        'Same_Month_Cancellation_Rate': (cancellations / new_subscriptions).fillna(0).values
+    })
+
+    # Format the 'Month' column
+    results_df['Month'] = results_df['Month'].dt.strftime('%Y-%m')
+
+    # Create the line chart for cancellation rate with pastel tones and larger markers
+    fig_cancellations = px.line(
+        results_df,
+        x='Month',  # Make sure 'month' is the column representing your date
+        y='Cancellation_Rate',  # Your y-axis data
+        title="Monthly Cancellation Rate (%)",
+        markers=True  # Adds dots to each data point
+    )
+
+    # Customize marker and line colors, marker size, and outline
+    fig_cancellations.update_traces(
+        marker=dict(size=10, color='lightskyblue', line=dict(width=2, color='black')),  # Larger markers with black outline
+        line=dict(color='lightcoral')  # Pastel line color
+    )
+
+    # Customize the layout of the chart for better readability and pastel background
+    fig_cancellations.update_layout(
+        plot_bgcolor='whitesmoke',  # Light pastel background
+        xaxis_title="Month",
+        yaxis_title="Cancellation Rate (%)",
+        title_font_size=20,
+        font=dict(size=12),  # Adjust general font size
+        hovermode="x unified",  # Show tooltip for the full x-axis
+        width=1000,  # Set the width of the plot
+        height=500,  # Set height for a balanced aspect ratio
+        xaxis=dict(
+            tickmode='linear',  # Ensure every month is shown
+            dtick="M1",  # Tick every month
+            tickformat="%b %Y",  # Format ticks as 'Jan 2024', etc.
+            ticks="outside"
+        )
+    )
+    st.plotly_chart(fig_cancellations, use_container_width=True)
+
+
+    st.markdown(
+        "## Hourly Cancellation Rate"
+    )
+
+    st.markdown(
+        "## Daily Cancellation Rate"
+    )
 
 
 def questions_duplicates():
@@ -149,6 +255,8 @@ def questions_duplicates():
          </div>
             
         """, unsafe_allow_html=True,)
+
+
 
 def features():
     # Title and branding
@@ -181,7 +289,7 @@ def main():
         # Add navigation items (for now, only the home page)
         page_names_to_funcs = {
             "Home": intro,
-            "Cancellation Rates": cancellation_rate,
+            "Cancellation Insights": cancellation_insights,
             "Question Insights": questions_duplicates,
             "Feauture Insights": features,
             "Country and Language Insights": languages_countries
