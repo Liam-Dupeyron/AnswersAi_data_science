@@ -403,6 +403,7 @@ def cancellation_insights():
         # Display the chart in Streamlit
         st.plotly_chart(fig, use_container_width=True)  # Allow dynamic resizing
             
+
 #################################################################################################################################
 # Questions/Duplicate Insights
 #################################################################################################################################
@@ -422,6 +423,63 @@ def questions_duplicates():
     st.markdown(
         "## Duplicate Questions"
     )
+
+    
+#----------------------------------------------------------------------------------------------------------------------------
+# Proportion of Duplicate Questions 
+#----------------------------------------------------------------------------------------------------------------------------
+
+    # Calculate total questions and total duplicate questions for each status
+    total_questions_by_status = master_table.groupby('status')['questions_asked'].sum()
+    total_duplicates_by_status = master_table.groupby('status')['duplicate_questions'].sum()
+
+    # Calculate the proportion of duplicate questions for each status
+    proportions_by_status = (total_duplicates_by_status / total_questions_by_status) * 100
+
+    # Prepare data for the bar chart
+    data_duplicate_proportions = {
+        "User Status": proportions_by_status.index,
+        "Proportion of Duplicate Questions (%)": proportions_by_status.values
+    }
+    df_duplicate_proportions = pd.DataFrame(data_duplicate_proportions)
+
+    # Create a bar chart with Plotly Express
+    fig_duplicate_proportions = px.bar(
+        df_duplicate_proportions,
+        x="User Status",
+        y="Proportion of Duplicate Questions (%)",
+        title="Proportion of Duplicate Questions by User Status",
+        text="Proportion of Duplicate Questions (%)"  # Display percentages on the bars
+    )
+
+    # Customize the chart
+    fig_duplicate_proportions.update_traces(
+        texttemplate='%{text:.2f}%',  # Format text as percentages
+        textposition="outside",  # Place text above the bars
+        marker=dict(color=px.colors.qualitative.Pastel, line=dict(width=2, color="black"))  # Pastel tones with black outlines
+    )
+    fig_duplicate_proportions.update_layout(
+        plot_bgcolor="whitesmoke",
+        xaxis_title="User Status",
+        yaxis_title="Proportion of Duplicate Questions (%)",
+        title_font_size=20,
+        font=dict(size=12),
+        margin=dict(l=50, r=50, t=80, b=50),  # Adjust margins for clean spacing
+        yaxis=dict(gridcolor="lightgray"),  # Add gridlines to y-axis
+        legend=dict(
+            orientation="h",
+            x=0.5,
+            xanchor="center",
+            y=-0.2
+        )
+    )
+
+    # Display the chart in Streamlit
+    st.plotly_chart(fig_duplicate_proportions, use_container_width=True)
+
+    
+    # Proportion by User Type
+    
 
     # Proportion of duplicate questions for cancelled users within 1 hour
     total_hourly_questions_cancelled = master_table[(master_table['status_code'] == 2) & (master_table['time_to_cancel_hours'] <= 1)]['questions_asked'].sum()
@@ -469,8 +527,8 @@ def questions_duplicates():
         title="Proportion of Duplicate Questions by User Type and Time Interval",
         text="Proportion of Duplicate Questions",
         color_discrete_map={
-        "Cancelled Users": "lightskyblue",
-        "Active Users": "lightcoral"
+        "Cancelled Users": "#68c4af",
+        "Active Users": "#1b85b8"
     }  # Show proportions as labels on the bars
     )
 
@@ -502,19 +560,426 @@ def questions_duplicates():
 
     # Display the chart in Streamlit
     st.plotly_chart(fig, use_container_width=True)
-    
 
+   
+#----------------------------------------------------------------------------------------------------------------------------
+# Feature Insights in Relation to Duplicates 
+#----------------------------------------------------------------------------------------------------------------------------
 
-
-def features():
-    # Title and branding
     st.markdown(
-        """
-        <div style="text-align: center;">
-            <h1>Feature Insights</h1>
-         </div>
-            
-        """, unsafe_allow_html=True,)
+        "## Feature Usage"
+    )
+
+    # Overall Feature Usage per Duplicate Questions
+    
+    # Calculate total questions and total duplicate questions for each feature
+    total_questions_by_feature = master_table.groupby('feature_used')['questions_asked'].sum()
+    total_duplicates_by_feature = master_table.groupby('feature_used')['duplicate_questions'].sum()
+
+    # Calculate the proportion of duplicate questions for each feature
+    proportions_by_feature = (total_duplicates_by_feature / total_questions_by_feature) * 100
+
+    # Prepare data for the bar chart
+    data_features_duplicates = {
+        "Feature Used": proportions_by_feature.index,
+        "Proportion of Duplicate Questions (%)": proportions_by_feature.values
+    }
+    df_features_duplicates = pd.DataFrame(data_features_duplicates)
+
+    # Create a horizontal bar chart with Plotly Express
+    fig_features_duplicates = px.bar(
+        df_features_duplicates,
+        y="Feature Used",  # Use 'y' for horizontal bars
+        x="Proportion of Duplicate Questions (%)",
+        color="Feature Used",  # Assign a different color to each feature
+        title="Overall Proportion of Duplicate Questions by Feature Used",
+        text="Proportion of Duplicate Questions (%)",
+        color_discrete_sequence=px.colors.qualitative.Set2  # Display values on the bars
+    )
+
+    # Customize the chart
+    fig_features_duplicates.update_traces(
+        texttemplate='%{text:.2f}%',  # Format text as percentages
+        textposition="outside",  # Place text to the right of the bars
+        marker=dict(line=dict(width=1, color="black"))  # Add black outlines to bars
+    )
+
+    fig_features_duplicates.update_layout(
+        plot_bgcolor="whitesmoke",
+        xaxis_title="Proportion of Duplicate Questions (%)",
+        yaxis_title="Feature Used",
+        title_font_size=20,
+        font=dict(size=12),
+        margin=dict(l=120, r=50, t=80, b=50),
+        xaxis=dict(
+            range=[0, 70],  # Adjust x-axis range to fit all bars
+            title_standoff=10  # Add space between axis title and labels
+        ),  # Adjust margins for cleaner layout
+        yaxis=dict(
+            categoryorder="total ascending"  # Order features by their proportion
+        ),
+        coloraxis_showscale=False  # Remove the color scale legend for cleaner look
+    )
+
+    # Display the chart in Streamlit
+    st.plotly_chart(fig_features_duplicates, use_container_width=True)
+
+    # 1 hr vs. 24 hr Feature Usage
+
+    # Data Preparation
+
+    if 'cancel_within_1h' not in master_table.columns:
+        master_table['cancel_within_1h'] = ((master_table['status'] == 'canceled') & (master_table['time_to_cancel_hours'] <= 1)).astype(int)
+
+    if 'cancel_within_24h' not in master_table.columns:
+        master_table['cancel_within_24h'] = ((master_table['status'] == 'canceled') & (master_table['time_to_cancel_hours'] <= 24)).astype(int)
+
+    # Filter users who canceled within 1 hour
+    cancelled_within_1h = master_table[master_table['cancel_within_1h'] == 1]
+
+    # Filter users who canceled within 24 hours
+    cancelled_within_24h = master_table[master_table['cancel_within_24h'] == 1]
+
+    # Group by feature_used and calculate total duplicate questions and total users
+    duplicates_cancel_1h_feature = cancelled_within_1h.groupby('feature_used').agg(
+        total_duplicate_questions=('duplicate_questions', 'sum'),
+        total_users=('user_id', 'nunique')
+    ).reset_index()
+
+    # Calculate proportion of duplicate questions
+    duplicates_cancel_1h_feature['proportion_duplicates'] = duplicates_cancel_1h_feature['total_duplicate_questions'] / duplicates_cancel_1h_feature['total_duplicate_questions'].sum()
+
+    # Handle division by zero and fill NaN values
+    duplicates_cancel_1h_feature['proportion_duplicates'].fillna(0, inplace=True)
+
+    # Group by feature_used and calculate total duplicate questions and total users
+    duplicates_cancel_24h_feature = cancelled_within_24h.groupby('feature_used').agg(
+        total_duplicate_questions=('duplicate_questions', 'sum'),
+        total_users=('user_id', 'nunique')
+    ).reset_index()
+
+    # Calculate proportion of duplicate questions
+    duplicates_cancel_24h_feature['proportion_duplicates'] = duplicates_cancel_24h_feature['total_duplicate_questions'] / duplicates_cancel_24h_feature['total_duplicate_questions'].sum()
+
+    # Handle division by zero and fill NaN values
+    duplicates_cancel_24h_feature['proportion_duplicates'].fillna(0, inplace=True)
+
+    # Add a 'cancellation_window' column to the dataframes
+    duplicates_cancel_1h_feature['cancellation_window'] = 'Within 1 Hour'
+    duplicates_cancel_24h_feature['cancellation_window'] = 'Within 24 Hours'
+
+    # Combine the data
+    combined_duplicates_feature = pd.concat([duplicates_cancel_1h_feature, duplicates_cancel_24h_feature], ignore_index=True)
+
+    # Sort the data by proportion_duplicates
+    combined_duplicates_feature = combined_duplicates_feature.sort_values('proportion_duplicates', ascending=False)
+
+        # Calculate percentages for annotations
+    combined_duplicates_feature['percentage_text'] = (
+        combined_duplicates_feature['proportion_duplicates'] * 100
+    ).round(2).astype(str) + "%"
+
+    # Create the bar plot using Plotly Express
+    fig_combined_duplicates_feature = px.bar(
+        combined_duplicates_feature,
+        x="proportion_duplicates",
+        y="feature_used",
+        color="cancellation_window",
+        orientation="h",  # Horizontal bar plot
+        barmode="group",
+        title="Proportion of Duplicate Questions by Feature and Cancellation Window",
+        text="percentage_text",  # Display percentages as text
+        labels={
+            "proportion_duplicates": "Proportion of Duplicate Questions",
+            "feature_used": "Feature Used",
+        },
+        color_discrete_sequence=["lightcoral", "lightskyblue"],  # Custom pastel color scheme
+    )
+
+    # Customize the chart
+    fig_combined_duplicates_feature.update_traces(
+        textposition="outside",  # Place text outside the bars
+        textfont=dict(size=10),  # Adjust text font size
+        cliponaxis=False,  # Prevent text from being clipped
+        marker=dict(line=dict(width=1, color="black")),  # Add black outlines to bars
+    )
+
+    # Customize layout
+    fig_combined_duplicates_feature.update_layout(
+        plot_bgcolor="whitesmoke",
+        title_font_size=20,
+        font=dict(size=12),
+        margin=dict(l=50, r=50, t=80, b=50),  # Adjust margins
+        legend=dict(
+            title="Cancellation Window",
+            orientation="h",
+            y=1.05,
+            x=0.5,
+            xanchor="center",
+            font=dict(size=12),
+            bgcolor="rgba(255,255,255,0.7)",
+        ),
+    )
+
+    # Display the chart in Streamlit
+    st.plotly_chart(fig_combined_duplicates_feature, use_container_width=True)
+
+
+#----------------------------------------------------------------------------------------------------------------------------
+# Monthly Breakdown for Duplicate Questions
+#----------------------------------------------------------------------------------------------------------------------------
+
+    st.markdown(
+        "## Monthly Breakdown"
+    )
+
+    # Overall Monthly Breakdown for Duplicate Questions
+
+    # Group by subscription month to calculate total duplicate questions for active and canceled users
+    total_duplicates_monthly_cancelled = master_table[master_table['status_code'] == 2].groupby('created_month')[
+        'duplicate_questions'].sum().reset_index()
+    total_duplicates_monthly_active = master_table[master_table['status_code'] == 0].groupby('created_month')[
+        'duplicate_questions'].sum().reset_index()
+
+    # Rename columns for clarity
+    total_duplicates_monthly_cancelled.rename(columns={'duplicate_questions': 'total_duplicate_questions_cancelled'}, inplace=True)
+    total_duplicates_monthly_active.rename(columns={'duplicate_questions': 'total_duplicate_questions_active'}, inplace=True)
+
+    # Merge the dataframes
+    total_duplicates_monthly = pd.merge(
+        total_duplicates_monthly_cancelled,
+        total_duplicates_monthly_active,
+        on='created_month',
+        how='outer'
+    ).fillna(0)
+
+    # Sort data by month
+    total_duplicates_monthly = total_duplicates_monthly.sort_values("created_month")
+
+    # Prepare data for Plotly
+    data_total_duplicates = pd.melt(
+        total_duplicates_monthly,
+        id_vars=["created_month"],
+        value_vars=["total_duplicate_questions_cancelled", "total_duplicate_questions_active"],
+        var_name="User Status",
+        value_name="Total Duplicate Questions"
+    )
+
+    data_total_duplicates["User Status"] = data_total_duplicates["User Status"].replace({
+        "total_duplicate_questions_cancelled": "Cancelled Users",
+        "total_duplicate_questions_active": "Active Users"
+    })
+
+    # Create the line plot
+    fig_total_duplicates = px.line(
+        data_total_duplicates,
+        x="created_month",
+        y="Total Duplicate Questions",
+        color="User Status",
+        title="Monthly Breakdown of Total Duplicate Questions by User Status",
+        labels={"created_month": "Subscription Month"},
+        markers=True
+    )
+
+    # Customize the plot
+    fig_total_duplicates.update_traces(
+        marker=dict(size=8, line=dict(width=1, color="black")),  # Markers with black outlines
+        line=dict(width=2)  # Increase line width
+    )
+
+    # Update layout
+    fig_total_duplicates.update_layout(
+        plot_bgcolor="whitesmoke",
+        xaxis_title="Subscription Month",
+        yaxis_title="Total Duplicate Questions",
+        title_font_size=20,
+        font=dict(size=12),
+        margin=dict(l=50, r=50, t=80, b=50),  # Adjust margins
+        legend=dict(
+            title=None,  # Remove legend title
+            font=dict(size=12),
+            orientation="h",  # Horizontal legend
+            x=0.5,  # Center the legend
+            xanchor="center",
+            y=-0.2  # Position legend below the chart
+        )
+    )
+
+    # Set consistent colors for the lines
+    fig_total_duplicates.for_each_trace(
+        lambda trace: trace.update(line_color="#68c4af") if trace.name == "Cancelled Users" else trace.update(line_color="#1b85b8")
+    )
+
+    # Display the chart in Streamlit
+    st.plotly_chart(fig_total_duplicates, use_container_width=True)
+
+
+    
+    # Filter data for canceled users within 1 hour
+    cancelled_within_1_hour = master_table[
+        (master_table['status_code'] == 2) & (master_table['time_to_cancel_hours'] <= 1)
+    ]
+
+    # Filter data for active users and count duplicate questions within the first hour
+    active_within_1_hour = master_table[master_table['status_code'] == 0]
+
+    # Group by subscription month and calculate averages
+    avg_cancelled_monthly = cancelled_within_1_hour.groupby('created_month')['duplicate_questions'].mean().reset_index()
+    avg_active_monthly = active_within_1_hour.groupby('created_month')['duplicate_questions_first_hour'].mean().reset_index()
+
+    # Rename columns explicitly for clarity
+    avg_cancelled_monthly.rename(columns={'duplicate_questions': 'avg_duplicate_questions_cancelled'}, inplace=True)
+    avg_active_monthly.rename(columns={'duplicate_questions_first_hour': 'avg_duplicate_questions_active'}, inplace=True)
+
+    # Merge the dataframes
+    avg_duplicates_monthly = pd.merge(
+        avg_cancelled_monthly, avg_active_monthly, on='created_month', how='outer'
+    ).fillna(0)
+
+    # Prepare the data for Plotly
+    avg_duplicates_monthly = avg_duplicates_monthly.sort_values("created_month")  # Ensure proper order of months
+    
+    data_montly_hourly = pd.melt(
+        avg_duplicates_monthly,
+        id_vars=['created_month'],
+        value_vars=['avg_duplicate_questions_cancelled', 'avg_duplicate_questions_active'],
+        var_name='User Status',
+        value_name='Average Duplicate Questions'
+    )
+    data_montly_hourly['User Status'] = data_montly_hourly['User Status'].replace({
+        'avg_duplicate_questions_cancelled': 'Cancelled Users',
+        'avg_duplicate_questions_active': 'Active Users'
+    })
+
+    # Create a line plot with Plotly Express
+    fig_montly_hourly = px.line(
+        data_montly_hourly,
+        x="created_month",
+        y="Average Duplicate Questions",
+        color="User Status",
+        title="Average Duplicate Questions Within 1 Hour - Monthly Breakdown",
+        labels={"created_month": "Subscription Month"},
+        markers=True  # Add markers to the lines
+    )
+
+        # Customize the line plot
+    fig_montly_hourly.update_traces(
+        marker=dict(size=8, line=dict(width=1, color="black")),  # Markers with black outlines
+        line=dict(width=2)  # Increase line width for better visibility
+    )
+
+    # Update layout to fix month visibility and colors
+    fig_montly_hourly.update_layout(
+        plot_bgcolor="whitesmoke",
+        xaxis_title="Subscription Month",
+        yaxis_title="Average Duplicate Questions",
+        title_font_size=20,
+        font=dict(size=12),
+        margin=dict(l=50, r=50, t=80, b=50),  # Adjust margins
+        legend=dict(
+            title=None,  # Remove legend title
+            font=dict(size=12),
+            orientation="h",  # Horizontal legend
+            x=0.5,  # Center the legend
+            xanchor="center",
+            y=-0.2  # Position legend below the plot
+        )
+    )
+
+    # Set colors matching the bar chart
+    fig_montly_hourly.for_each_trace(
+        lambda trace: trace.update(line_color="#68c4af") if trace.name == "Cancelled Users" else trace.update(line_color="#1b85b8")
+    )
+
+
+    # Display the chart in Streamlit
+    st.plotly_chart(fig_montly_hourly, use_container_width=True)
+
+
+    # Monthly Breakdown for duplicate questions within 24 hours
+    # Filter data for canceled users within 24 hours
+    cancelled_within_24_hours = master_table[
+        (master_table['status_code'] == 2) & (master_table['time_to_cancel_hours'] <= 24)
+    ]
+
+    # Filter data for active users and count duplicate questions within the first 24 hours
+    active_within_24_hours = master_table[master_table['status_code'] == 0]
+
+    # Group by subscription month and calculate averages
+    avg_cancelled_24h_monthly = cancelled_within_24_hours.groupby('created_month')['duplicate_questions'].mean().reset_index()
+    avg_active_24h_monthly = active_within_24_hours.groupby('created_month')['duplicate_questions_first_24_hours'].mean().reset_index()
+
+    # Rename columns explicitly for clarity
+    avg_cancelled_24h_monthly.rename(columns={'duplicate_questions': 'avg_duplicate_questions_cancelled_24h'}, inplace=True)
+    avg_active_24h_monthly.rename(columns={'duplicate_questions_first_24_hours': 'avg_duplicate_questions_active_24h'}, inplace=True)
+
+    # Merge the dataframes
+    avg_duplicates_24h_monthly = pd.merge(
+        avg_cancelled_24h_monthly, avg_active_24h_monthly, on='created_month', how='outer'
+    ).fillna(0)
+
+    # Prepare the data
+    avg_duplicates_24h_monthly = avg_duplicates_24h_monthly.sort_values("created_month")  # Ensure proper order of months
+    data_24h = pd.melt(
+        avg_duplicates_24h_monthly,
+        id_vars=['created_month'],
+        value_vars=['avg_duplicate_questions_cancelled_24h', 'avg_duplicate_questions_active_24h'],
+        var_name='User Status',
+        value_name='Average Duplicate Questions'
+    )
+    data_24h['User Status'] = data_24h['User Status'].replace({
+        'avg_duplicate_questions_cancelled_24h': 'Cancelled Users',
+        'avg_duplicate_questions_active_24h': 'Active Users'
+    })
+
+    # Create a line plot using Plotly Express
+    fig_24h = px.line(
+        data_24h,
+        x="created_month",
+        y="Average Duplicate Questions",
+        color="User Status",
+        title="Average Duplicate Questions Within 24 Hours - Monthly Breakdown",
+        labels={"created_month": "Subscription Month"},
+        markers=True  # Add markers to the lines
+    )
+
+    # Customize the line plot
+    fig_24h.update_traces(
+        marker=dict(size=8, line=dict(width=1, color="black")),  # Markers with black outlines
+        line=dict(width=2)  # Increase line width for better visibility
+    )
+
+    # Update layout for consistent x-axis and colors
+    fig_24h.update_layout(
+        plot_bgcolor="whitesmoke",
+        xaxis_title="Subscription Month",
+        yaxis_title="Average Duplicate Questions",
+        title_font_size=20,
+        font=dict(size=12),
+        margin=dict(l=50, r=50, t=80, b=50),  # Adjust margins
+        legend=dict(
+            title=None,  # Remove legend title
+            font=dict(size=12),
+            orientation="h",  # Horizontal legend
+            x=0.5,  # Center the legend
+            xanchor="center",
+            y=-0.2  # Position legend below the plot
+        )
+    )
+
+    # Set consistent colors for the lines
+    fig_24h.for_each_trace(
+        lambda trace: trace.update(line_color="#68c4af") if trace.name == "Cancelled Users" else trace.update(line_color="#1b85b8")
+    )
+
+    # Display the chart in Streamlit
+    st.plotly_chart(fig_24h, use_container_width=True)
+
+#################################################################################################################################
+#################################################################################################################################
+# Questions/Duplicate Insights
+#################################################################################################################################
+#################################################################################################################################
 
 def languages_countries():
     # Title and branding
@@ -522,6 +987,129 @@ def languages_countries():
         """
         <div style="text-align: center;">
             <h1>Country and Language Insights</h1>
+         </div>
+            
+        """, unsafe_allow_html=True,)
+
+    #----------------------------------------------------------------------------------------------------------------------------
+    # Language Proportions
+    #----------------------------------------------------------------------------------------------------------------------------
+    melted_duplicates_lang = pd.read_csv("/Users/liamdupeyron/Desktop/AnswersAi/main_data/melted_duplicates_lang.csv")
+    
+    # Ensure consistent sorting by proportion of duplicate questions
+    sorted_data_lang = melted_duplicates_lang.sort_values('Prop Duplicate Questions', ascending=False)
+
+    # Create the bar chart using Plotly Express
+    fig_lang = px.bar(
+        sorted_data_lang,
+        x='main_language',
+        y='Prop Duplicate Questions',
+        color='Cancellation Window',
+        barmode='group',  # Set to side-by-side bars
+        title='Proportion Duplicate Questions per Canceled User by Main Language',
+        #text='Prop Duplicate Questions',
+        color_discrete_map={
+            "Within 1 Hour": "skyblue",
+            "Within 24 Hours": "salmon"
+        }
+    )
+
+    # Update traces for accurate percentage formatting and text position
+    fig_lang.update_traces(
+        marker=dict(line=dict(width=1, color="black"))
+    )
+
+    # Customize layout
+    fig_lang.update_layout(
+        title=dict(font=dict(size=20)),
+        xaxis_title='Main Language',
+        yaxis_title='Proportion of Duplicate Questions (%)',
+        xaxis=dict(tickangle=45),  # Rotate x-axis labels for readability
+        legend=dict(
+            title="Cancellation Window",
+            orientation="h",
+            y=1.03,
+            x=0.5,
+            xanchor="center",
+            font=dict(size=12),
+            bgcolor="rgba(255,255,255,0.7)"
+        ),
+        plot_bgcolor="whitesmoke",
+        width=900,
+        height=600
+    )
+
+    # Display the chart in Streamlit
+    st.plotly_chart(fig_lang, use_container_width=True)
+
+    #----------------------------------------------------------------------------------------------------------------------------
+    # Country Proportions
+    #----------------------------------------------------------------------------------------------------------------------------
+
+    melted_duplicates_country = pd.read_csv("/Users/liamdupeyron/Desktop/AnswersAi/main_data/melted_duplicates_country.csv")
+
+    # Sort the data for better visualization
+    sorted_data_country = melted_duplicates_country.sort_values('Prop Duplicate Questions', ascending=False)
+
+    # Create the bar chart using Plotly Express
+    fig_country = px.bar(
+        sorted_data_country,
+        x='country',
+        y='Prop Duplicate Questions',
+        color='Cancellation Window',
+        barmode='group',
+        title='Proportion of Duplicate Questions per Canceled User by Country',
+        #text='Prop Duplicate Questions',
+        color_discrete_map={
+            "Within 1 Hour": "skyblue",
+            "Within 24 Hours": "salmon"
+        }
+    )
+
+    # Update traces for percentage formatting and text position
+    fig_country.update_traces(
+        marker=dict(line=dict(width=1, color="black"))
+    )
+
+    # Customize the layout
+    fig_country.update_layout(
+        title=dict(font=dict(size=20)),
+        xaxis_title='Country',
+        yaxis_title='Proportion of Duplicate Questions (%)',
+        xaxis=dict(tickangle=45),  # Rotate country labels for readability
+        legend=dict(
+            title="Cancellation Window",
+            orientation="h",
+            y=1.03,
+            x=0.5,
+            xanchor="center",
+            font=dict(size=12),
+            bgcolor="rgba(255,255,255,0.7)"
+        ),
+        plot_bgcolor="whitesmoke",
+        width=900,
+        height=600
+    )
+
+    # Display the chart in Streamlit
+    st.plotly_chart(fig_country, use_container_width=True)
+
+def reactivations():
+    # Title and branding
+    st.markdown(
+        """
+        <div style="text-align: center;">
+            <h1>Reactivation Insights</h1>
+         </div>
+            
+        """, unsafe_allow_html=True,)
+
+def signups():
+    # Title and branding
+    st.markdown(
+        """
+        <div style="text-align: center;">
+            <h1>Sign Up Insights</h1>
          </div>
             
         """, unsafe_allow_html=True,)
@@ -539,8 +1127,11 @@ def main():
             "Home": intro,
             "Cancellation Insights": cancellation_insights,
             "Question Insights": questions_duplicates,
-            "Feauture Insights": features,
-            "Country and Language Insights": languages_countries
+            "Country and Language Insights": languages_countries,
+            "Reactivation Insights": reactivations,
+            "Sign Up Insights": signups
+
+
 
         }
 
