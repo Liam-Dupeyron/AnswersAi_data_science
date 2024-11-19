@@ -13,7 +13,6 @@ from phonenumbers import carrier
 import pycountry
 import langcodes
 from langcodes import Language
-from babel.core import Locale, get_global
 import streamlit as st
 import geopandas as gpd
 import contextily as ctx
