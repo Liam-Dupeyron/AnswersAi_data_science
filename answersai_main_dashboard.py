@@ -1429,7 +1429,7 @@ def signups():
     )
 
     # Load the dialy_signups CSV
-    dialy_signups = pd.read_csv("/Users/liamdupeyron/Desktop/AnswersAi/main_data/dialy_signups.csv")
+    dialy_signups = pd.read_csv("dialy_signups.csv")
 
     # Ensure 'account_creation_time' is in datetime format
     dialy_signups['account_creation_time'] = pd.to_datetime(dialy_signups['account_creation_time'])
