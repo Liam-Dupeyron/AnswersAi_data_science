@@ -403,7 +403,9 @@ def cancellation_insights():
         # Display the chart in Streamlit
         st.plotly_chart(fig, use_container_width=True)  # Allow dynamic resizing
             
-
+#################################################################################################################################
+# Questions/Duplicate Insights
+#################################################################################################################################
 
 
 def questions_duplicates():
@@ -415,6 +417,92 @@ def questions_duplicates():
          </div>
             
         """, unsafe_allow_html=True,)
+
+
+    st.markdown(
+        "## Duplicate Questions"
+    )
+
+    # Proportion of duplicate questions for cancelled users within 1 hour
+    total_hourly_questions_cancelled = master_table[(master_table['status_code'] == 2) & (master_table['time_to_cancel_hours'] <= 1)]['questions_asked'].sum()
+    total_hourly_duplicates_cancelled = master_table[(master_table['status_code'] == 2) & (master_table['time_to_cancel_hours'] <= 1)]['duplicate_questions'].sum()
+    proportion_hourly_duplicates_cancelled = total_hourly_duplicates_cancelled / total_hourly_questions_cancelled if total_hourly_questions_cancelled > 0 else 0
+
+    # Proportion of duplicate questions for active users within the first hour
+    total_hourly_questions_active = master_table[(master_table['status_code'] == 0)]['questions_first_hour'].sum()
+    total_hourly_duplicates_active = master_table[(master_table['status_code'] == 0)]['duplicate_questions_first_hour'].sum()
+    proportion_hourly_duplicates_active = total_hourly_duplicates_active / total_hourly_questions_active if total_hourly_questions_active > 0 else 0
+    
+    # Proportion of duplicate questions for cancelled users within 1 hour
+    total_daily_questions_cancelled = master_table[(master_table['status_code'] == 2) & (master_table['time_to_cancel_hours'] <= 24)]['questions_asked'].sum()
+    total_daily_duplicates_cancelled = master_table[(master_table['status_code'] == 2) & (master_table['time_to_cancel_hours'] <= 24)]['duplicate_questions'].sum()
+    proportion_daily_duplicates_cancelled = total_daily_duplicates_cancelled / total_daily_questions_cancelled if total_daily_questions_cancelled > 0 else 0
+
+    # Proportion of duplicate questions for active users within the first hour
+    total_daily_questions_active = master_table[(master_table['status_code'] == 0)]['questions_first_24_hours'].sum()
+    total_daily_duplicates_active = master_table[(master_table['status_code'] == 0)]['duplicate_questions_first_24_hours'].sum()
+    proportion_daily_duplicates_active = total_daily_duplicates_active / total_daily_questions_active if total_daily_questions_active > 0 else 0
+
+        # Prepare the data for visualization
+    data_duplicates = {
+        "Time Interval": ["Within 1 Hour", "Within 1 Hour", "Within 24 Hours", "Within 24 Hours"],
+        "User Type": ["Cancelled Users", "Active Users", "Cancelled Users", "Active Users"],
+        "Proportion of Duplicate Questions": [
+            proportion_hourly_duplicates_cancelled,  # Duplicate questions for cancelled users within 1 hour
+            proportion_hourly_duplicates_active,  # Duplicate questions for active users within 1 hour
+            proportion_daily_duplicates_cancelled,  # Duplicate questions for cancelled users within 24 hours
+            proportion_daily_duplicates_active  # Duplicate questions for active users within 24 hours
+        ]
+    }
+
+
+    # Create a DataFrame
+    df_duplicates = pd.DataFrame(data_duplicates)
+
+    # Create a grouped bar chart
+    fig = px.bar(
+        df_duplicates,
+        x="Time Interval",
+        y="Proportion of Duplicate Questions",
+        color="User Type",  # Group by user type
+        barmode="group",  # Place bars side by side
+        title="Proportion of Duplicate Questions by User Type and Time Interval",
+        text="Proportion of Duplicate Questions",
+        color_discrete_map={
+        "Cancelled Users": "lightskyblue",
+        "Active Users": "lightcoral"
+    }  # Show proportions as labels on the bars
+    )
+
+    # Customize the chart
+    fig.update_traces(
+        texttemplate='%{text:.2%}',  # Format text as percentages
+        textposition="outside",  # Place labels above the bars
+        marker=dict(line=dict(width=2, color="black")),  # Add black outlines to bars
+
+    )
+    fig.update_layout(
+        plot_bgcolor="whitesmoke",
+        xaxis_title="Time Interval",
+        yaxis_title="Proportion of Duplicate Questions (%)",
+        title_font_size=20,
+        font=dict(size=12),
+        margin=dict(l=50, r=50, t=120, b=90),
+        yaxis=dict(
+        range=[0, 0.55],  # Set a fixed range with extra space at the top
+        ),
+        legend=dict(
+            title="User Type",
+            orientation="h",
+            x=0.5,
+            xanchor="center",
+            y=-0.2  # Move legend below the chart
+        )
+    )
+
+    # Display the chart in Streamlit
+    st.plotly_chart(fig, use_container_width=True)
+    
 
 
 
