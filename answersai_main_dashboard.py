@@ -112,7 +112,7 @@ def intro():
 #################################################################################################################################
 
 # Data cleaning subscribed_users dataframe
-subscribed_users = pd.read_csv("/Users/liamdupeyron/Desktop/AnswersAi/main_data/subscribed_users_11-24.csv")
+subscribed_users = pd.read_csv("subscribed_users_11-24.csv")
 
 subscribed_users['created_at'] = pd.to_datetime(subscribed_users['created_at'], errors='coerce')
 subscribed_users['updated_at'] = pd.to_datetime(subscribed_users['updated_at'], errors='coerce')
@@ -135,7 +135,7 @@ subscribed_users['time_to_cancel_minutes'] = (
     (subscribed_users['canceled_at'] - subscribed_users['created_at']) / np.timedelta64(1, 'm')
 )
 
-master_table = pd.read_csv("/Users/liamdupeyron/Desktop/AnswersAi/main_data/master_table.csv")
+master_table = pd.read_csv("master_table.csv")
 
 #################################################################################################################################
 # Cancellation Rates
@@ -992,7 +992,7 @@ def languages_countries():
     #----------------------------------------------------------------------------------------------------------------------------
     # Language Proportions
     #----------------------------------------------------------------------------------------------------------------------------
-    melted_duplicates_lang = pd.read_csv("/Users/liamdupeyron/Desktop/AnswersAi/main_data/melted_duplicates_lang.csv")
+    melted_duplicates_lang = pd.read_csv("melted_duplicates_lang.csv")
     
     # Ensure consistent sorting by proportion of duplicate questions
     sorted_data_lang = melted_duplicates_lang.sort_values('Prop Duplicate Questions', ascending=False)
@@ -1044,7 +1044,7 @@ def languages_countries():
     # Country Proportions
     #----------------------------------------------------------------------------------------------------------------------------
 
-    melted_duplicates_country = pd.read_csv("/Users/liamdupeyron/Desktop/AnswersAi/main_data/melted_duplicates_country.csv")
+    melted_duplicates_country = pd.read_csv("melted_duplicates_country.csv")
 
     # Sort the data for better visualization
     sorted_data_country = melted_duplicates_country.sort_values('Prop Duplicate Questions', ascending=False)
@@ -1110,7 +1110,7 @@ def reactivations():
             
         """, unsafe_allow_html=True,)
 
-    reactivated_users = pd.read_csv("/Users/liamdupeyron/Desktop/AnswersAi/main_data/reactivated_users.csv")
+    reactivated_users = pd.read_csv("reactivated_users.csv")
 
 
     #----------------------------------------------------------------------------------------------------------------------------
@@ -1286,7 +1286,7 @@ def signups():
         "## Cancellations Within 1 hour"
     )
 
-    hourly_signups = pd.read_csv("/Users/liamdupeyron/Desktop/AnswersAi/main_data/hourly_signups.csv")
+    hourly_signups = pd.read_csv("hourly_signups.csv")
 
     # Ensure 'account_creation_time' is in datetime format
     hourly_signups['account_creation_time'] = pd.to_datetime(hourly_signups['account_creation_time'], errors='coerce')
