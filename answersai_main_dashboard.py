@@ -1094,6 +1094,14 @@ def languages_countries():
     # Display the chart in Streamlit
     st.plotly_chart(fig_country, use_container_width=True)
 
+
+#################################################################################################################################
+#################################################################################################################################
+# Reactivations
+#################################################################################################################################
+#################################################################################################################################
+
+
 def reactivations():
     # Title and branding
     st.markdown(
@@ -1104,6 +1112,163 @@ def reactivations():
             
         """, unsafe_allow_html=True,)
 
+    reactivated_users = pd.read_csv("/Users/liamdupeyron/Desktop/AnswersAi/main_data/reactivated_users.csv")
+
+
+    #----------------------------------------------------------------------------------------------------------------------------
+    # Country Proportions
+    #----------------------------------------------------------------------------------------------------------------------------
+
+    # Calculate reactivation counts by time window
+    reactivation_counts = reactivated_users['reactivation_window'].value_counts()
+
+    # Convert the counts into a DataFrame for Plotly
+    reactivation_df = pd.DataFrame({
+        'Time Window': reactivation_counts.index,
+        'Count': reactivation_counts.values
+    })
+
+    # Create the pie chart using Plotly Express
+    fig_reactivation_prop = px.pie(
+        reactivation_df,
+        names='Time Window',
+        values='Count',
+        title='Proportion of Reactivations by Time Window',
+        color_discrete_sequence=px.colors.qualitative.Pastel  # Pastel tones for better aesthetics
+    )
+
+    # Customize the layout
+    fig_reactivation_prop.update_traces(
+        textinfo='percent+label',  # Show percentages and labels
+        textfont_size=14,  # Adjust font size
+        marker=dict(line=dict(color='black', width=1))  # Add a border to slices
+    )
+    fig_reactivation_prop.update_layout(
+        title=dict(font=dict(size=20), y=.95),  # Center the title
+        showlegend=True,
+        legend=dict(
+            orientation="h",
+            y=-0.2,  # Position the legend below the chart
+            x=0.5,
+            xanchor="center",
+            font=dict(size=12)
+        ),
+        plot_bgcolor="whitesmoke",  # Light background
+    )
+
+    # Display the chart in Streamlit
+    st.plotly_chart(fig_reactivation_prop, use_container_width=True)
+
+    #----------------------------------------------------------------------------------------------------------------------------
+    # Last Used feature before reactivating
+    #----------------------------------------------------------------------------------------------------------------------------
+
+    # Pivot the data for easier plotting
+    reactivation_feature = reactivated_users.groupby(['reactivation_window', 'feature_used'])['user_id'].nunique().reset_index(name='reactivated_users')
+
+    reactivation_pivot = reactivation_feature.pivot(index='reactivation_window', columns='feature_used', values='reactivated_users').fillna(0)
+
+    # Separate the data for each time window
+    within_1_hour = reactivation_pivot.loc['Within 1 Hour']
+    between_1_and_24_hours = reactivation_pivot.loc['1 to 24 Hours']
+    after_24_hours = reactivation_pivot.loc['After 24 Hours']
+
+    # Streamlit layout for displaying charts
+    st.markdown("## Last Feature Used Before Reactivation")
+
+    # Function to create a bar chart for a given time window with clearer y-axis labels
+    def create_bar_chart(data, title):
+        # Convert pivoted DataFrame into a long-form DataFrame
+        data_long = data.reset_index().melt(id_vars='feature_used', value_name='reactivated_users')
+        # Remove NaN values (if any) for clean plotting
+        data_long = data_long.dropna(subset=['reactivated_users'])
+
+        # Plotly bar chart
+        chart = px.bar(
+            data_frame=data_long,
+            x='feature_used',
+            y='reactivated_users',
+            title=title,
+            color='feature_used',  # Assign colors by feature
+            color_discrete_sequence=px.colors.qualitative.Set3,  # Use Set3 color palette
+        )
+
+
+        chart.update_layout(
+            title=dict(x=0.2, font=dict(size=20)),
+            xaxis_title="Feature Used",
+            yaxis_title="Number of Reactivated Users",  # Add clear label for y-axis
+            yaxis=dict(
+                tickformat=",",  # Add commas to large numbers for readability
+                title_font=dict(size=14),  # Increase y-axis title font size
+                tickfont=dict(size=12),  # Increase y-axis tick font size
+            ),
+            plot_bgcolor="whitesmoke",
+            legend_title_text="Feature Used",
+            xaxis=dict(tickangle=45),  # Rotate x-axis labels for readability
+        )
+        return chart
+
+    # Plot for "Within 1 Hour"
+    st.plotly_chart(create_bar_chart(within_1_hour.reset_index(), "Reactivations Within 1 Hour"))
+
+    # Plot for "1 to 24 Hours"
+    st.plotly_chart(create_bar_chart(between_1_and_24_hours.reset_index(), "Reactivations Between 1 and 24 Hours"))
+
+    # Plot for "After 24 Hours"
+    st.plotly_chart(create_bar_chart(after_24_hours.reset_index(), "Reactivations After 24 Hours"))
+
+    #----------------------------------------------------------------------------------------------------------------------------
+    # Monthly Breakdown Reactivations
+    #----------------------------------------------------------------------------------------------------------------------------
+    
+        # Group by 'reactivation_month' and count unique reactivated users
+    # Group by 'reactivation_month' and count unique reactivated users
+    monthly_reactivations = reactivated_users.groupby('reactivation_month')['user_id'].nunique().reset_index(name='reactivated_accounts')
+
+    # Ensure 'reactivation_month' is a datetime type
+    monthly_reactivations['reactivation_month'] = pd.to_datetime(monthly_reactivations['reactivation_month'], errors='coerce')
+
+    # Sort the DataFrame by 'reactivation_month'
+    monthly_reactivations = monthly_reactivations.sort_values('reactivation_month')
+
+    # Create the line chart using Plotly Express
+    line_chart = px.line(
+        data_frame=monthly_reactivations,
+        x='reactivation_month',
+        y='reactivated_accounts',
+        title="Monthly Reactivated Accounts",
+        markers=True  # Add markers to emphasize data points
+    )
+
+    # Customize the chart
+    line_chart.update_traces(
+        line=dict(width=2, color="lightcoral"),  # Line color and thickness
+        marker=dict(size=10, color="lightskyblue", line=dict(width=2, color="black"))  # Larger markers for better visibility
+    )
+
+    # Update layout for better readability
+    line_chart.update_layout(
+        title=dict(x=0.2, font=dict(size=20)),  # Center the title and adjust font size
+        xaxis=dict(
+            title="Month",
+            title_font=dict(size=14),  # X-axis title font size
+            tickangle=45,  # Rotate x-axis labels for readability
+            tickfont=dict(size=12),  # X-axis tick font size
+            tickformat="%b %Y"  # Format x-axis labels as "Month Year"
+        ),
+        yaxis=dict(
+            title="Number of Reactivated Accounts",
+            title_font=dict(size=14),  # Y-axis title font size
+            tickfont=dict(size=12),  # Y-axis tick font size
+            tickformat=","  # Add commas to numbers for readability
+        ),
+        plot_bgcolor="whitesmoke",  # Set a light background color
+    )
+
+    # Display the chart in Streamlit
+    st.plotly_chart(line_chart)
+
 def signups():
     # Title and branding
     st.markdown(
@@ -1113,6 +1278,276 @@ def signups():
          </div>
             
         """, unsafe_allow_html=True,)
+
+    
+    #----------------------------------------------------------------------------------------------------------------------------
+    # Hourly Sign Up Times
+    #----------------------------------------------------------------------------------------------------------------------------
+
+    st.markdown(
+        "## Cancellations Within 1 hour"
+    )
+
+    hourly_signups = pd.read_csv("/Users/liamdupeyron/Desktop/AnswersAi/main_data/hourly_signups.csv")
+
+    # Ensure 'account_creation_time' is in datetime format
+    hourly_signups['account_creation_time'] = pd.to_datetime(hourly_signups['account_creation_time'], errors='coerce')
+
+    # Remove rows where datetime conversion failed (if any)
+    hourly_signups = hourly_signups.dropna(subset=['account_creation_time'])
+
+    # Create bins for the specified time intervals
+    bins = [0, 1, 5, 30, 60]
+    labels = ["<=1 min", "1-5 min", "5-30 min", "30-60 min"]
+    hourly_signups['time_interval'] = pd.cut(
+        hourly_signups['time_diff_in_minutes'],
+        bins=bins,
+        labels=labels,
+        right=True  # Includes the right endpoint in the interval
+    )
+
+    # Calculate proportions for each time interval
+    proportions = hourly_signups['time_interval'].value_counts(normalize=True).sort_index() * 100
+
+    # Convert proportions to a DataFrame for visualization
+    proportions_df = proportions.reset_index()
+    proportions_df.columns = ['Time Interval', 'Proportion']
+
+    # Visualization: Bar Chart
+    bar_chart = px.bar(
+        proportions_df,
+        x='Time Interval',
+        y='Proportion',
+        title="Proportion of Users by Time to First Payment (1 hour span)",
+        text='Proportion',  # Display proportions as text on bars
+        labels={'Proportion': 'Proportion (%)', 'Time Interval': 'Time to First Payment'},
+        color='Time Interval',  # Use different colors for each bar
+        color_discrete_sequence=px.colors.qualitative.Pastel1  # Custom color palette
+    )
+
+    # Customize the chart
+    bar_chart.update_traces(
+        texttemplate='%{text:.2f}%',  # Format text as percentages
+        textposition="outside",  # Place labels outside the bars
+        marker=dict(line=dict(width=2, color="black"))  # Add black outlines to bars
+    )
+
+    bar_chart.update_layout(
+        title=dict(x=0.17, font=dict(size=20)),  # Center and enlarge title
+        xaxis=dict(
+            title="Time to First Payment",
+            title_font=dict(size=16),
+            tickfont=dict(size=12)
+        ),
+        yaxis=dict(
+            title="Proportion (%)",
+            title_font=dict(size=16),
+            tickfont=dict(size=12),
+            range=[0, 50],  # Set a fixed range with extra space at the top
+        ),
+        
+        plot_bgcolor="whitesmoke"  # Background color
+    )
+
+    # Display the chart in Streamlit
+    st.plotly_chart(bar_chart)
+
+    # Ensure 'account_creation_time' is in datetime format
+    hourly_signups['account_creation_time'] = pd.to_datetime(hourly_signups['account_creation_time'])
+
+    # Format 'month_year' to show month names and year explicitly (e.g., "Sep 2024")
+    hourly_signups['month_year'] = hourly_signups['account_creation_time'].dt.strftime('%b %Y')
+
+    # Create time bins for signups
+    hourly_signups['time_bins'] = pd.cut(
+        hourly_signups['time_diff_in_minutes'], 
+        bins=[0, 1, 5, 30, 60], 
+        labels=['<1 min', '1-5 min', '5-30 min', '30-60 min'], 
+        right=False
+    )
+
+    # Group and calculate proportions
+    hourly_proportions = hourly_signups.groupby(['month_year', 'time_bins']).size().reset_index(name='count')
+    hourly_proportions['proportion'] = hourly_proportions.groupby('month_year')['count'].transform(lambda x: x / x.sum() * 100)
+
+    # Filter for the months of interest (Sep, Oct, Nov 2024)
+    selected_months = ['Sep 2024', 'Oct 2024', 'Nov 2024']
+    hourly_proportions_filtered = hourly_proportions[hourly_proportions['month_year'].isin(selected_months)]
+
+    # Create a grouped bar chart with horizontal bars
+    fig = px.bar(
+        hourly_proportions_filtered,
+        x='proportion',
+        y='month_year',
+        color='time_bins',
+        color_discrete_sequence=px.colors.qualitative.Pastel2,
+        title="Hourly Signups Proportions by Month (Sep, Oct, Nov)",
+        labels={'proportion': 'Proportion (%)', 'month_year': 'Month-Year', 'time_bins': 'Time Bin'},
+        barmode='group',  # Grouped layout
+        orientation='h'  # Horizontal orientation
+    )
+
+    # Customize the chart
+    fig.update_traces(
+        texttemplate='%{x:.1f}%',  # Show percentages on bars
+        textposition='outside',  # Position text outside the bars
+        marker=dict(line=dict(width=1, color="black"))  # Add black outline
+    )
+
+    fig.update_layout(
+        title=dict(x=0.5, font=dict(size=20)),  # Center and enlarge the title
+        xaxis=dict(
+            title="Proportion (%)",
+            title_font=dict(size=14),
+            tickfont=dict(size=12),
+            range=[0, 73]  # Adjust the range for better visualization
+        ),
+        yaxis=dict(
+            title="Month-Year",
+            title_font=dict(size=14),
+            tickfont=dict(size=12)
+        ),
+        legend=dict(
+            title="Time Bin",
+            font=dict(size=12),
+            orientation="h",  # Horizontal legend
+            yanchor="top",
+            y=-0.2,
+            xanchor="center",
+            x=0.5
+        ),
+        plot_bgcolor="whitesmoke",  # Set background color
+    )
+
+    # Show the visualization
+    st.plotly_chart(fig)
+
+    #----------------------------------------------------------------------------------------------------------------------------
+    # Daily Sign Up Times
+    #----------------------------------------------------------------------------------------------------------------------------
+
+    st.markdown(
+        "## Cancellations Within 24 hours"
+    )
+
+    # Load the dialy_signups CSV
+    dialy_signups = pd.read_csv("/Users/liamdupeyron/Desktop/AnswersAi/main_data/dialy_signups.csv")
+
+    # Ensure 'account_creation_time' is in datetime format
+    dialy_signups['account_creation_time'] = pd.to_datetime(dialy_signups['account_creation_time'])
+
+    # Define new bins for Time to First Payment
+    bins = [0, 1, 6, 12, 24]  # Adjusted bins
+    labels = ['<1 hour', '1-6 hours', '6-12 hours', '12-24 hours']  # Updated labels
+    dialy_signups['time_bins'] = pd.cut(
+        dialy_signups['time_diff_in_hours'], bins=bins, labels=labels, right=False
+    )
+
+    # Group and calculate proportions for the entire dataset
+    time_bin_proportions = dialy_signups.groupby('time_bins').size().reset_index(name='Sign-ups')
+    time_bin_proportions['Proportion'] = (time_bin_proportions['Sign-ups'] / time_bin_proportions['Sign-ups'].sum()) * 100
+
+    # Visualization: Bar Chart for Overall Time Bins
+    bar_chart = px.bar(
+        time_bin_proportions,
+        x='time_bins',
+        y='Proportion',
+        title="Proportion of Users by Time to First Payment (24 hour span)",
+        text='Proportion',  # Show percentages on bars
+        labels={'Proportion': 'Proportion (%)', 'time_bins': 'Time to First Payment'},
+        color='time_bins',  # Use distinct colors for each bar
+        color_discrete_sequence=px.colors.qualitative.Set3  # Custom color palette
+    )
+
+    # Customize the chart
+    bar_chart.update_traces(
+        texttemplate='%{text:.2f}%',  # Format text as percentages
+        textposition="outside",  # Place text labels outside the bars
+        marker=dict(line=dict(width=1, color="black"))  # Add black outlines to bars
+    )
+
+    bar_chart.update_layout(
+        title=dict(x=0.17, font=dict(size=20)),  # Center and enlarge the title
+        xaxis=dict(
+            title="Time to First Payment",
+            title_font=dict(size=14),
+            tickfont=dict(size=12)
+        ),
+        yaxis=dict(
+            title="Proportion (%)",
+            title_font=dict(size=14),
+            tickfont=dict(size=12),
+            range=[0, 105]
+        ),
+        plot_bgcolor="whitesmoke",  # Set background color
+        showlegend=False  # Hide legend for simplicity
+    )
+
+    # Display the chart in Streamlit
+    st.plotly_chart(bar_chart)
+
+    # Add month-year formatting for the stacked bar chart
+    dialy_signups['month_year'] = dialy_signups['account_creation_time'].dt.strftime('%b %Y')
+
+    # Group and calculate proportions for each month
+    daily_proportions = dialy_signups.groupby(['month_year', 'time_bins']).size().reset_index(name='count')
+    daily_proportions['proportion'] = daily_proportions.groupby('month_year')['count'].transform(lambda x: x / x.sum() * 100)
+
+    # Filter for the months of interest (Sep, Oct, Nov 2024)
+    selected_months = ['Sep 2024', 'Oct 2024', 'Nov 2024']
+    daily_proportions_filtered = daily_proportions[daily_proportions['month_year'].isin(selected_months)]
+
+    # Create a stacked bar chart for proportions by month
+    fig = px.bar(
+        daily_proportions_filtered,
+        x='proportion',
+        y='month_year',
+        color='time_bins',
+        color_discrete_sequence=px.colors.qualitative.Pastel1,
+        title="Daily Signups Proportions by Month (Sep, Oct, Nov)",
+        labels={'proportion': 'Proportion (%)', 'month_year': 'Month-Year', 'time_bins': 'Time Bin'},
+        barmode='group',  # Stacked layout
+        orientation='h'  # Horizontal orientation
+    )
+
+    # Customize the chart
+    fig.update_traces(
+        texttemplate='%{x:.1f}%',  # Show percentages on bars
+        textposition='inside',  # Position text inside the bars for better clarity
+        marker=dict(line=dict(width=0.5, color="black"))  # Add black outline
+    )
+
+    fig.update_layout(
+        title=dict(x=0.2, font=dict(size=20)),  # Center and enlarge the title
+        xaxis=dict(
+            title="Proportion (%)",
+            title_font=dict(size=14),
+            tickfont=dict(size=12),
+            range=[0, 100]  # Adjust the range for clearer visualization
+        ),
+        yaxis=dict(
+            title="Month-Year",
+            title_font=dict(size=14),
+            tickfont=dict(size=12)
+        ),
+        legend=dict(
+            title="Time Bin",
+            font=dict(size=12),
+            orientation="v",  # Vertical legend
+            yanchor="top",
+            y=1,
+            xanchor="right",
+            x=1.2
+        ),
+        plot_bgcolor="whitesmoke",  # Set background color
+    )
+
+    # Show the visualization in Streamlit
+    st.plotly_chart(fig)
+
+    
+
+
 
 # Main function with navigation
 def main():
