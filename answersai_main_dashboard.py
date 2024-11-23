@@ -561,6 +561,8 @@ def questions_duplicates():
     # Calculate total questions and total duplicate questions for each status
     total_questions_by_status = master_table.groupby('status')['questions_asked'].sum()
     total_duplicates_by_status = master_table.groupby('status')['duplicate_questions'].sum()
+    total_non_duplicates_by_status = total_questions_by_status - total_duplicates_by_status
+
 
     # Calculate the proportion of duplicate questions for each status
     proportions_by_status = (total_duplicates_by_status / total_questions_by_status) * 100
@@ -568,46 +570,60 @@ def questions_duplicates():
     # Prepare data for the bar chart
     data_duplicate_proportions = {
         "User Status": proportions_by_status.index,
-        "Proportion of Duplicate Questions (%)": proportions_by_status.values
+        "Proportion of Duplicate Questions (%)": proportions_by_status.values,
+        "Non-Duplicate Questions (%)": (total_non_duplicates_by_status / total_questions_by_status) * 100
     }
     df_duplicate_proportions = pd.DataFrame(data_duplicate_proportions)
 
-    # Create a bar chart with Plotly Express
-    fig_duplicate_proportions = px.bar(
-        df_duplicate_proportions,
+    # Melt data for grouped bar chart
+    df_melted_duplicate_proportions = df_duplicate_proportions.melt(id_vars=["User Status"], 
+                                value_vars=["Proportion of Duplicate Questions (%)", "Non-Duplicate Questions (%)"], 
+                                var_name="Question Type", 
+                                value_name="Proportion (%)")
+
+    # Create a grouped bar chart with Plotly Express
+    fig_grouped_bar = px.bar(
+        df_melted_duplicate_proportions,
         x="User Status",
-        y="Proportion of Duplicate Questions (%)",
-        title="Proportion of Duplicate Questions by User Status",
-        text="Proportion of Duplicate Questions (%)"  # Display percentages on the bars
+        y="Proportion (%)",
+        color="Question Type",
+        title="Proportion of Duplicate and Non-Duplicate Questions by User Status",
+        text="Proportion (%)",
+        color_discrete_sequence=px.colors.qualitative.Pastel,  # Use pastel tones
+        barmode="group"  # Set bars to grouped mode
     )
 
     # Customize the chart
-    fig_duplicate_proportions.update_traces(
+    fig_grouped_bar.update_traces(
         texttemplate='%{text:.2f}%',  # Format text as percentages
-        textposition="outside",  # Place text above the bars
-        marker=dict(color=px.colors.qualitative.Pastel, line=dict(width=2, color="black"))  # Pastel tones with black outlines
+        textposition="outside",  # Position text above the bars
+        marker=dict(line=dict(width=2, color="black"))  # Add black outlines
     )
-    fig_duplicate_proportions.update_layout(
+
+    fig_grouped_bar.update_layout(
         plot_bgcolor="whitesmoke",
         xaxis_title="User Status",
-        yaxis_title="Proportion of Duplicate Questions (%)",
+        yaxis_title="Proportion (%)",
         title_font_size=20,
         font=dict(size=12),
-        margin=dict(l=50, r=50, t=80, b=50),  # Adjust margins for clean spacing
-        yaxis=dict(gridcolor="lightgray"),  # Add gridlines to y-axis
+        margin=dict(l=50, r=50, t=80, b=50),  # Adjust margins
+        yaxis=dict(gridcolor="lightgray",
+                   range=[0,100]),  # Add gridlines to y-axis
         legend=dict(
             orientation="h",
             x=0.5,
             xanchor="center",
-            y=-0.2
+            y=-0.2  # Place legend below the chart
         )
     )
 
     # Display the chart in Streamlit
-    st.plotly_chart(fig_duplicate_proportions, use_container_width=True)
+    st.plotly_chart(fig_grouped_bar, use_container_width=True)
 
     
-    # Proportion by User Type
+#----------------------------------------------------------------------------------------------------------------------------
+# Proportion of Duplicate Questions By User Type
+#----------------------------------------------------------------------------------------------------------------------------
     
 
     # Proportion of duplicate questions for cancelled users within 1 hour
@@ -704,56 +720,78 @@ def questions_duplicates():
     # Calculate total questions and total duplicate questions for each feature
     total_questions_by_feature = master_table.groupby('feature_used')['questions_asked'].sum()
     total_duplicates_by_feature = master_table.groupby('feature_used')['duplicate_questions'].sum()
+    total_non_duplicates_by_feature = total_questions_by_feature - total_duplicates_by_feature
+
 
     # Calculate the proportion of duplicate questions for each feature
     proportions_by_feature = (total_duplicates_by_feature / total_questions_by_feature) * 100
+    proportions_non_duplicates = (total_non_duplicates_by_feature / total_questions_by_feature) * 100
+
 
     # Prepare data for the bar chart
     data_features_duplicates = {
         "Feature Used": proportions_by_feature.index,
-        "Proportion of Duplicate Questions (%)": proportions_by_feature.values
+        "Proportion of Duplicate Questions (%)": proportions_by_feature.values,
+        "Proportion of Non-Duplicate Questions (%)": proportions_non_duplicates.values
+
     }
     df_features_duplicates = pd.DataFrame(data_features_duplicates)
 
-    # Create a horizontal bar chart with Plotly Express
-    fig_features_duplicates = px.bar(
-        df_features_duplicates,
-        y="Feature Used",  # Use 'y' for horizontal bars
-        x="Proportion of Duplicate Questions (%)",
-        color="Feature Used",  # Assign a different color to each feature
-        title="Overall Proportion of Duplicate Questions by Feature Used",
-        text="Proportion of Duplicate Questions (%)",
-        color_discrete_sequence=px.colors.qualitative.Set2  # Display values on the bars
+    # Melt data for grouped bar chart
+    df_melted_features_duplicates = df_features_duplicates.melt(
+        id_vars=["Feature Used"], 
+        value_vars=["Proportion of Duplicate Questions (%)", "Proportion of Non-Duplicate Questions (%)"], 
+        var_name="Question Type", 
+        value_name="Proportion (%)"
+    )
+
+    # Create a grouped bar chart with Plotly Express
+    fig_grouped_bar_features = px.bar(
+        df_melted_features_duplicates,
+        x="Feature Used",
+        y="Proportion (%)",  # Horizontal bars
+        color="Question Type",
+        title="Proportion of Duplicate and Non-Duplicate Questions by Feature Used",
+        text="Proportion (%)",
+        color_discrete_sequence=["lightcoral", "lightskyblue"],  # Pastel tones for better readability
+        barmode="group"  # Grouped bars
     )
 
     # Customize the chart
-    fig_features_duplicates.update_traces(
+    fig_grouped_bar_features.update_traces(
         texttemplate='%{text:.2f}%',  # Format text as percentages
-        textposition="outside",  # Place text to the right of the bars
-        marker=dict(line=dict(width=1, color="black"))  # Add black outlines to bars
+        textposition="outside",  # Place text outside bars
+        marker=dict(line=dict(width=1, color="black"))  # Add black outlines
     )
 
-    fig_features_duplicates.update_layout(
+    fig_grouped_bar_features.update_layout(
         plot_bgcolor="whitesmoke",
-        xaxis_title="Proportion of Duplicate Questions (%)",
+        xaxis_title="Proportion (%)",
         yaxis_title="Feature Used",
         title_font_size=20,
         font=dict(size=12),
-        margin=dict(l=120, r=50, t=80, b=50),
-        xaxis=dict(
-            range=[0, 70],  # Adjust x-axis range to fit all bars
-            title_standoff=10  # Add space between axis title and labels
-        ),  # Adjust margins for cleaner layout
+        margin=dict(l=120, r=50, t=80, b=50),  # Adjust margins for cleaner layout
         yaxis=dict(
-            categoryorder="total ascending"  # Order features by their proportion
+            range=[0,75]  # Add space between axis title and labels
         ),
-        coloraxis_showscale=False  # Remove the color scale legend for cleaner look
+        xaxis=dict(
+            title_standoff=10  # Add space between axis title and labels
+        ),
+        legend=dict(
+            orientation="h",
+            x=0.5,
+            xanchor="center",
+            y=-0.2
+        )
     )
 
     # Display the chart in Streamlit
-    st.plotly_chart(fig_features_duplicates, use_container_width=True)
+    st.plotly_chart(fig_grouped_bar_features, use_container_width=True)
 
-    # 1 hr vs. 24 hr Feature Usage
+   
+#----------------------------------------------------------------------------------------------------------------------------
+# 1hr vs 24 hr feature usage
+#----------------------------------------------------------------------------------------------------------------------------
 
     # Data Preparation
 
@@ -771,28 +809,51 @@ def questions_duplicates():
 
     # Group by feature_used and calculate total duplicate questions and total users
     duplicates_cancel_1h_feature = cancelled_within_1h.groupby('feature_used').agg(
+        total_questions=('questions_asked', 'sum'),
         total_duplicate_questions=('duplicate_questions', 'sum'),
         total_users=('user_id', 'nunique')
     ).reset_index()
 
-    # Calculate proportion of duplicate questions
-    duplicates_cancel_1h_feature['proportion_duplicates'] = duplicates_cancel_1h_feature['total_duplicate_questions'] / duplicates_cancel_1h_feature['total_duplicate_questions'].sum()
+   # Calculate non-duplicate questions
+    duplicates_cancel_1h_feature['non_duplicate_questions'] = (
+        duplicates_cancel_1h_feature['total_questions'] - duplicates_cancel_1h_feature['total_duplicate_questions']
+    )
 
-    # Handle division by zero and fill NaN values
-    duplicates_cancel_1h_feature['proportion_duplicates'].fillna(0, inplace=True)
+    # Calculate proportions for duplicate and non-duplicate questions
+    duplicates_cancel_1h_feature['proportion_duplicates'] = (
+        duplicates_cancel_1h_feature['total_duplicate_questions'] / duplicates_cancel_1h_feature['total_questions']) * 100
+
+    duplicates_cancel_1h_feature['proportion_non_duplicates'] = ( 
+        duplicates_cancel_1h_feature['non_duplicate_questions'] / duplicates_cancel_1h_feature['total_questions']) * 100
+
+
+     # Handle division by zero and fill NaN values (if no questions exist for a feature)
+    duplicates_cancel_1h_feature.fillna(0, inplace=True)
 
     # Group by feature_used and calculate total duplicate questions and total users
     duplicates_cancel_24h_feature = cancelled_within_24h.groupby('feature_used').agg(
+        total_questions=('questions_asked', 'sum'),
         total_duplicate_questions=('duplicate_questions', 'sum'),
         total_users=('user_id', 'nunique')
     ).reset_index()
 
-    # Calculate proportion of duplicate questions
-    duplicates_cancel_24h_feature['proportion_duplicates'] = duplicates_cancel_24h_feature['total_duplicate_questions'] / duplicates_cancel_24h_feature['total_duplicate_questions'].sum()
+    # Calculate non-duplicate questions
+    duplicates_cancel_24h_feature['non_duplicate_questions'] = (
+        duplicates_cancel_24h_feature['total_questions'] - duplicates_cancel_24h_feature['total_duplicate_questions']
+    )
 
-    # Handle division by zero and fill NaN values
-    duplicates_cancel_24h_feature['proportion_duplicates'].fillna(0, inplace=True)
+    # Calculate proportions for duplicate and non-duplicate questions
+    duplicates_cancel_24h_feature['proportion_duplicates'] = (
+        duplicates_cancel_24h_feature['total_duplicate_questions'] / duplicates_cancel_24h_feature['total_questions']) * 100
 
+    duplicates_cancel_24h_feature['proportion_non_duplicates'] = ( 
+        duplicates_cancel_24h_feature['non_duplicate_questions'] / duplicates_cancel_24h_feature['total_questions']) * 100
+
+
+     # Handle division by zero and fill NaN values (if no questions exist for a feature)
+    duplicates_cancel_24h_feature.fillna(0, inplace=True)
+
+    
     # Add a 'cancellation_window' column to the dataframes
     duplicates_cancel_1h_feature['cancellation_window'] = 'Within 1 Hour'
     duplicates_cancel_24h_feature['cancellation_window'] = 'Within 24 Hours'
@@ -808,50 +869,124 @@ def questions_duplicates():
         combined_duplicates_feature['proportion_duplicates'] * 100
     ).round(2).astype(str) + "%"
 
-    # Create the bar plot using Plotly Express
-    fig_combined_duplicates_feature = px.bar(
-        combined_duplicates_feature,
-        x="proportion_duplicates",
-        y="feature_used",
-        color="cancellation_window",
-        orientation="h",  # Horizontal bar plot
+
+    # Prepare data for the grouped bar chart
+    df_1h_grouped = duplicates_cancel_1h_feature.melt(
+        id_vars=["feature_used"],
+        value_vars=["proportion_duplicates", "proportion_non_duplicates"],
+        var_name="Question Type",
+        value_name="Proportion (%)"
+    )
+
+    # Rename columns for better readability
+    df_1h_grouped["Question Type"] = df_1h_grouped["Question Type"].replace({
+        "proportion_duplicates": "Duplicate Questions",
+        "proportion_non_duplicates": "Non-Duplicate Questions"
+    })
+
+    # Create a grouped bar chart
+    fig_1h_grouped = px.bar(
+        df_1h_grouped,
+        x="feature_used",
+        y="Proportion (%)",
+        color="Question Type",
         barmode="group",
-        title="Proportion of Duplicate Questions by Feature and Cancellation Window",
-        text="percentage_text",  # Display percentages as text
-        labels={
-            "proportion_duplicates": "Proportion of Duplicate Questions",
-            "feature_used": "Feature Used",
-        },
-        color_discrete_sequence=["lightcoral", "lightskyblue"],  # Custom pastel color scheme
+        title="Proportion of Duplicate and Non-Duplicate Questions by Feature (Within 1 Hour)",
+        text="Proportion (%)",
+        color_discrete_sequence=["lightcoral", "lightskyblue"]  # Custom pastel colors
     )
 
     # Customize the chart
-    fig_combined_duplicates_feature.update_traces(
+    fig_1h_grouped.update_traces(
+        texttemplate='%{text:.2f}%',  # Format text as percentages
         textposition="outside",  # Place text outside the bars
-        textfont=dict(size=10),  # Adjust text font size
-        cliponaxis=False,  # Prevent text from being clipped
-        marker=dict(line=dict(width=1, color="black")),  # Add black outlines to bars
+        marker=dict(line=dict(width=1, color="black"))  # Add black outlines to bars
     )
 
     # Customize layout
-    fig_combined_duplicates_feature.update_layout(
+    fig_1h_grouped.update_layout(
         plot_bgcolor="whitesmoke",
+        xaxis_title="Proportion (%)",
+        yaxis_title="Feature Used",
         title_font_size=20,
         font=dict(size=12),
-        margin=dict(l=50, r=50, t=80, b=50),  # Adjust margins
+        margin=dict(l=50, r=50, t=80, b=50),
+        yaxis=dict(
+            range=[0,100]  # Add space between axis title and labels
+        ),  # Adjust margins
         legend=dict(
-            title="Cancellation Window",
-            orientation="h",
-            y=1.05,
+            title="Question Type",
+            orientation="h",  # Horizontal legend
+            y=-0.25,  # Position below the plot
             x=0.5,
             xanchor="center",
             font=dict(size=12),
-            bgcolor="rgba(255,255,255,0.7)",
-        ),
+            bgcolor="rgba(255,255,255,0.9)"
+        )
     )
 
     # Display the chart in Streamlit
-    st.plotly_chart(fig_combined_duplicates_feature, use_container_width=True)
+    st.plotly_chart(fig_1h_grouped, use_container_width=True)
+
+
+# Prepare data for the grouped bar chart
+    df_24h_grouped = duplicates_cancel_24h_feature.melt(
+        id_vars=["feature_used"],
+        value_vars=["proportion_duplicates", "proportion_non_duplicates"],
+        var_name="Question Type",
+        value_name="Proportion (%)"
+    )
+
+    # Rename columns for better readability
+    df_24h_grouped["Question Type"] = df_24h_grouped["Question Type"].replace({
+        "proportion_duplicates": "Duplicate Questions",
+        "proportion_non_duplicates": "Non-Duplicate Questions"
+    })
+
+    # Create a grouped bar chart
+    fig_24h_grouped = px.bar(
+        df_24h_grouped,
+        x="feature_used",
+        y="Proportion (%)",
+        color="Question Type",
+        barmode="group",
+        title="Proportion of Duplicate and Non-Duplicate Questions by Feature (Within 24 Hours)",
+        text="Proportion (%)",
+        color_discrete_sequence=["lightcoral", "lightskyblue"]  # Custom pastel colors
+    )
+
+    # Customize the chart
+    fig_24h_grouped.update_traces(
+        texttemplate='%{text:.2f}%',  # Format text as percentages
+        textposition="outside",  # Place text outside the bars
+        marker=dict(line=dict(width=1, color="black"))  # Add black outlines to bars
+    )
+
+    # Customize layout
+    fig_24h_grouped.update_layout(
+        plot_bgcolor="whitesmoke",
+        xaxis_title="Proportion (%)",
+        yaxis_title="Feature Used",
+        title_font_size=20,
+        font=dict(size=12),
+        margin=dict(l=50, r=50, t=80, b=50),
+        yaxis=dict(
+            range=[0,100]  # Add space between axis title and labels
+        ),  # Adjust margins
+        legend=dict(
+            title="Question Type",
+            orientation="h",  # Horizontal legend
+            y=-0.25,  # Position below the plot
+            x=0.5,
+            xanchor="center",
+            font=dict(size=12),
+            bgcolor="rgba(255,255,255,0.9)"
+        )
+    )
+
+    # Display the chart in Streamlit
+    st.plotly_chart(fig_24h_grouped, use_container_width=True)
+    
 
 
 #----------------------------------------------------------------------------------------------------------------------------
