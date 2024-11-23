@@ -244,20 +244,34 @@ def cancellation_insights():
     total_subscriptions = len(subscribed_users)
     total_cancellations = (subscribed_users['status'] == 'canceled').sum()
 
+    # Cancellations within 5 minutes
+    cancellations_within_5_minutes = subscribed_users[
+            (subscribed_users['status'] == 'canceled') &
+            (subscribed_users['time_to_cancel_minutes'] <= 5)
+        ].shape[0]
+
+        # Cancellations within 30 minutes
+    cancellations_within_30_minutes = subscribed_users[
+            (subscribed_users['status'] == 'canceled') &
+            ((subscribed_users['time_to_cancel_minutes'] > 5) & (subscribed_users['time_to_cancel_minutes'] <=30))
+        ].shape[0]
+
     # Cancellations within 1 hour
     cancellations_within_1_hour = subscribed_users[
         (subscribed_users['status'] == 'canceled') &
-        (subscribed_users['time_to_cancel_hours'] <= 1)
+        ((subscribed_users['time_to_cancel_hours'] <=1))
     ].shape[0]
 
     # Cancellations within 24 hours
     cancellations_within_24_hours = subscribed_users[
         (subscribed_users['status'] == 'canceled') &
-        (subscribed_users['time_to_cancel_hours'] <= 24)
+        ((subscribed_users['time_to_cancel_hours'] <=24))
     ].shape[0]
 
     # Calculate rates
     overall_cancellation_rate = total_cancellations / total_subscriptions
+    overall_cancellation_rate_5m = cancellations_within_5_minutes / total_subscriptions
+    overall_cancellation_rate_30m = cancellations_within_30_minutes / total_subscriptions
     overall_cancellation_rate_1h = cancellations_within_1_hour / total_subscriptions
     overall_cancellation_rate_24h = cancellations_within_24_hours / total_subscriptions
 
@@ -298,8 +312,9 @@ def cancellation_insights():
     with col1_hourly_daily:
         # Data for overall cancellation rates
         data_hourly_daily = {
-            "Cancellation Rate Type": ["1-Hour", "24-Hour"],  # Labels for the bar chart
-            "Cancellation Rate (%)": [overall_cancellation_rate_1h * 100, overall_cancellation_rate_24h * 100]  # Convert to percentage
+            "Cancellation Rate Type": ["1 Hour", "24 Hours"],  # Labels for the bar chart
+            "Cancellation Rate (%)": [overall_cancellation_rate_1h * 100, 
+                                      overall_cancellation_rate_24h * 100]  # Convert to percentage
         }
 
         # Create a DataFrame
@@ -310,7 +325,7 @@ def cancellation_insights():
             overall_cancellation_df,
             x="Cancellation Rate Type",
             y="Cancellation Rate (%)",
-            title="Cancellation Rates: 1 hr vs. 24 hr",
+            title="Cancellation Rates Time Breakdown",
             text="Cancellation Rate (%)"  # Show values on the bars
         )
 
@@ -322,7 +337,7 @@ def cancellation_insights():
         )
         fig.update_layout(
             title=dict(
-                text="Cancellation Rates: 1 hr vs. 24 hr",
+                text="Cancellation Rates Time Breakdown",
                 font_size=15,
                 x = 0.02# Center the title
             ),
@@ -346,10 +361,10 @@ def cancellation_insights():
         data_proportions = {
             "Cancellation Category": [
                 "Within 1 Hour", 
-                "Within 24 Hours", 
+                "Within 1-24 Hours", 
                 "Beyond 24 Hours"
             ],
-            "Count": [
+            "Count":[
                 cancellations_within_1_hour, 
                 cancellations_within_24_hours - cancellations_within_1_hour,  # Only the 1-24 hour range
                 cancellations_beyond_24_hours
@@ -386,7 +401,7 @@ def cancellation_insights():
             ),
             title_font_size=20,  # Decrease title font size for alignment
             font=dict(size=12),  # General font size
-            margin=dict(l=10, r=10, t=50, b=50),  # Adjust margins
+            margin=dict(l=20, r=20, t=50, b=50),  # Adjust margins
             plot_bgcolor="whitesmoke",  # Light pastel background
             showlegend=True,  # Keep legend visible
             legend=dict(
@@ -400,6 +415,122 @@ def cancellation_insights():
 
         # Display the chart in Streamlit
         st.plotly_chart(fig, use_container_width=True)  # Allow dynamic resizing
+
+    st.markdown(
+        "## Hour Breakdown to Minutes"
+    )
+
+    # Filter data for cancellations within 1 hour
+    cancellations_within_60_minutes = subscribed_users[
+        (subscribed_users['status'] == 'canceled') & 
+        (subscribed_users['time_to_cancel_minutes'] <= 60)
+    ]
+
+    # Define bins for the breakdown
+    bins = [0, 5, 30, 60]  # Bins: <5 minutes, 5-30 minutes, 30-60 minutes
+    labels = ['<5 Minutes', '5-30 Minutes', '30-60 Minutes']
+    cancellations_within_60_minutes['Time Bin'] = pd.cut(
+        cancellations_within_60_minutes['time_to_cancel_minutes'], bins=bins, labels=labels, right=False
+    )
+
+    # Calculate proportions for each bin
+    hourly_breakdown = cancellations_within_60_minutes['Time Bin'].value_counts(normalize=True).reset_index()
+    hourly_breakdown.columns = ['Time Bin', 'Proportion']
+    hourly_breakdown['Proportion'] *= 100  # Convert to percentages
+
+           
+    col1_hourly_rate, col2_hourly_proportion = st.columns(2)
+
+    with col1_hourly_rate:
+        # Prepare data for the bar chart
+        hourly_breakdown_counts = cancellations_within_60_minutes['Time Bin'].value_counts().sort_index()
+        hourly_breakdown_rates = (hourly_breakdown_counts / cancellations_within_60_minutes.shape[0]) * 100
+        hourly_breakdown_df = pd.DataFrame({
+            "Time Bin": hourly_breakdown_rates.index,
+            "Cancellation Rate (%)": hourly_breakdown_rates.values
+        })
+
+        # Visualization: Bar Chart
+        bar_chart = px.bar(
+            hourly_breakdown_df,
+            x="Time Bin",
+            y="Cancellation Rate (%)",
+            title="Cancellation Rates by Minutes",
+            text="Cancellation Rate (%)",  # Show percentages on bars
+            labels={"Time Bin": "Cancellation Time Bin", "Cancellation Rate (%)": "Cancellation Rate (%)"},# Custom color palette
+        )
+
+        # Customize the bar chart
+        bar_chart.update_traces(
+            texttemplate='%{text:.2f}%',  # Format text as percentages
+            textposition="outside",  # Place text labels outside the bars
+            marker=dict(
+                color=["#FFB3B3", "#B3D9FF", "#B3FFB3"],
+                line=dict(width=1, color="black"))  # Add black outlines to bars
+        )
+
+        bar_chart.update_layout(
+            title=dict(x=0.1, font=dict(size=18)),  # Center and enlarge the title
+            xaxis=dict(
+                title="Cancellation Time Bin",
+                title_font=dict(size=14),
+                tickfont=dict(size=12)
+            ),
+            yaxis=dict(
+                title="Cancellation Rate (%)",
+                title_font=dict(size=14),
+                tickfont=dict(size=12),
+                range=[0, 105]
+            ),
+            plot_bgcolor="whitesmoke",  # Set background color
+            showlegend=False  # Hide legend for simplicity
+        )
+
+        # Display the bar chart in Streamlit
+        st.plotly_chart(bar_chart, use_container_width=True)
+
+    with col2_hourly_proportion:
+            
+
+            pie_chart = px.pie(
+                hourly_breakdown,
+                names='Time Bin',
+                values='Proportion',
+                title="Cancellation Breakdown Within 1 Hour",  
+            )
+
+            # Customize the pie chart
+            pie_chart.update_traces(
+                textinfo="percent+label",  # Show percentages and labels
+                textfont=dict(size=14),  # Adjust font size for percentages
+                textposition="inside", 
+                marker=dict(
+                    colors=["#B3D9FF", "#FFB3B3", "#B3FFB3"],
+                    line=dict(width=1.5, color="black")  # Black outline for slices
+                )
+            )
+
+            pie_chart.update_layout(
+                title=dict(
+                    text="Cancellation Breakdown Within 1 Hour",
+                    font_size=18,
+                    x=0.1  # Center the title
+                ),
+                legend=dict(
+                    title="Time Bin",
+                    font=dict(size=12),
+                    orientation="h",  # Horizontal legend
+                    yanchor="top",
+                    y=-0.2,  # Position below the chart
+                    xanchor="center",
+                    x=0.5
+                ),
+                plot_bgcolor="whitesmoke"  # Light pastel background
+            )
+
+            # Display the chart in Streamlit
+            st.plotly_chart(pie_chart, use_container_width=True)
+
             
 
 #################################################################################################################################
@@ -1283,7 +1414,7 @@ def signups():
     #----------------------------------------------------------------------------------------------------------------------------
 
     st.markdown(
-        "## Cancellations Within 1 hour"
+        "### Sign up times for users who canceled within 1 hour"
     )
 
     hourly_signups = pd.read_csv("hourly_signups.csv")
@@ -1425,7 +1556,7 @@ def signups():
     #----------------------------------------------------------------------------------------------------------------------------
 
     st.markdown(
-        "## Cancellations Within 24 hours"
+        "### Sign up times for users who canceled within 24 hours"
     )
 
     # Load the dialy_signups CSV
