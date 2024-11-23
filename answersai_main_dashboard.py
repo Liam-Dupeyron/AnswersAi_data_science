@@ -891,7 +891,7 @@ def questions_duplicates():
         y="Proportion (%)",
         color="Question Type",
         barmode="group",
-        title="Proportion of Duplicate and Non-Duplicate Questions by Feature (Within 1 Hour)",
+        title="Duplicate and Non-Duplicate Questions by Feature (1 Hour)",
         text="Proportion (%)",
         color_discrete_sequence=["lightcoral", "lightskyblue"]  # Custom pastel colors
     )
@@ -950,7 +950,7 @@ def questions_duplicates():
         y="Proportion (%)",
         color="Question Type",
         barmode="group",
-        title="Proportion of Duplicate and Non-Duplicate Questions by Feature (Within 24 Hours)",
+        title="Duplicate and Non-Duplicate Questions by Feature (24 Hours)",
         text="Proportion (%)",
         color_discrete_sequence=["lightcoral", "lightskyblue"]  # Custom pastel colors
     )
