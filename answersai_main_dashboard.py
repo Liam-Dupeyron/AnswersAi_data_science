@@ -1241,7 +1241,7 @@ def questions_duplicates():
 
 #################################################################################################################################
 #################################################################################################################################
-# Questions/Duplicate Insights
+# Language Insights
 #################################################################################################################################
 #################################################################################################################################
 
@@ -1262,6 +1262,8 @@ def languages_countries():
     
     # Ensure consistent sorting by proportion of duplicate questions
     sorted_data_lang = melted_duplicates_lang.sort_values('Prop Duplicate Questions', ascending=False)
+
+    st.dataframe(sorted_data_lang)
 
     # Create the bar chart using Plotly Express
     fig_lang = px.bar(
@@ -1549,10 +1551,17 @@ def signups():
     #----------------------------------------------------------------------------------------------------------------------------
 
     st.markdown(
-        "### Sign up times for users who canceled within 1 hour"
+        "### Sign up times for active and canceled users within 1 hour"
     )
 
+    active_signups = pd.read_csv("active_signups.csv")
     hourly_signups = pd.read_csv("hourly_signups.csv")
+
+    # Ensure 'account_created_time' in 'active_signups' is in datetime format
+    active_signups['account_created_time'] = pd.to_datetime(active_signups['account_created_time'], errors='coerce')
+
+    # Remove rows where datetime conversion failed (if any)
+    active_signups = active_signups.dropna(subset=['account_created_time'])
 
     # Ensure 'account_creation_time' is in datetime format
     hourly_signups['account_creation_time'] = pd.to_datetime(hourly_signups['account_creation_time'], errors='coerce')
@@ -1563,6 +1572,15 @@ def signups():
     # Create bins for the specified time intervals
     bins = [0, 1, 5, 30, 60]
     labels = ["<=1 min", "1-5 min", "5-30 min", "30-60 min"]
+
+
+    active_signups['time_interval'] = pd.cut(
+        active_signups['time_difference_minutes'],
+        bins=bins,
+        labels=labels,
+        right=True  # Includes the right endpoint in the interval
+    )
+
     hourly_signups['time_interval'] = pd.cut(
         hourly_signups['time_diff_in_minutes'],
         bins=bins,
@@ -1571,18 +1589,26 @@ def signups():
     )
 
     # Calculate proportions for each time interval
-    proportions = hourly_signups['time_interval'].value_counts(normalize=True).sort_index() * 100
+    proportions_active = active_signups['time_interval'].value_counts(normalize=True).sort_index() * 100
 
     # Convert proportions to a DataFrame for visualization
-    proportions_df = proportions.reset_index()
-    proportions_df.columns = ['Time Interval', 'Proportion']
+    proportions_active_df = proportions_active.reset_index()
+    proportions_active_df.columns = ['Time Interval', 'Proportion']
 
-    # Visualization: Bar Chart
-    bar_chart = px.bar(
-        proportions_df,
+    # Calculate proportions for each time interval
+    proportions_canceled = hourly_signups['time_interval'].value_counts(normalize=True).sort_index() * 100
+
+    # Convert proportions to a DataFrame for visualization
+    proportions_canceled_df = proportions_canceled.reset_index()
+    proportions_canceled_df.columns = ['Time Interval', 'Proportion']
+
+
+    # Visualization: Bar Chart for Active users within 1 hour
+    bar_chart_active = px.bar(
+        proportions_active_df,
         x='Time Interval',
         y='Proportion',
-        title="Proportion of Users by Time to First Payment (1 hour span)",
+        title="Proportion of Active Users by Time to First Payment (1 hour span)",
         text='Proportion',  # Display proportions as text on bars
         labels={'Proportion': 'Proportion (%)', 'Time Interval': 'Time to First Payment'},
         color='Time Interval',  # Use different colors for each bar
@@ -1590,14 +1616,14 @@ def signups():
     )
 
     # Customize the chart
-    bar_chart.update_traces(
+    bar_chart_active.update_traces(
         texttemplate='%{text:.2f}%',  # Format text as percentages
         textposition="outside",  # Place labels outside the bars
         marker=dict(line=dict(width=2, color="black"))  # Add black outlines to bars
     )
 
-    bar_chart.update_layout(
-        title=dict(x=0.17, font=dict(size=20)),  # Center and enlarge title
+    bar_chart_active.update_layout(
+        title=dict(x=0.1, font=dict(size=20)),  # Center and enlarge title
         xaxis=dict(
             title="Time to First Payment",
             title_font=dict(size=16),
@@ -1614,13 +1640,54 @@ def signups():
     )
 
     # Display the chart in Streamlit
-    st.plotly_chart(bar_chart)
+    st.plotly_chart(bar_chart_active)
+
+    # Visualization: Bar Chart for Canceled users within 1 hour
+    bar_chart_canceled = px.bar(
+        proportions_canceled_df,
+        x='Time Interval',
+        y='Proportion',
+        title="Proportion of Canceled Users by Time to First Payment (1 hour span)",
+        text='Proportion',  # Display proportions as text on bars
+        labels={'Proportion': 'Proportion (%)', 'Time Interval': 'Time to First Payment'},
+        color='Time Interval',  # Use different colors for each bar
+        color_discrete_sequence=px.colors.qualitative.Pastel1  # Custom color palette
+    )
+
+    # Customize the chart
+    bar_chart_canceled.update_traces(
+        texttemplate='%{text:.2f}%',  # Format text as percentages
+        textposition="outside",  # Place labels outside the bars
+        marker=dict(line=dict(width=2, color="black"))  # Add black outlines to bars
+    )
+
+    bar_chart_canceled.update_layout(
+        title=dict(x=0.1, font=dict(size=20)),  # Center and enlarge title
+        xaxis=dict(
+            title="Time to First Payment",
+            title_font=dict(size=16),
+            tickfont=dict(size=12)
+        ),
+        yaxis=dict(
+            title="Proportion (%)",
+            title_font=dict(size=16),
+            tickfont=dict(size=12),
+            range=[0, 50],  # Set a fixed range with extra space at the top
+        ),
+        
+        plot_bgcolor="whitesmoke"  # Background color
+    )
+
+    # Display the chart in Streamlit
+    st.plotly_chart(bar_chart_canceled)
 
     # Ensure 'account_creation_time' is in datetime format
     hourly_signups['account_creation_time'] = pd.to_datetime(hourly_signups['account_creation_time'])
 
     # Format 'month_year' to show month names and year explicitly (e.g., "Sep 2024")
     hourly_signups['month_year'] = hourly_signups['account_creation_time'].dt.strftime('%b %Y')
+    active_signups['month_year'] = active_signups['account_created_time'].dt.strftime('%b %Y')
+
 
     # Create time bins for signups
     hourly_signups['time_bins'] = pd.cut(
@@ -1630,36 +1697,49 @@ def signups():
         right=False
     )
 
+    # Create time bins for signups
+    active_signups['time_bins'] = pd.cut(
+        active_signups['time_difference_minutes'], 
+        bins=[0, 1, 5, 30, 60], 
+        labels=['<1 min', '1-5 min', '5-30 min', '30-60 min'], 
+        right=False
+    )
+
     # Group and calculate proportions
-    hourly_proportions = hourly_signups.groupby(['month_year', 'time_bins']).size().reset_index(name='count')
-    hourly_proportions['proportion'] = hourly_proportions.groupby('month_year')['count'].transform(lambda x: x / x.sum() * 100)
+    hourly_proportions_1hr = hourly_signups.groupby(['month_year', 'time_bins']).size().reset_index(name='count')
+    hourly_proportions_1hr['proportion'] = hourly_proportions_1hr.groupby('month_year')['count'].transform(lambda x: x / x.sum() * 100)
+
+    active_proportions_1hr = active_signups.groupby(['month_year', 'time_bins']).size().reset_index(name='count')
+    active_proportions_1hr['proportion'] = active_proportions_1hr.groupby('month_year')['count'].transform(lambda x: x / x.sum() * 100)
 
     # Filter for the months of interest (Sep, Oct, Nov 2024)
     selected_months = ['Sep 2024', 'Oct 2024', 'Nov 2024']
-    hourly_proportions_filtered = hourly_proportions[hourly_proportions['month_year'].isin(selected_months)]
+    hourly_proportions_1hr_filtered = hourly_proportions_1hr[hourly_proportions_1hr['month_year'].isin(selected_months)]
+    active_proportions_1hr_filtered = active_proportions_1hr[active_proportions_1hr['month_year'].isin(selected_months)]
 
-    # Create a grouped bar chart with horizontal bars
-    fig = px.bar(
-        hourly_proportions_filtered,
+
+    # Active Users monhtly 1hr breakdown
+    fig_active_proportions_1hr_filtered = px.bar(
+        active_proportions_1hr_filtered,
         x='proportion',
         y='month_year',
         color='time_bins',
         color_discrete_sequence=px.colors.qualitative.Pastel2,
-        title="Hourly Signups Proportions by Month (Sep, Oct, Nov)",
+        title="Monthly Signups Breakdown for Active Users  (Sep, Oct, Nov)",
         labels={'proportion': 'Proportion (%)', 'month_year': 'Month-Year', 'time_bins': 'Time Bin'},
         barmode='group',  # Grouped layout
         orientation='h'  # Horizontal orientation
     )
 
     # Customize the chart
-    fig.update_traces(
+    fig_active_proportions_1hr_filtered.update_traces(
         texttemplate='%{x:.1f}%',  # Show percentages on bars
         textposition='outside',  # Position text outside the bars
         marker=dict(line=dict(width=1, color="black"))  # Add black outline
     )
 
-    fig.update_layout(
-        title=dict(x=0.5, font=dict(size=20)),  # Center and enlarge the title
+    fig_active_proportions_1hr_filtered.update_layout(
+        title=dict(x=0.1, font=dict(size=20)),  # Center and enlarge the title
         xaxis=dict(
             title="Proportion (%)",
             title_font=dict(size=14),
@@ -1684,14 +1764,62 @@ def signups():
     )
 
     # Show the visualization
-    st.plotly_chart(fig)
+    st.plotly_chart(fig_active_proportions_1hr_filtered)
+
+    # Canceled Users monhtly 1hr breakdown
+    fig_hourly_proportions_1hr_filtered = px.bar(
+        hourly_proportions_1hr_filtered,
+        x='proportion',
+        y='month_year',
+        color='time_bins',
+        color_discrete_sequence=px.colors.qualitative.Pastel2,
+        title="Monthly Signups Breakdown for Canceled Users  (Sep, Oct, Nov)",
+        labels={'proportion': 'Proportion (%)', 'month_year': 'Month-Year', 'time_bins': 'Time Bin'},
+        barmode='group',  # Grouped layout
+        orientation='h'  # Horizontal orientation
+    )
+
+    # Customize the chart
+    fig_hourly_proportions_1hr_filtered.update_traces(
+        texttemplate='%{x:.1f}%',  # Show percentages on bars
+        textposition='outside',  # Position text outside the bars
+        marker=dict(line=dict(width=1, color="black"))  # Add black outline
+    )
+
+    fig_hourly_proportions_1hr_filtered.update_layout(
+        title=dict(x=0.1, font=dict(size=20)),  # Center and enlarge the title
+        xaxis=dict(
+            title="Proportion (%)",
+            title_font=dict(size=14),
+            tickfont=dict(size=12),
+            range=[0, 73]  # Adjust the range for better visualization
+        ),
+        yaxis=dict(
+            title="Month-Year",
+            title_font=dict(size=14),
+            tickfont=dict(size=12)
+        ),
+        legend=dict(
+            title="Time Bin",
+            font=dict(size=12),
+            orientation="h",  # Horizontal legend
+            yanchor="top",
+            y=-0.2,
+            xanchor="center",
+            x=0.5
+        ),
+        plot_bgcolor="whitesmoke",  # Set background color
+    )
+
+    # Show the visualization
+    st.plotly_chart(fig_hourly_proportions_1hr_filtered)
 
     #----------------------------------------------------------------------------------------------------------------------------
     # Daily Sign Up Times
     #----------------------------------------------------------------------------------------------------------------------------
 
     st.markdown(
-        "### Sign up times for users who canceled within 24 hours"
+        "### Sign up times for users who  within 24 hours"
     )
 
     # Load the dialy_signups CSV
