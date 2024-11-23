@@ -157,6 +157,8 @@ def cancellation_insights():
         "## Monthly Cancellation Rate"
     )
     # Assuming 'subscribed_users' is your DataFrame
+
+    
     df = subscribed_users.copy()
 
     # Step 1: Calculate new subscriptions and cancellations per month
@@ -1824,6 +1826,7 @@ def signups():
 
     # Load the dialy_signups CSV
     dialy_signups = pd.read_csv("dialy_signups.csv")
+    active_daily = active_signups.copy()
 
     # Ensure 'account_creation_time' is in datetime format
     dialy_signups['account_creation_time'] = pd.to_datetime(dialy_signups['account_creation_time'])
@@ -1835,16 +1838,23 @@ def signups():
         dialy_signups['time_diff_in_hours'], bins=bins, labels=labels, right=False
     )
 
-    # Group and calculate proportions for the entire dataset
-    time_bin_proportions = dialy_signups.groupby('time_bins').size().reset_index(name='Sign-ups')
-    time_bin_proportions['Proportion'] = (time_bin_proportions['Sign-ups'] / time_bin_proportions['Sign-ups'].sum()) * 100
+    active_daily['time_bins'] = pd.cut(
+        active_daily['time_difference_hours'], bins=bins, labels=labels, right=False
+    )
 
-    # Visualization: Bar Chart for Overall Time Bins
-    bar_chart = px.bar(
-        time_bin_proportions,
+    # Group and calculate proportions for the entire dataset
+    time_bin_proportions_canceled = dialy_signups.groupby('time_bins').size().reset_index(name='Sign-ups')
+    time_bin_proportions_canceled['Proportion'] = (time_bin_proportions_canceled['Sign-ups'] / time_bin_proportions_canceled['Sign-ups'].sum()) * 100
+
+    time_bin_proportions_active = active_daily.groupby('time_bins').size().reset_index(name='Sign-ups')
+    time_bin_proportions_active['Proportion'] = (time_bin_proportions_active['Sign-ups'] / time_bin_proportions_active['Sign-ups'].sum()) * 100
+
+    # Visualization: Active Bar Chart for Overall Time Bins
+    bar_chart_canceled_daily = px.bar(
+        time_bin_proportions_active,
         x='time_bins',
         y='Proportion',
-        title="Proportion of Users by Time to First Payment (24 hour span)",
+        title="Proportion of Active Users by Time to First Payment (24 hour span)",
         text='Proportion',  # Show percentages on bars
         labels={'Proportion': 'Proportion (%)', 'time_bins': 'Time to First Payment'},
         color='time_bins',  # Use distinct colors for each bar
@@ -1852,14 +1862,14 @@ def signups():
     )
 
     # Customize the chart
-    bar_chart.update_traces(
+    bar_chart_canceled_daily.update_traces(
         texttemplate='%{text:.2f}%',  # Format text as percentages
         textposition="outside",  # Place text labels outside the bars
         marker=dict(line=dict(width=1, color="black"))  # Add black outlines to bars
     )
 
-    bar_chart.update_layout(
-        title=dict(x=0.17, font=dict(size=20)),  # Center and enlarge the title
+    bar_chart_canceled_daily.update_layout(
+        title=dict(x=0.1, font=dict(size=20)),  # Center and enlarge the title
         xaxis=dict(
             title="Time to First Payment",
             title_font=dict(size=14),
@@ -1876,7 +1886,47 @@ def signups():
     )
 
     # Display the chart in Streamlit
-    st.plotly_chart(bar_chart)
+    st.plotly_chart(bar_chart_canceled_daily)
+    
+    
+    # Visualization: Canceled Bar Chart for Overall Time Bins
+    bar_chart_canceled_daily = px.bar(
+        time_bin_proportions_canceled,
+        x='time_bins',
+        y='Proportion',
+        title="Proportion of Canceled Users by Time to First Payment (24 hour span)",
+        text='Proportion',  # Show percentages on bars
+        labels={'Proportion': 'Proportion (%)', 'time_bins': 'Time to First Payment'},
+        color='time_bins',  # Use distinct colors for each bar
+        color_discrete_sequence=px.colors.qualitative.Set3  # Custom color palette
+    )
+
+    # Customize the chart
+    bar_chart_canceled_daily.update_traces(
+        texttemplate='%{text:.2f}%',  # Format text as percentages
+        textposition="outside",  # Place text labels outside the bars
+        marker=dict(line=dict(width=1, color="black"))  # Add black outlines to bars
+    )
+
+    bar_chart_canceled_daily.update_layout(
+        title=dict(x=0.1, font=dict(size=20)),  # Center and enlarge the title
+        xaxis=dict(
+            title="Time to First Payment",
+            title_font=dict(size=14),
+            tickfont=dict(size=12)
+        ),
+        yaxis=dict(
+            title="Proportion (%)",
+            title_font=dict(size=14),
+            tickfont=dict(size=12),
+            range=[0, 105]
+        ),
+        plot_bgcolor="whitesmoke",  # Set background color
+        showlegend=False  # Hide legend for simplicity
+    )
+
+    # Display the chart in Streamlit
+    st.plotly_chart(bar_chart_canceled_daily)
 
     # Add month-year formatting for the stacked bar chart
     dialy_signups['month_year'] = dialy_signups['account_creation_time'].dt.strftime('%b %Y')
@@ -1889,27 +1939,40 @@ def signups():
     selected_months = ['Sep 2024', 'Oct 2024', 'Nov 2024']
     daily_proportions_filtered = daily_proportions[daily_proportions['month_year'].isin(selected_months)]
 
-    # Create a stacked bar chart for proportions by month
-    fig = px.bar(
-        daily_proportions_filtered,
+    ######
+
+    # Add month-year formatting for the stacked bar chart
+    active_daily['month_year'] = active_daily['account_created_time'].dt.strftime('%b %Y')
+
+    # Group and calculate proportions for each month
+    active_daily_proportions = active_daily.groupby(['month_year', 'time_bins']).size().reset_index(name='count')
+    active_daily_proportions['proportion'] = active_daily_proportions.groupby('month_year')['count'].transform(lambda x: x / x.sum() * 100)
+
+    # Filter for the months of interest (Sep, Oct, Nov 2024)
+    active_daily_proportions_filtered = active_daily_proportions[active_daily_proportions['month_year'].isin(selected_months)]  
+
+
+    # Active stacked bar chart for proportions by month
+    fig_active_daily_proportions_filtered = px.bar(
+        active_daily_proportions_filtered,
         x='proportion',
         y='month_year',
         color='time_bins',
         color_discrete_sequence=px.colors.qualitative.Pastel1,
-        title="Daily Signups Proportions by Month (Sep, Oct, Nov)",
+        title="Daily Active Signups Times by Month (Sep, Oct, Nov)",
         labels={'proportion': 'Proportion (%)', 'month_year': 'Month-Year', 'time_bins': 'Time Bin'},
         barmode='group',  # Stacked layout
         orientation='h'  # Horizontal orientation
     )
 
     # Customize the chart
-    fig.update_traces(
+    fig_active_daily_proportions_filtered.update_traces(
         texttemplate='%{x:.1f}%',  # Show percentages on bars
         textposition='inside',  # Position text inside the bars for better clarity
         marker=dict(line=dict(width=0.5, color="black"))  # Add black outline
     )
 
-    fig.update_layout(
+    fig_active_daily_proportions_filtered.update_layout(
         title=dict(x=0.2, font=dict(size=20)),  # Center and enlarge the title
         xaxis=dict(
             title="Proportion (%)",
@@ -1935,7 +1998,56 @@ def signups():
     )
 
     # Show the visualization in Streamlit
-    st.plotly_chart(fig)
+    st.plotly_chart(fig_active_daily_proportions_filtered)
+
+
+    # Canceled stacked bar chart for proportions by month
+    fig_daily_proportions_filtered = px.bar(
+        daily_proportions_filtered,
+        x='proportion',
+        y='month_year',
+        color='time_bins',
+        color_discrete_sequence=px.colors.qualitative.Pastel1,
+        title="Daily Canceled Signup Times by Month (Sep, Oct, Nov)",
+        labels={'proportion': 'Proportion (%)', 'month_year': 'Month-Year', 'time_bins': 'Time Bin'},
+        barmode='group',  # Stacked layout
+        orientation='h'  # Horizontal orientation
+    )
+
+    # Customize the chart
+    fig_daily_proportions_filtered.update_traces(
+        texttemplate='%{x:.1f}%',  # Show percentages on bars
+        textposition='inside',  # Position text inside the bars for better clarity
+        marker=dict(line=dict(width=0.5, color="black"))  # Add black outline
+    )
+
+    fig_daily_proportions_filtered.update_layout(
+        title=dict(x=0.2, font=dict(size=20)),  # Center and enlarge the title
+        xaxis=dict(
+            title="Proportion (%)",
+            title_font=dict(size=14),
+            tickfont=dict(size=12),
+            range=[0, 100]  # Adjust the range for clearer visualization
+        ),
+        yaxis=dict(
+            title="Month-Year",
+            title_font=dict(size=14),
+            tickfont=dict(size=12)
+        ),
+        legend=dict(
+            title="Time Bin",
+            font=dict(size=12),
+            orientation="v",  # Vertical legend
+            yanchor="top",
+            y=1,
+            xanchor="right",
+            x=1.2
+        ),
+        plot_bgcolor="whitesmoke",  # Set background color
+    )
+
+    # Show the visualization in Streamlit
+    st.plotly_chart(fig_daily_proportions_filtered)
 
     
 
