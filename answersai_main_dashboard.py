@@ -68,7 +68,7 @@ def intro():
     st.markdown(
         """
         <div style="text-align: center;">
-            <h1 style="color: #4CAF50;">AnswersAi Marketing Insights</h1>
+            <h1 style="color: #904BFF;">AnswersAi Marketing Insights</h1>
             
         """,
         
@@ -112,7 +112,7 @@ def intro():
 #################################################################################################################################
 
 # Data cleaning subscribed_users dataframe
-subscribed_users = pd.read_csv("subscribed_users_11-24.csv")
+subscribed_users = pd.read_csv("subscribers_11-25.csv")
 
 subscribed_users['created_at'] = pd.to_datetime(subscribed_users['created_at'], errors='coerce')
 subscribed_users['updated_at'] = pd.to_datetime(subscribed_users['updated_at'], errors='coerce')
@@ -133,6 +133,11 @@ subscribed_users['time_to_cancel_hours'] = (
 # Calculate the time difference between 'created_at' and 'canceled_at' in hours
 subscribed_users['time_to_cancel_minutes'] = (
     (subscribed_users['canceled_at'] - subscribed_users['created_at']) / np.timedelta64(1, 'm')
+)
+
+# Calculate the time difference between 'created_at' and 'canceled_at' in hours
+subscribed_users['time_to_cancel_days'] = (
+    (subscribed_users['canceled_at'] - subscribed_users['created_at']) / np.timedelta64(1, 'D')
 )
 
 master_table = pd.read_csv("master_table.csv")
@@ -239,12 +244,16 @@ def cancellation_insights():
     )
     st.plotly_chart(fig_cancellations, use_container_width=True)
 
-    # Hourly and Daily Cancellation Rate
+    
+
+#----------------------------------------------------------------------------------------------------------------------------
+## Hourly and Daily Cancellation Rate
+#----------------------------------------------------------------------------------------------------------------------------
 
     # Calculate overall cancellation rates
 
     total_subscriptions = len(subscribed_users)
-    total_cancellations = (subscribed_users['status'] == 'canceled').sum()
+    total_cancellations = subscribed_users[subscribed_users['status'] == 'canceled'].shape[0]
 
     # Cancellations within 5 minutes
     cancellations_within_5_minutes = subscribed_users[
@@ -270,43 +279,23 @@ def cancellation_insights():
         ((subscribed_users['time_to_cancel_hours'] <=24))
     ].shape[0]
 
+    # Cancellations within 7 days
+    cancellations_within_7_days = subscribed_users[
+        (subscribed_users['status'] == 'canceled') &
+        ((subscribed_users['time_to_cancel_days'] >=1) & (subscribed_users['time_to_cancel_days'] <=7))
+    ].shape[0]
+
+
     # Calculate rates
     overall_cancellation_rate = total_cancellations / total_subscriptions
     overall_cancellation_rate_5m = cancellations_within_5_minutes / total_subscriptions
     overall_cancellation_rate_30m = cancellations_within_30_minutes / total_subscriptions
     overall_cancellation_rate_1h = cancellations_within_1_hour / total_subscriptions
     overall_cancellation_rate_24h = cancellations_within_24_hours / total_subscriptions
-
-
-    # Aggregate cancellations within 1 hour
-    df_one_hour = subscribed_users.groupby('created_month').apply(
-        lambda x: pd.Series({
-            'total_subscriptions': len(x),
-            'cancellations_within_1_hour': x[
-                (x['status'] == 'canceled') & (x['time_to_cancel_hours'] <= 1)
-            ].shape[0],
-            'cancellation_rate_within_one_hour': x[
-                (x['status'] == 'canceled') & (x['time_to_cancel_hours'] <= 1)
-            ].shape[0] / len(x)
-        })
-    ).reset_index()
-
-    # Aggregate cancellations within 24 hours
-    df_24_hours = subscribed_users.groupby('created_month').apply(
-        lambda x: pd.Series({
-            'total_subscriptions': len(x),
-            'cancellations_within_24_hours': x[
-                (x['status'] == 'canceled') & (x['time_to_cancel_hours'] <= 24)
-            ].shape[0],
-            'cancellation_rate_within_24_hours': x[
-                (x['status'] == 'canceled') & (x['time_to_cancel_hours'] <= 24)
-            ].shape[0] / len(x)
-        })
-    ).reset_index()
-
+    overall_cancellation_rate_7d = cancellations_within_7_days / total_subscriptions
 
     st.markdown(
-        "## 1 hour vs. 24 hour Cancellation Insights"
+        "## 1 Hour, Day, and Week Cancelation Insights"
         )
 
     col1_hourly_daily, col2_proportion = st.columns(2)
@@ -314,9 +303,10 @@ def cancellation_insights():
     with col1_hourly_daily:
         # Data for overall cancellation rates
         data_hourly_daily = {
-            "Cancellation Rate Type": ["1 Hour", "24 Hours"],  # Labels for the bar chart
+            "Cancellation Rate Type": ["1 Hour", "24 Hours", "1-7 Days"],  # Labels for the bar chart
             "Cancellation Rate (%)": [overall_cancellation_rate_1h * 100, 
-                                      overall_cancellation_rate_24h * 100]  # Convert to percentage
+                                      overall_cancellation_rate_24h * 100,
+                                      overall_cancellation_rate_7d * 100]  # Convert to percentage
         }
 
         # Create a DataFrame
@@ -333,7 +323,7 @@ def cancellation_insights():
 
         # Customize the chart
         fig.update_traces(
-            marker=dict(color=["lightskyblue", "lightcoral"], line=dict(width=2, color="black")),
+            marker=dict(color=["lightskyblue", "lightcoral", "moccasin"], line=dict(width=2, color="black")),
             texttemplate='%{text:.2f}',  # Format the text values
             textposition='outside'  # Position text above the bars
         )
@@ -358,18 +348,22 @@ def cancellation_insights():
     with col2_proportion:
         # Calculate cancellations beyond 24 hours
         cancellations_beyond_24_hours = total_cancellations - cancellations_within_24_hours
+        cancellations_beyond_7_days = total_cancellations - cancellations_within_7_days
+
 
         # Prepare data for the pie chart
         data_proportions = {
             "Cancellation Category": [
                 "Within 1 Hour", 
                 "Within 1-24 Hours", 
-                "Beyond 24 Hours"
+                "Within 1-7 Days",
+                "Beyond 7 Days"
             ],
             "Count":[
                 cancellations_within_1_hour, 
-                cancellations_within_24_hours - cancellations_within_1_hour,  # Only the 1-24 hour range
-                cancellations_beyond_24_hours
+                cancellations_within_24_hours - cancellations_within_1_hour,  
+                cancellations_within_7_days,
+                cancellations_beyond_7_days
             ]
         }
 
@@ -389,7 +383,7 @@ def cancellation_insights():
             textinfo="percent",  # Show only percentages inside the slices
             textfont=dict(size=14),  # Adjust font size for percentages
             marker=dict(
-                colors=["lightskyblue", "lightcoral", "lightgreen"],  # Pastel tones
+                colors=["lightskyblue", "lightcoral", "moccasin", "lightgreen"],  # Pastel tones
                 line=dict(width=2, color="black")  # Black outline for slices
             )
         )
@@ -419,7 +413,7 @@ def cancellation_insights():
         st.plotly_chart(fig, use_container_width=True)  # Allow dynamic resizing
 
     st.markdown(
-        "## Hour Breakdown to Minutes"
+        "### Hour Breakdown to Minutes"
     )
 
     # Filter data for cancellations within 1 hour
@@ -533,7 +527,11 @@ def cancellation_insights():
             # Display the chart in Streamlit
             st.plotly_chart(pie_chart, use_container_width=True)
 
-            
+#----------------------------------------------------------------------------------------------------------------------------
+## Weekly Breakdown for Cancellations
+#----------------------------------------------------------------------------------------------------------------------------
+     
+
 
 #################################################################################################################################
 # Questions/Duplicate Insights
@@ -1821,7 +1819,7 @@ def signups():
     #----------------------------------------------------------------------------------------------------------------------------
 
     st.markdown(
-        "### Sign up times for users who  within 24 hours"
+        "### Sign up times for active and canceled users within 24 hours"
     )
 
     # Load the dialy_signups CSV
