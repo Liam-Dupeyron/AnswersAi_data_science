@@ -162,8 +162,6 @@ def cancellation_insights():
         "## Monthly Cancellation Rate"
     )
     # Assuming 'subscribed_users' is your DataFrame
-
-    st.dataframe(master_table)
     
     df = subscribed_users.copy()
 
@@ -1088,7 +1086,104 @@ def questions_duplicates():
 
     # Display the chart in Streamlit
     st.plotly_chart(fig_24h_grouped, use_container_width=True)
-    
+
+#----------------------------------------------------------------------------------------------------------------------------
+# Time to Cancel Since Last Question
+#----------------------------------------------------------------------------------------------------------------------------   
+    st.markdown(
+        "## Time to Cancel Since Last Question Asked"
+    )
+
+     # Histogram for Time to Cancel (Minutes)
+    time_to_cancel_questions_hist_m = px.histogram(
+        master_table[master_table['status'] == 'canceled'],
+        x='time_to_cancel_question_minutes',
+        nbins=17000,  # Adjust the number of bins for granularity
+        title="Distribution of Time to Cancel (Minutes)",
+        labels={"time_to_cancel_question_minutes": "Time to Cancel (Minutes)"},
+        color_discrete_sequence=["#B3D9FF"]  # Pastel color
+    )
+
+    # Add black outlines to the bins
+    time_to_cancel_questions_hist_m.update_traces(
+        marker=dict(
+            line=dict(width=1, color="black")) 
+            )
+
+    # Customize layout
+    time_to_cancel_questions_hist_m.update_layout(
+        title=dict(font_size=18, x=0.1),  # Center and enlarge title
+        xaxis=dict(title="Time to Cancel (Minutes)", title_font=dict(size=14), tickfont=dict(size=12), range=[0,1440]),
+        yaxis=dict(title="Number of Users", title_font=dict(size=14), tickfont=dict(size=12)),
+        plot_bgcolor="whitesmoke",
+        margin=dict(l=20, r=20, t=50, b=50),
+
+    )
+
+    # Display in Streamlit
+    st.plotly_chart(time_to_cancel_questions_hist_m, use_container_width=True)
+
+
+    # Histogram for Time to Cancel (Hours)
+    time_to_cancel_questions_hist_hours = px.histogram(
+        master_table[master_table['status'] == 'canceled'],
+        x='time_to_cancel_question_hours',
+        nbins=800,  # Adjust the number of bins for granularity
+        title="Distribution of Time to Cancel (Hours)",
+        labels={"time_to_cancel_question_hours": "Time to Cancel (Hours)"},
+        color_discrete_sequence=["#B3D9FF"]  # Pastel color
+    )
+
+    # Add black outlines to the bins
+    time_to_cancel_questions_hist_hours.update_traces(
+        marker=dict(
+            line=dict(width=1, color="black")) 
+            )
+
+    # Customize layout
+    time_to_cancel_questions_hist_hours.update_layout(
+        title=dict(font_size=18, x=0.1),  # Center and enlarge title
+        xaxis=dict(title="Time to Cancel (Minutes)", title_font=dict(size=14), tickfont=dict(size=12), range=[0,730]),
+        yaxis=dict(title="Number of Users", title_font=dict(size=14), tickfont=dict(size=12)),
+        plot_bgcolor="whitesmoke",
+        margin=dict(l=20, r=20, t=50, b=50),
+
+    )
+
+    # Display in Streamlit
+    st.plotly_chart(time_to_cancel_questions_hist_hours, use_container_width=True)
+
+
+    # Histogram for Time to Cancel (Days)
+    time_to_cancel_questions_hist_days = px.histogram(
+        master_table[master_table['status'] == 'canceled'],
+        x='time_to_cancel_question_days',
+        nbins=30,  # Adjust the number of bins for granularity
+        title="Distribution of Time to Cancel (Days)",
+        labels={"time_to_cancel_question_days": "Time to Cancel (Days)"},
+        color_discrete_sequence=["#B3D9FF"]  # Pastel color
+    )
+
+    # Add black outlines to the bins
+    time_to_cancel_questions_hist_days.update_traces(
+        marker=dict(
+            line=dict(width=1, color="black")) 
+            )
+
+    # Customize layout
+    time_to_cancel_questions_hist_days.update_layout(
+        title=dict(font_size=18, x=0.1),  # Center and enlarge title
+        xaxis=dict(title="Time to Cancel (Minutes)", title_font=dict(size=14), tickfont=dict(size=12),),
+        yaxis=dict(title="Number of Users", title_font=dict(size=14), tickfont=dict(size=12)),
+        plot_bgcolor="whitesmoke",
+        margin=dict(l=20, r=20, t=50, b=50),
+
+    )
+
+    # Display in Streamlit
+    st.plotly_chart(time_to_cancel_questions_hist_days, use_container_width=True)
+
+
 
 
 #----------------------------------------------------------------------------------------------------------------------------
