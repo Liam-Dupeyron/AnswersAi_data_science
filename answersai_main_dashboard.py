@@ -413,12 +413,13 @@ def cancellation_insights():
         # Display the chart in Streamlit
         st.plotly_chart(fig, use_container_width=True)  # Allow dynamic resizing
 
+    bin_edges_hours = np.linspace(0, 168, 30)
 
      # Histogram for Time to Cancel (Hours)
     time_to_cancel_histogram_hours = px.histogram(
-        subscribed_users[subscribed_users['status'] == 'canceled'],
+        subscribed_users[(subscribed_users['status'] == 'canceled')],
         x='time_to_cancel_hours',
-        nbins=30,  # Adjust the number of bins for granularity
+        nbins=800,  # Adjust the number of bins for granularity
         title="Distribution of Time to Cancel (Hours)",
         labels={"time_to_cancel_hours": "Time to Cancel (Hours)"},
         color_discrete_sequence=["#B3D9FF"]  # Pastel color
@@ -433,8 +434,15 @@ def cancellation_insights():
     # Customize layout
     time_to_cancel_histogram_hours.update_layout(
         title=dict(font_size=18, x=0.1),  # Center and enlarge title
-        xaxis=dict(title="Time to Cancel (Hours)", title_font=dict(size=14), tickfont=dict(size=12)),
-        yaxis=dict(title="Number of Users", title_font=dict(size=14), tickfont=dict(size=12)),
+        xaxis=dict(title="Time to Cancel (Hours)", 
+                   title_font=dict(size=14), 
+                   tickfont=dict(size=12),
+                   range=[0,730]
+        ),
+        yaxis=dict(title="Number of Users",
+                   title_font=dict(size=14), 
+                   tickfont=dict(size=12)
+                   ),
         plot_bgcolor="whitesmoke",
         margin=dict(l=20, r=20, t=50, b=50),
 
@@ -447,7 +455,7 @@ def cancellation_insights():
     time_to_cancel_histogram_days = px.histogram(
         subscribed_users[subscribed_users['status'] == 'canceled'],
         x='time_to_cancel_days',
-        nbins=30,  # Adjust the number of bins for granularity
+        nbins=60,  # Adjust the number of bins for granularity
         title="Distribution of Time to Cancel (Days)",
         labels={"time_to_cancel_days": "Time to Cancel (Days)"},
         color_discrete_sequence=["#B3D9FF"]  # Pastel color
@@ -595,7 +603,7 @@ def cancellation_insights():
     time_to_cancel_histogram = px.histogram(
         subscribed_users[subscribed_users['status'] == 'canceled'],
         x='time_to_cancel_minutes',
-        nbins=30,  # Adjust the number of bins for granularity
+        nbins=17000,  # Adjust the number of bins for granularity
         title="Distribution of Time to Cancel (Minutes)",
         labels={"time_to_cancel_minutes": "Time to Cancel (Minutes)"},
         color_discrete_sequence=["#B3D9FF"]  # Pastel color
@@ -610,7 +618,7 @@ def cancellation_insights():
     # Customize layout
     time_to_cancel_histogram.update_layout(
         title=dict(font_size=18, x=0.1),  # Center and enlarge title
-        xaxis=dict(title="Time to Cancel (Minutes)", title_font=dict(size=14), tickfont=dict(size=12)),
+        xaxis=dict(title="Time to Cancel (Minutes)", title_font=dict(size=14), tickfont=dict(size=12), range=[0,1440]),
         yaxis=dict(title="Number of Users", title_font=dict(size=14), tickfont=dict(size=12)),
         plot_bgcolor="whitesmoke",
         margin=dict(l=20, r=20, t=50, b=50),
