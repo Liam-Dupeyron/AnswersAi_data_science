@@ -140,7 +140,7 @@ subscribed_users['time_to_cancel_days'] = (
     (subscribed_users['canceled_at'] - subscribed_users['created_at']) / np.timedelta64(1, 'D')
 )
 
-master_table = pd.read_csv("master_table.csv")
+master_table = pd.read_csv("master_table_11-25.csv")
 
 #################################################################################################################################
 # Cancellation Rates
