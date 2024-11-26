@@ -163,6 +163,7 @@ def cancellation_insights():
     )
     # Assuming 'subscribed_users' is your DataFrame
 
+    st.dataframe(master_table)
     
     df = subscribed_users.copy()
 
