@@ -112,7 +112,7 @@ def intro():
 #################################################################################################################################
 
 # Data cleaning subscribed_users dataframe
-subscribed_users = pd.read_csv("subscribers_11-25.csv")
+subscribed_users = pd.read_csv("/Users/liamdupeyron/Desktop/AnswersAi/subscribers_11-25.csv")
 
 subscribed_users['created_at'] = pd.to_datetime(subscribed_users['created_at'], errors='coerce')
 subscribed_users['updated_at'] = pd.to_datetime(subscribed_users['updated_at'], errors='coerce')
